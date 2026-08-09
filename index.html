@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;1,500&family=Source+Serif+4:ital@0;1&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1E9D8; --ink:#2B2620; --stamp:#C1502E; --olive:#6B7353; --muted:#8C8370;
+    --display:'Fraunces', serif; --body:'Source Serif 4', serif; --mono:'Courier Prime', monospace;
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:var(--body); line-height:1.65;
+    background-image: radial-gradient(rgba(43,38,32,0.035) 1px, transparent 1px);
+    background-size: 6px 6px;
+  }
+  a{color:inherit;}
+  .topbar{ position:sticky; top:0; z-index:20; background:rgba(241,233,216,0.92); backdrop-filter:blur(6px); border-bottom:1px solid rgba(43,38,32,0.15); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; }
+  .topbar .mark{ font-family:var(--mono); font-weight:700; font-size:12.5px; letter-spacing:0.04em; text-decoration:none; color:var(--stamp); text-transform:uppercase; }
+  .topbar .field{ font-family:var(--mono); font-size:11px; color:var(--muted); }
+
+  header{ padding:80px 24px 30px; max-width:680px; margin:0 auto; text-align:center; }
+  .eyebrow{ font-family:var(--mono); font-size:11.5px; color:var(--olive); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:18px; }
+  h1{ font-family:var(--display); font-style:italic; font-weight:500; font-size:clamp(2.2rem,5.5vw,3.4rem); margin:0 0 18px; }
+  .tagline{ font-size:1.1rem; color:#4A4235; max-width:480px; margin:0 auto 8px; }
+  .desc{ font-size:14.5px; color:var(--muted); max-width:480px; margin:14px auto 0; }
+
+  main{ max-width:800px; margin:0 auto; padding:20px 24px 100px; }
+  .section-label{ font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid rgba(43,38,32,0.18); padding-bottom:10px; margin-bottom:32px; display:flex; justify-content:space-between; }
+
+  .grid-feed{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px; }
+  .card{
+    position:relative; background:#F8F2E4; border:1px solid rgba(43,38,32,0.18);
+    box-shadow: 2px 3px 0 rgba(43,38,32,0.08);
+    padding:24px 22px; text-decoration:none; color:inherit;
+    transition:transform .15s ease;
+  }
+  .card:hover{ transform:translateY(-2px) rotate(-0.3deg); }
+  .card.pinned{ grid-column:1/-1; border-color:var(--stamp); }
+
+  .stamp{
+    position:absolute; top:16px; right:16px;
+    font-family:var(--mono); font-weight:700; font-size:10px; color:var(--stamp);
+    border:2px solid var(--stamp); border-radius:3px; padding:4px 8px;
+    transform:rotate(8deg) scale(1); text-transform:uppercase; letter-spacing:0.05em;
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+    opacity:0.85;
+  }
+  .card:hover .stamp{ transform:rotate(-3deg) scale(1.12); opacity:1; }
+
+  .card-meta{ font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:12px; }
+  h2{ font-family:var(--display); font-style:italic; font-weight:500; font-size:1.35rem; margin:0 40px 12px 0; line-height:1.3; }
+  p.hook{ font-size:15px; color:#4A4235; margin:0 0 14px; }
+  .tags{ display:flex; gap:8px; flex-wrap:wrap; }
+  .tag-pill{ font-family:var(--mono); font-size:10px; color:var(--olive); text-transform:lowercase; }
+  .tag-pill::before{ content:'#'; }
+
+  .empty{ text-align:center; padding:60px 20px; color:var(--muted); grid-column:1/-1; }
+  .empty .glyph{ font-family:var(--display); font-style:italic; color:var(--stamp); margin-bottom:10px; font-size:1.2rem; }
+
+  footer{ border-top:1px solid rgba(43,38,32,0.18); padding:36px 24px; text-align:center; }
+  footer p{ font-size:13.5px; color:var(--muted); max-width:480px; margin:0 auto 14px; }
+  footer a.home{ font-family:var(--mono); font-size:12px; color:var(--stamp); text-decoration:none; border-bottom:1px solid var(--stamp); padding-bottom:2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="mark" href="https://iggym.github.io/fde-field-notes/">FDE FIELD NOTES</a>
+  <span class="field" id="field-count">entries: —</span>
+</div>
+
+<header>
+  <div class="eyebrow">Deployment Engineering, In Practice</div>
+  <h1>What the job actually is,<br>from inside the engagement.</h1>
+  <p class="desc" id="site-desc">Field notes on deployment-engineering practice — discovery, scoping, and customer judgment calls.</p>
+</header>
+
+<main>
+  <div class="section-label"><span>Field Log</span><span id="feed-count">loading…</span></div>
+  <div class="grid-feed" id="feed"></div>
+</main>
+
+<footer>
+  <p id="footer-desc">FDE Field Notes — the deployment-practice layer of an eight-repo portfolio on running AI in production.</p>
+  <a class="home" href="https://iggym.github.io/fde-field-notes/">Back to top ↑</a>
+</footer>
+
+<script>
+(async function(){
+  const feedEl = document.getElementById('feed');
+  const countEl = document.getElementById('feed-count');
+  const fieldCountEl = document.getElementById('field-count');
+  const descEl = document.getElementById('site-desc');
+  const footerDescEl = document.getElementById('footer-desc');
+
+  const STAMPS = ['ON SITE','DISCOVERY','SCOPED','SHIPPED','DEBRIEF'];
+  function stampFor(idx){ return STAMPS[idx % STAMPS.length]; }
+
+  function fmtDate(iso){ try{ return new Date(iso+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }catch(e){return iso;} }
+
+  function cardHTML(a, idx, isPinned){
+    const tags = (a.tags||[]).map(t=>`<span class="tag-pill">${t}</span>`).join('');
+    return `
+      <a class="card ${isPinned?'pinned':''}" href="${a.path}">
+        <span class="stamp">${isPinned ? 'FLAGSHIP' : stampFor(idx)}</span>
+        <div class="card-meta">${fmtDate(a.date)} · ${a.reading_time_minutes||'—'} min read</div>
+        <h2>${a.title}</h2>
+        <p class="hook">${a.hook||''}</p>
+        <div class="tags">${tags}</div>
+      </a>`;
+  }
+
+  function render(published, site){
+    if(site && site.description){ descEl.textContent = site.description; footerDescEl.textContent = site.description; }
+    if(published.length === 0){
+      feedEl.innerHTML = '<div class="empty"><div class="glyph">The notebook is still blank.</div>First entry coming from the field.</div>';
+      countEl.textContent = '0'; fieldCountEl.textContent = 'entries: 0'; return;
+    }
+    const pinned = published.filter(a=>a.pinned);
+    const rest = published.filter(a=>!a.pinned).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    countEl.textContent = published.length;
+    fieldCountEl.textContent = 'entries: ' + published.length;
+    let html='';
+    pinned.forEach((a,i)=>{ html += cardHTML(a,i,true); });
+    rest.forEach((a,i)=>{ html += cardHTML(a,i,false); });
+    feedEl.innerHTML = html;
+  }
+
+  try{
+    const res = await fetch('./metadata.json');
+    if(!res.ok) throw new Error('not found');
+    const data = await res.json();
+    render((data.articles||[]).filter(a=>a.status==='published'), data.site);
+  }catch(err){
+    feedEl.innerHTML = '<div class="empty"><div class="glyph">The notebook is still blank.</div>First entry coming from the field.</div>';
+  }
+})();
+</script>
+</body>
+</html>
