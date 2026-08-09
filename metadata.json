@@ -1,0 +1,11 @@
+{
+  "site": {
+    "repo_name": "fde-field-notes",
+    "title": "FDE Field Notes",
+    "tagline": "What the job actually is, from inside the engagement.",
+    "base_url": "https://iggym.github.io/fde-field-notes/",
+    "audience": "Forward Deployed Engineers and job-seekers in that market",
+    "description": "Field notes on deployment-engineering practice — discovery, scoping, customer judgment calls, and the skill nobody puts in the job posting."
+  },
+  "articles": []
+}
