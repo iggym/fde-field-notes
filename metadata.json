@@ -44,6 +44,19 @@
   "reading_time_minutes": 5,
   "pinned": false,
   "research_window": "2025-01-27 to 2025-03-03"
+}, {
+  "id": "0001",
+  "slug": "not-yet-is-the-deliverable",
+  "title": "Not Yet Is the Deliverable",
+  "hook": "The best FDEs aren't measured by what they ship — they're measured by what they refuse to build until the data proves it's ready.",
+  "path": "articles/not-yet-is-the-deliverable.html",
+  "date": "2026-03-17",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["customer-judgment", "discovery", "scoping", "forward-deployed-engineer"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2026-02-10 to 2026-03-17"
 }
   ]
 }
