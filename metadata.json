@@ -219,6 +219,20 @@
       "reading_time_minutes": 6,
       "pinned": false,
       "research_window": "2024-12-18 to 2025-01-22"
-    }
+    },
+    {
+  "id": "0011",
+  "slug": "the-title-isnt-the-job",
+  "title": "The Title Isn't the Job",
+  "hook": "An 'FDE' title doesn't describe a role — it describes a company's bet about how software gets sold.",
+  "path": "articles/the-title-isnt-the-job.html",
+  "date": "2025-03-14",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "comp", "title-fragmentation", "career-decisions"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2024-03-14 to 2025-03-14"
+}
   ]
 }
