@@ -83,6 +83,19 @@
   "reading_time_minutes": 5,
   "pinned": false,
   "research_window": "2025-02-02 to 2025-03-08"
+},{
+  "id": "0008",
+  "slug": "your-real-job-is-roadmap",
+  "title": "Your Real Job Is Roadmap",
+  "hook": "The FDE's highest-leverage output isn't code deployed — it's field signal that changes the roadmap.",
+  "path": "articles/your-real-job-is-roadmap.html",
+  "date": "2025-02-18",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "internal-advocacy", "product-roadmap", "career-craft"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2024-02-18 to 2025-02-18"
 }
   ]
 }
