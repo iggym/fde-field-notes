@@ -122,6 +122,19 @@
   "reading_time_minutes": 5,
   "pinned": false,
   "research_window": "2024-02-18 to 2025-02-18"
+},{
+  "id": "0008",
+  "slug": "roadmap-is-not-wish-list",
+  "title": "The Roadmap Is Not a Wish List",
+  "hook": "Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.",
+  "path": "articles/roadmap-is-not-wish-list.html",
+  "date": "2026-02-18",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "internal-advocacy", "roadmap", "eval-harness"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2025-02-18 to 2026-02-18"
 }
   ]
 }
