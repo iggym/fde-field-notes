@@ -96,6 +96,19 @@
   "reading_time_minutes": 6,
   "pinned": false,
   "research_window": "2024-02-18 to 2025-02-18"
+}, {
+  "id": "0002",
+  "slug": "when-the-building-stops",
+  "title": "When the Building Stops",
+  "hook": "\"Don't build this yet\" isn't a technical judgment — it's an information-architecture check.",
+  "path": "articles/when-the-building-stops.html",
+  "date": "2025-03-18",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "customer-judgment", "scoping", "career-craft"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2024-03-18 to 2025-03-18"
 }
   ]
 }
