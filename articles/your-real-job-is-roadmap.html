@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Real Job Is Roadmap — FDE Field Notes</title>
+<meta name="description" content="The FDE's highest-leverage output isn't code deployed — it's field signal that changes the roadmap.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c10;
+  --surface: #12151c;
+  --surface2: #1a1e28;
+  --border: #2a2f3d;
+  --text: #e2e4e9;
+  --text-dim: #8a8f9d;
+  --accent: #f0c040;
+  --accent-dim: #f0c04033;
+  --red: #e85454;
+  --green: #34d399;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'Inter', -apple-system, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* Progress bar */
+#progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+  background: var(--accent); z-index: 1001; transition: width 0.15s linear;
+}
+
+/* Topbar */
+#topbar {
+  position: sticky; top: 0; z-index: 1000;
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  background: rgba(10,12,16,0.75);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+#topbar a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+#topbar .breadcrumb { color: var(--text-dim); font-size: 0.8rem; }
+#topbar .breadcrumb span { color: var(--text); }
+#topbar .reading-time { color: var(--text-dim); font-size: 0.78rem; }
+.hamburger { display: none; background: none; border: none; color: var(--text); font-size: 1.4rem; cursor: pointer; }
+
+@media (max-width: 880px) {
+  .hamburger { display: block; }
+  #topbar .desktop-links { display: none; }
+  #topbar .desktop-links.open { display: flex; flex-direction: column; position: absolute; top: 52px; left: 0; right: 0; background: var(--surface); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); gap: 0.5rem; }
+}
+
+/* Layout */
+.container { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem; }
+.grid { display: grid; grid-template-columns: 1fr 280px; gap: 3rem; align-items: start; }
+@media (max-width: 880px) {
+  .grid { grid-template-columns: 1fr; }
+  .aside { display: none; }
+  .aside.drawer-open { display: block; position: fixed; top: 52px; right: 0; bottom: 0; width: 300px; background: var(--surface); border-left: 1px solid var(--border); padding: 1.5rem; overflow-y: auto; z-index: 999; }
+}
+
+/* Hero */
+.hero { padding: 4rem 0 2.5rem; }
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text);
+  max-width: 680px;
+}
+.hero-meta { color: var(--text-dim); font-size: 0.82rem; margin-top: 1rem; display: flex; gap: 1.2rem; flex-wrap: wrap; }
+.hero-meta time { color: var(--accent); }
+
+/* Article prose */
+.prose h2 {
+  font-family: var(--serif);
+  font-size: 1.6rem; font-weight: 400;
+  margin: 2.5rem 0 1rem;
+  color: var(--text);
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+.prose h3 { font-size: 1.05rem; font-weight: 700; margin: 1.8rem 0 0.6rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
+.prose p { margin: 0 0 1.2rem; max-width: 640px; }
+.prose strong { color: var(--accent); font-weight: 600; }
+.prose em { font-style: italic; color: var(--text-dim); }
+
+/* Spectrum widget */
+.spectrum {
+  display: flex; gap: 1.5rem; margin: 2rem 0; flex-wrap: wrap;
+}
+.spectrum-card {
+  flex: 1; min-width: 220px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 1.4rem; position: relative; overflow: hidden;
+}
+.spectrum-card.before { border-color: var(--red); }
+.spectrum-card.after { border-color: var(--green); }
+.spectrum-card .label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.6rem; }
+.spectrum-card.before .label { color: var(--red); }
+.spectrum-card.after .label { color: var(--green); }
+.spectrum-card .statement { font-family: var(--serif); font-size: 1.15rem; line-height: 1.45; }
+
+/* Pull quote */
+.pullquote {
+  margin: 2.5rem 0; padding: 1.5rem 2rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-dim);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  line-height: 1.5;
+  font-style: italic;
+  max-width: 640px;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.pullquote.revealed { transform: translateX(0); opacity: 1; }
+.pullquote:not(.revealed) { transform: translateX(-20px); opacity: 0.6; }
+
+/* Centerpiece: Decision-Matrix Diagnostic */
+.diagnostic {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 2rem; margin: 2.5rem 0; max-width: 640px;
+}
+.diagnostic h3 { color: var(--accent); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+.diagnostic .question { font-family: var(--serif); font-size: 1.15rem; margin-bottom: 1.2rem; }
+.diagnostic .choices { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.diagnostic .choice-btn {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 0.6rem 1.2rem; color: var(--text); cursor: pointer; font-size: 0.9rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+.diagnostic .choice-btn:hover { border-color: var(--accent); background: var(--accent-dim); }
+.diagnostic .result {
+  margin-top: 1.2rem; padding: 1rem; border-radius: 8px; display: none;
+  font-size: 0.92rem; line-height: 1.6;
+}
+.diagnostic .result.strong { background: rgba(52,211,153,0.12); border: 1px solid var(--green); }
+.diagnostic .result.moderate { background: var(--accent-dim); border: 1px solid var(--accent); }
+.diagnostic .result.weak { background: rgba(232,84,84,0.1); border: 1px solid var(--red); }
+.diagnostic .reset-btn {
+  margin-top: 0.8rem; background: none; border: 1px solid var(--border); color: var(--text-dim);
+  padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.78rem; display: none;
+}
+.diagnostic .reset-btn:hover { border-color: var(--text); color: var(--text); }
+.diagnostic figcaption { color: var(--text-dim); font-size: 0.75rem; margin-top: 0.8rem; }
+
+/* Three Things tracker */
+.three-things { position: sticky; top: 68px; }
+.three-things h4 { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.8rem; }
+.thing-item {
+  display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.7rem;
+  font-size: 0.82rem; line-height: 1.4; color: var(--text-dim);
+  transition: color 0.4s;
+}
+.thing-item.unlocked { color: var(--text); }
+.thing-item .icon { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; transition: border-color 0.4s, background 0.4s; }
+.thing-item.unlocked .icon { border-color: var(--green); background: rgba(52,211,153,0.15); color: var(--green); }
+
+/* Checklist */
+.checklist { margin: 1.5rem 0; }
+.checklist-item { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.7rem; cursor: pointer; }
+.checklist-item input[type="checkbox"] { appearance: none; width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 2px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+.checklist-item input[type="checkbox"]:checked { border-color: var(--green); background: var(--green); }
+.checklist-item input[type="checkbox"]:checked::after { content: '✓'; display: flex; align-items: center; justify-content: center; color: var(--bg); font-size: 0.7rem; font-weight: 700; width: 100%; height: 100%; }
+.checklist-item label { font-size: 0.92rem; cursor: pointer; transition: color 0.2s; }
+.checklist-item input:checked + label { color: var(--text-dim); text-decoration: line-through; }
+
+/* Recall cards */
+.recall-cards { margin: 2.5rem 0; }
+.recall-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 1.2rem 1.4rem; margin-bottom: 0.8rem; cursor: pointer;
+  transition: border-color 0.3s;
+}
+.recall-card:hover { border-color: var(--accent); }
+.recall-card .prompt { font-size: 0.9rem; font-weight: 600; }
+.recall-card .answer { font-size: 0.85rem; color: var(--text-dim); margin-top: 0.6rem; display: none; line-height: 1.5; }
+.recall-card.flipped .answer { display: block; color: var(--text); }
+.recall-card.flipped .prompt { color: var(--accent); }
+
+/* Concept map */
+.concept-map { margin: 2.5rem 0; }
+.concept-map svg { max-width: 100%; height: auto; }
+
+/* Share block */
+.share-block { margin: 2.5rem 0; padding: 1.4rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; max-width: 640px; }
+.share-block h4 { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+.share-block .share-text { font-size: 0.88rem; line-height: 1.5; color: var(--text-dim); margin-bottom: 0.8rem; }
+.share-block .share-btn {
+  background: var(--accent); color: var(--bg); border: none; border-radius: 6px;
+  padding: 0.5rem 1rem; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+  transition: opacity 0.2s;
+}
+.share-block .share-btn:hover { opacity: 0.85; }
+
+/* Scroll reveal */
+.scroll-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.scroll-reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Beat markers */
+.beat-marker { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.15rem 0.45rem; border-radius: 4px; margin-right: 0.3rem; vertical-align: middle; }
+.beat-marker.before-after { background: rgba(52,211,153,0.15); color: var(--green); }
+.beat-marker.turn { background: rgba(240,192,64,0.15); color: var(--accent); }
+
+/* Footer */
+footer {
+  margin-top: 4rem; padding: 2rem 0; border-top: 1px solid var(--border);
+  font-size: 0.78rem; color: var(--text-dim); line-height: 1.7;
+}
+footer a { color: var(--accent); text-decoration: none; }
+footer .citations { margin-top: 1rem; }
+footer .citations li { margin-bottom: 0.3rem; }
+.back-to-top { display: inline-block; margin-top: 1rem; color: var(--accent); cursor: pointer; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav id="topbar">
+  <div style="display:flex;align-items:center;gap:1.2rem;">
+    <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+    <span class="breadcrumb">→ <span>Field Note</span></span>
+  </div>
+  <div class="desktop-links" style="display:flex;align-items:center;gap:1rem;">
+    <span class="reading-time">6 min read</span>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">☰</button>
+</nav>
+
+<main class="container">
+
+  <!-- Hero -->
+  <header class="hero">
+    <h1 class="hero-title">Your Real Job Is Roadmap</h1>
+    <div class="hero-meta">
+      <time datetime="2025-02-18">18 Feb 2025</time>
+      <span>Internal Advocacy</span>
+      <span>Field Note #008</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <article class="prose">
+
+      <!-- Opening Scene -->
+      <p>You're three weeks into a customer engagement when you notice it. The customer's data team is building something your product should already do — not as a hack, not as a one-off, but as a recurring pattern they've institutionalized. You've seen the same gap at two other accounts. You mention it on your internal Slack channel. Someone from product responds with a thumbs-up emoji. The message scrolls up and away. Six months later, a competitor ships the feature.</p>
+
+      <p>That thumbs-up emoji cost your company more than any bug you'll ever fix.</p>
+
+      <!-- Beat 1 -->
+      <h2 id="the-advocacy-frame"><span class="beat-marker before-after">BEAT 1: Before → After</span> The Advocacy Frame</h2>
+
+      <p>Most FDEs describe their job as "making the product work at the customer." That's the deployment frame. It's honest and it's incomplete. The deployment frame treats the product as fixed and the customer as variable — your job is to bend the customer toward the product's existing shape.</p>
+
+      <p>But the actual highest-leverage work runs the opposite direction: bending the product toward what the customer is actually doing. The FDE's most valuable output isn't code deployed. <strong>It's field signal that changes the roadmap.</strong></p>
+
+      <!-- Spectrum widget -->
+      <div class="spectrum" role="figure" aria-label="Deployment frame versus advocacy frame comparison">
+        <div class="spectrum-card before">
+          <div class="label">Before — Deployment Frame</div>
+          <div class="statement">"My job is to make the product work at this customer."</div>
+        </div>
+        <div class="spectrum-card after">
+          <div class="label">After — Advocacy Frame</div>
+          <div class="statement">"My job is to make the product work for every customer like this one."</div>
+        </div>
+      </div>
+
+      <!-- Hidden Connection — pull quote -->
+      <div class="pullquote" id="hidden-connection">
+        Every pattern you see at one customer is a leading indicator for every similar customer you haven't landed yet — and the product team will never see it unless you package it as roadmap evidence, not deployment trivia.
+      </div>
+
+      <!-- Palantir section — Insight 1 anchor -->
+      <h2 id="the-compounding-loop">The Compounding Loop</h2>
+
+      <p>Palantir built this loop explicitly. In their Q3 2024 earnings, they reported <strong>$725.5M</strong> in revenue with <strong>30% year-over-year growth</strong>. Their US commercial segment hit $136M, up 54%. The company credits the forward deployed engineer model directly — not because FDEs are better at deploying software, but because each FDE's field discoveries get productized into the platform. An FDE finds a new use case at one account. That use case becomes a feature. That feature sells the next account without an FDE needing to rediscover it. The loop compounds.</p>
+
+      <p id="insight-1-anchor">Palantir's 10-K describes this as "our software improves as it is used" — but the mechanism isn't magical. It's FDEs turning observations into internal advocacy, consistently enough that product trusts the signal. <strong>The translation layer between field observation and roadmap item is the real infrastructure.</strong> Without it, you're just a deployment engineer with good instincts.</p>
+
+      <!-- Databricks section — Insight 2 anchor -->
+      <h2 id="crossing-the-threshold">Crossing the Threshold</h2>
+
+      <p>Databricks made a ~$1.3B bet on the same mechanism. Their solution architects and field engineers spent 2023 watching enterprise customers train LLMs outside Databricks — in separate ML tooling, with separate governance, creating the exact compliance and observability gaps the data platform was supposed to solve. The field signal was consistent: customers wanted training and inference inside the platform's governance boundary.</p>
+
+      <p id="insight-2-anchor">That signal drove the MosaicML acquisition in June 2023 and the DBRX model release in March 2024. Without field engineer advocacy, Databricks would have continued building standalone ML tooling. The field observation didn't just add a feature — it redirected a strategic investment. <strong>And it only landed because the signal crossed a credibility threshold</strong>: multiple accounts, same pattern, specific business impact. One anecdote doesn't redirect a billion-dollar roadmap. A pattern across accounts does.</p>
+
+      <!-- Confluent section — Insight 3 anchor -->
+      <h2 id="when-they-dont-want-it">When They Don't Want It</h2>
+
+      <p>Confluent's field engineering team surfaced a different kind of signal in 2024. The product team assumed the main blocker for cloud migration was feature parity — that on-prem customers needed more capabilities before they'd switch. Field engineers heard something else. The blocker was organizational trust. Customers didn't doubt the platform's capabilities; they doubted their own ability to govern streaming data in a managed environment.</p>
+
+      <p>That signal shaped Confluent's investment in managed Apache Flink (GA in 2024) and tiered storage features — both of which addressed governance and control, not raw capability. The roadmap followed the field signal, not the internal assumption.</p>
+
+      <p id="insight-3-anchor">But notice the asymmetry. Confluent's field teams succeeded partly because "governance is the real blocker" was compatible with the cloud-first strategy. <strong>If the signal had been "customers actually want more on-prem features," the advocacy would have been harder.</strong> The credibility threshold would have been higher. The framing would have needed to be more precise. The hardest advocacy work is delivering signal that conflicts with internal conviction.</p>
+
+      <!-- Beat 2 -->
+      <h2 id="the-turn"><span class="beat-marker turn">BEAT 2: Turn</span> The Turn</h2>
+
+      <p>Here's the turn most FDEs miss: <strong>your field notes are worth more to your own company than to your customer.</strong> Your customer pays you to solve their problem. Your company pays you to learn what the next hundred customers will need. Once you see that, it changes what you write down and who you send it to.</p>
+
+      <!-- Counterargument -->
+      <h2 id="the-counterargument">The Counterargument</h2>
+
+      <p>"I'm not a product manager. My job is the engagement in front of me. Product has their own roadmap and their own data." True. Product does have their own roadmap, and it's usually built on different evidence than what you're seeing. That's exactly the point. Product teams optimize for signal they can measure at scale: usage telemetry, support tickets, sales pipeline data. You have signal they can't get: the work that happens before telemetry exists, before the customer is in the pipeline, before they've figured out how to articulate what they need.</p>
+
+      <p>That signal is worth more than telemetry because it's earlier. But early signal is weak signal. To override product's existing conviction, you need a pattern observed across enough engagements that it's undeniable. Palantir's loop works because the signal crosses a threshold of consistency — not because one FDE sent one Slack message.</p>
+
+      <!-- Centerpiece: Decision-Matrix Diagnostic -->
+      <figure class="diagnostic" id="signal-diagnostic">
+        <h3>Field Signal Diagnostic</h3>
+        <div class="question" id="diag-q1">Have you seen the same gap at 2+ customers?</div>
+        <div class="choices" id="diag-c1">
+          <button class="choice-btn" onclick="diagAnswer(1,'yes')">Yes, multiple accounts</button>
+          <button class="choice-btn" onclick="diagAnswer(1,'no')">Only once so far</button>
+        </div>
+        <div class="question" id="diag-q2" style="display:none">Is this something the product team is unaware of?</div>
+        <div class="choices" id="diag-c2" style="display:none">
+          <button class="choice-btn" onclick="diagAnswer(2,'yes')">Yes, they don't know</button>
+          <button class="choice-btn" onclick="diagAnswer(2,'no')">They're aware</button>
+        </div>
+        <div class="question" id="diag-q3" style="display:none">Does addressing it align with company strategy?</div>
+        <div class="choices" id="diag-c3" style="display:none">
+          <button class="choice-btn" onclick="diagAnswer(3,'yes')">Yes, aligned</button>
+          <button class="choice-btn" onclick="diagAnswer(3,'no')">It contradicts</button>
+        </div>
+        <div class="result strong" id="diag-r1"><strong>Strong signal.</strong> Write the field signal memo, name the pattern, send it to your product counterpart by name. This is roadmap evidence.</div>
+        <div class="result moderate" id="diag-r2"><strong>Moderate signal.</strong> Product knows the gap exists — your job is to provide evidence on <em>priority</em> and <em>urgency</em>, not existence. Quantify the business impact across accounts.</div>
+        <div class="result weak" id="diag-r3"><strong>Contradicting signal.</strong> You need 3+ customer examples and a precise framing of the business case. Expect a higher credibility threshold. Build the relationship before you need it.</div>
+        <div class="result moderate" id="diag-r4"><strong>Emerging signal.</strong> You have a pattern but product isn't aware. Document it clearly and send to the relevant PM. One strong memo can open the door.</div>
+        <div class="result weak" id="diag-r5"><strong>Anecdote, not yet signal.</strong> Watch for the same pattern at your next engagement. Don't advocate yet — collect.</div>
+        <div class="result moderate" id="diag-r6"><strong>Known gap, contested priority.</strong> Product knows and hasn't prioritized it. Your evidence needs to show business impact, not just customer frustration.</div>
+        <div class="result weak" id="diag-r7"><strong>Anecdote, and product knows.</strong> Low advocacy leverage right now. Watch for the pattern to repeat, then bring urgency data.</div>
+        <button class="reset-btn" id="diag-reset" onclick="diagReset()">↺ Start over</button>
+        <figcaption>Interactive diagnostic — answer each question to assess your field signal's advocacy strength.</figcaption>
+      </figure>
+
+      <!-- Narrative Agency / Guidance -->
+      <h2 id="what-you-can-do">What You Can Do</h2>
+
+      <div class="checklist" id="guidance-checklist">
+        <div class="checklist-item">
+          <input type="checkbox" id="c1">
+          <label for="c1"><strong>Write a field signal memo after every engagement</strong> — not a deployment summary, but a single-paragraph answer to: "What did this customer do that the product doesn't support yet, and how many times have I seen this pattern?" Send it to your product counterpart, not just your manager. Palantir's loop works because it's systematic, not heroic.</label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="c2">
+          <label for="c2"><strong>Name the pattern, not just the feature request</strong> — "Customer X needs Y feature" is a request. "Three customers built custom [pattern] because the platform doesn't handle [category]" is roadmap evidence. Product can prioritize the second. They'll thumbs-up the first and forget it.</label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="c3">
+          <label for="c3"><strong>Find your product counterpart</strong> — the specific PM or eng lead whose area overlaps with what you're seeing. General advocacy to a channel is noise. Directed advocacy to the person who owns the decision is signal. Build the relationship before you need it.</label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="c4">
+          <label for="c4"><strong>Track your own hit rate</strong> — how many of your field observations have made it into the product? If the answer is zero after a year, the problem isn't product's willingness to listen. It's how you're packaging the signal.</label>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <h2 id="one-thing-today">One Thing, Today</h2>
+
+      <p>Write one field signal memo from your current or most recent engagement. Send it to one product counterpart by name. Not a Slack message — a short, direct document they can forward. If you don't know who to send it to, your first job is finding that person.</p>
+
+      <!-- Recall cards -->
+      <div class="recall-cards scroll-reveal">
+        <h3>Recall Practice</h3>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.8rem;">Click each card to reveal the answer.</p>
+        <div class="recall-card" onclick="this.classList.toggle('flipped')">
+          <div class="prompt">What mechanism makes Palantir's FDE loop compound?</div>
+          <div class="answer">FDE discoveries get productized into platform features, which then sell the next account without requiring FDE rediscovery. The translation layer between observation and roadmap item is the infrastructure.</div>
+        </div>
+        <div class="recall-card" onclick="this.classList.toggle('flipped')">
+          <div class="prompt">Why did Databricks' field signal redirect a $1.3B investment?</div>
+          <div class="answer">The signal crossed a credibility threshold — multiple accounts showing the same pattern (customers training LLMs outside the platform, creating governance gaps). One anecdote doesn't redirect a roadmap. A pattern across accounts does.</div>
+        </div>
+        <div class="recall-card" onclick="this.classList.toggle('flipped')">
+          <div class="prompt">What makes internal advocacy harder when signal contradicts strategy?</div>
+          <div class="answer">The credibility threshold rises. You need more customer examples, more precise framing, and a pre-existing relationship with your product counterpart. Compatible signals land easier; contradicting signals require stronger evidence.</div>
+        </div>
+      </div>
+
+      <!-- Concept map SVG -->
+      <div class="concept-map scroll-reveal">
+        <h3>Practice Arc</h3>
+        <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Concept map showing the field signal advocacy loop from observation to product feature">
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#f0c040"/>
+            </marker>
+          </defs>
+          <!-- Nodes -->
+          <rect x="10" y="60" width="110" height="40" rx="8" fill="#1a1e28" stroke="#2a2f3d"/>
+          <text x="65" y="84" text-anchor="middle" fill="#e2e4e9" font-size="11" font-family="Inter,sans-serif">Field Observation</text>
+
+          <rect x="155" y="60" width="110" height="40" rx="8" fill="#1a1e28" stroke="#2a2f3d"/>
+          <text x="210" y="84" text-anchor="middle" fill="#e2e4e9" font-size="11" font-family="Inter,sans-serif">Pattern Named</text>
+
+          <rect x="300" y="60" width="110" height="40" rx="8" fill="#1a1e28" stroke="#f0c040"/>
+          <text x="355" y="84" text-anchor="middle" fill="#f0c040" font-size="11" font-family="Inter,sans-serif">Internal Advocacy</text>
+
+          <rect x="445" y="60" width="120" height="40" rx="8" fill="#1a1e28" stroke="#2a2f3d"/>
+          <text x="505" y="84" text-anchor="middle" fill="#e2e4e9" font-size="11" font-family="Inter,sans-serif">Roadmap Change</text>
+
+          <rect x="445" y="140" width="120" height="40" rx="8" fill="#1a1e28" stroke="#34d399"/>
+          <text x="505" y="164" text-anchor="middle" fill="#34d399" font-size="11" font-family="Inter,sans-serif">Product Feature</text>
+
+          <!-- Arrows -->
+          <line x1="120" y1="80" x2="155" y2="80" stroke="#f0c040" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="265" y1="80" x2="300" y2="80" stroke="#f0c040" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="410" y1="80" x2="445" y2="80" stroke="#f0c040" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="505" y1="100" x2="505" y2="140" stroke="#34d399" stroke-width="1.5"/>
+
+          <!-- Loop back arrow -->
+          <path d="M 445 160 Q 300 190 65 100" stroke="#34d399" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#arrowhead)"/>
+          <text x="250" y="185" text-anchor="middle" fill="#8a8f9d" font-size="9" font-family="Inter,sans-serif" font-style="italic">compounds — next customer doesn't need rediscovery</text>
+        </svg>
+        <figcaption style="color:var(--text-dim);font-size:0.75rem;margin-top:0.5rem;">The field signal advocacy loop: observation → pattern → advocacy → roadmap → feature → loop back.</figcaption>
+      </div>
+
+      <!-- Share block -->
+      <div class="share-block">
+        <h4>Share This Reframe</h4>
+        <p class="share-text" id="share-text">The FDE's highest-leverage output isn't code deployed — it's field signal that changes the roadmap. Your company pays you to learn what the next hundred customers will need.</p>
+        <button class="share-btn" onclick="copyShare()">Copy to clipboard</button>
+      </div>
+
+    </article>
+
+    <!-- Aside / Sidebar -->
+    <aside class="aside" id="sidebar">
+      <div class="three-things">
+        <h4>Three Things You Didn't Know You Needed</h4>
+        <div class="thing-item" id="thing1">
+          <span class="icon">1</span>
+          <span>Field-to-Roadmap Translation Layer</span>
+        </div>
+        <div class="thing-item" id="thing2">
+          <span class="icon">2</span>
+          <span>Credibility Tax on Advocacy</span>
+        </div>
+        <div class="thing-item" id="thing3">
+          <span class="icon">3</span>
+          <span>The Anti-Signal Problem</span>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <h4 style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:0.8rem;">On This Page</h4>
+        <nav style="display:flex;flex-direction:column;gap:0.4rem;">
+          <a href="#the-advocacy-frame" style="color:var(--text-dim);text-decoration:none;font-size:0.82rem;">The Advocacy Frame</a>
+          <a href="#the-compounding-loop" style="color:var(--text-dim);text-decoration:none;font-size:0.82rem;">The Compounding Loop</a>
+          <a href="#crossing-the-threshold" style="color:var(--text-dim);text-decoration:none;font-size:0.82rem;">Crossing the Threshold</a>
+          <a href="#when-they-dont-want-it" style="color:var(--text-dim);text-decoration:none;font-size:0.82rem;">When They Don't Want It</a>
+          <a href="#the-turn" style="color:var(--text-dim);text-decoration:none;font-size:0.82rem;">The Turn</a>
+          <a href="#the-counterargument" style="color:var(--text-dim);text-decoration:none;font-size:0.82rem;">The Counterargument</a>
+          <a href="#what-you-can-do" style="color:var(--text-dim);text-decoration:none;font-size:0.82rem;">What You Can Do</a>
+          <a href="#one-thing-today" style="color:var(--text-dim);text-decoration:none;font-size:0.82rem;">One Thing, Today</a>
+        </nav>
+      </div>
+    </aside>
+  </div>
+
+</main>
+
+<footer class="container">
+  <a href="https://iggym.github.io/fde-field-notes/">← Back to FDE Field Notes</a>
+  <div class="citations">
+    <h4 style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:0.5rem;">Sources</h4>
+    <ol style="padding-left:1.2rem;">
+      <li>Palantir Q3 2024 earnings release and 10-Q filing. Revenue $725.5M, 30% YoY growth, US commercial 54% growth. Forward deployed engineer model credited in earnings call commentary.</li>
+      <li>Databricks MosaicML acquisition (~$1.3B, June 2023) and DBRX open-source model release (March 2024). Field engineering observations cited as driver for unified ML+data governance strategy.</li>
+      <li>Confluent managed Apache Flink for Confluent Cloud GA (2024) and tiered storage launch. Field engineering signals on organizational trust as primary cloud-migration blocker shaped roadmap investment.</li>
+    </ol>
+  </div>
+  <span class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Back to top</span>
+</footer>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+// Hamburger menu
+function toggleMenu() {
+  const links = document.querySelector('#topbar .desktop-links');
+  const aside = document.getElementById('sidebar');
+  if (links) links.classList.toggle('open');
+  aside.classList.toggle('drawer-open');
+}
+
+// IntersectionObserver for scroll reveals
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.scroll-reveal').forEach(el => revealObs.observe(el));
+
+// Pull quote reveal
+const pqObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('revealed'); });
+}, { threshold: 0.3 });
+const pq = document.getElementById('hidden-connection');
+if (pq) pqObs.observe(pq);
+
+// Three Things unlock on scroll past anchors
+const thingObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      if (id === 'insight-1-anchor') document.getElementById('thing1').classList.add('unlocked');
+      if (id === 'insight-2-anchor') document.getElementById('thing2').classList.add('unlocked');
+      if (id === 'insight-3-anchor') document.getElementById('thing3').classList.add('unlocked');
+    }
+  });
+}, { threshold: 0.5 });
+['insight-1-anchor','insight-2-anchor','insight-3-anchor'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) thingObs.observe(el);
+});
+
+// Diagnostic widget state
+let diagState = {};
+function diagAnswer(step, val) {
+  diagState[step] = val;
+  // Hide current choices
+  document.getElementById('diag-c' + step).style.display = 'none';
+  document.getElementById('diag-q' + step).style.display = 'none';
+
+  if (step === 1) {
+    if (val === 'yes') {
+      document.getElementById('diag-q2').style.display = 'block';
+      document.getElementById('diag-c2').style.display = 'flex';
+    } else {
+      // Only once
+      document.getElementById('diag-q2').style.display = 'block';
+      document.getElementById('diag-c2').style.display = 'flex';
+    }
+  } else if (step === 2) {
+    if (diagState[1] === 'yes' && val === 'yes') {
+      document.getElementById('diag-q3').style.display = 'block';
+      document.getElementById('diag-c3').style.display = 'flex';
+    } else if (diagState[1] === 'yes' && val === 'no') {
+      showResult('diag-r2');
+    } else if (diagState[1] === 'no' && val === 'yes') {
+      showResult('diag-r4');
+    } else {
+      showResult('diag-r7');
+    }
+  } else if (step === 3) {
+    if (val === 'yes') {
+      showResult('diag-r1');
+    } else {
+      showResult('diag-r3');
+    }
+  }
+}
+function showResult(id) {
+  document.getElementById(id).style.display = 'block';
+  document.getElementById('diag-reset').style.display = 'inline-block';
+}
+function diagReset() {
+  diagState = {};
+  ['diag-r1','diag-r2','diag-r3','diag-r4','diag-r5','diag-r6','diag-r7'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('diag-q' + i).style.display = i === 1 ? 'block' : 'none';
+    document.getElementById('diag-c' + i).style.display = i === 1 ? 'flex' : 'none';
+  }
+  document.getElementById('diag-reset').style.display = 'none';
+}
+
+// Share copy
+function copyShare() {
+  const text = document.getElementById('share-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.share-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy to clipboard'; }, 2000);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.querySelector('.share-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy to clipboard'; }, 2000);
+  });
+}
+
+// Reduced motion: disable diagnostic transitions, show pull quote immediately
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.querySelectorAll('.scroll-reveal').forEach(el => el.classList.add('visible'));
+  const pqEl = document.getElementById('hidden-connection');
+  if (pqEl) pqEl.classList.add('revealed');
+}
+</script>
+</body>
+</html>
