@@ -261,6 +261,19 @@
   "reading_time_minutes": 6,
   "pinned": false,
   "research_window": "2024-03-14 to 2025-03-14"
+},{
+  "id": "20260314-title-is-tell",
+  "slug": "title-is-tell",
+  "title": "The Title Is The Tell",
+  "hook": "Fragmented FDE titles are not confusion — they are price discovery for deployment risk.",
+  "path": "articles/title-is-tell.html",
+  "date": "2026-03-14",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "comp", "market", "career-craft"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2025-03-14 to 2026-03-14"
 }
   ]
 }
