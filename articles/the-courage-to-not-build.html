@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Courage to Not Build — FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1115;
+    --bg-elevated: #16181f;
+    --bg-card: #1a1d26;
+    --text: #e4e6eb;
+    --text-muted: #9ca3af;
+    --text-dim: #6b7280;
+    --accent: #f59e0b;
+    --accent-soft: rgba(245,158,11,0.12);
+    --accent-glow: rgba(245,158,11,0.25);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.14);
+    --success: #10b981;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
+  /* Progress bar */
+  #progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), #fbbf24);
+    width: 0%; z-index: 1001; transition: width 0.1s linear;
+  }
+
+  /* Topbar */
+  #topbar {
+    position: sticky; top: 0; z-index: 1000;
+    background: rgba(15,17,21,0.72);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1.5rem;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 1rem; }
+  .topbar-left a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
+  .topbar-left a:hover { color: var(--accent); }
+  .breadcrumb { color: var(--text-dim); font-size: 0.8rem; }
+  .breadcrumb span { color: var(--accent); }
+  .reading-time { color: var(--text-dim); font-size: 0.8rem; font-family: var(--font-mono); }
+  .hamburger {
+    display: none; background: none; border: none; color: var(--text); cursor: pointer;
+  }
+  .hamburger svg { width: 24px; height: 24px; }
+
+  /* Layout */
+  .container {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 320px; gap: 3rem;
+    padding: 2rem 1.5rem 4rem;
+  }
+  @media (max-width: 880px) {
+    .container { grid-template-columns: 1fr; gap: 2rem; }
+    .hamburger { display: block; }
+    .drawer { display: none; }
+    .drawer.open { display: block; }
+  }
+
+  /* Hero */
+  .hero {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  .hero-label {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em;
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .hero-sub {
+    font-size: 1.15rem; color: var(--text-muted); max-width: 640px;
+    line-height: 1.5;
+  }
+  .meta-line {
+    margin-top: 1.5rem; display: flex; gap: 1.5rem; flex-wrap: wrap;
+    font-size: 0.8rem; color: var(--text-dim);
+  }
+  .meta-line span { display: flex; align-items: center; gap: 0.4rem; }
+
+  /* Article body */
+  article { font-size: 1.05rem; }
+  article p { margin-bottom: 1.4rem; }
+  article h2 {
+    font-size: 1.35rem; font-weight: 600; margin: 2.5rem 0 1rem;
+    color: var(--text); letter-spacing: -0.01em;
+  }
+  article h3 {
+    font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.8rem;
+    color: var(--text-muted);
+  }
+  article blockquote {
+    border-left: 3px solid var(--accent); padding-left: 1.2rem;
+    margin: 1.8rem 0; color: var(--text-muted); font-style: italic;
+  }
+  article blockquote cite {
+    display: block; margin-top: 0.5rem; font-style: normal;
+    font-size: 0.85rem; color: var(--text-dim);
+  }
+  .pull-quote {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0;
+    position: relative;
+  }
+  .pull-quote::before {
+    content: """; font-size: 4rem; line-height: 1;
+    color: var(--accent); opacity: 0.3; position: absolute;
+    top: 0.2rem; left: 0.8rem;
+  }
+  .pull-quote p {
+    font-size: 1.25rem; font-weight: 500; color: var(--text);
+    margin: 0; position: relative; z-index: 1;
+  }
+
+  /* Spectrum widget */
+  .spectrum {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem; margin: 2rem 0;
+  }
+  .spectrum-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem;
+  }
+  .spectrum-title { font-weight: 600; font-size: 0.95rem; }
+  .spectrum-bar {
+    height: 8px; border-radius: 4px;
+    background: linear-gradient(90deg, var(--danger), var(--accent), var(--success));
+    position: relative; margin: 1.5rem 0;
+  }
+  .spectrum-marker {
+    position: absolute; top: -6px; width: 20px; height: 20px;
+    background: var(--accent); border-radius: 50%;
+    border: 3px solid var(--bg-card); box-shadow: 0 0 12px var(--accent-glow);
+    transform: translateX(-50%); left: 15%;
+    transition: left 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+  .spectrum-labels {
+    display: flex; justify-content: space-between;
+    font-size: 0.75rem; color: var(--text-dim);
+  }
+  .spectrum-caption {
+    margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);
+  }
+
+  /* Social share */
+  .share-block {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem; margin: 2rem 0;
+  }
+  .share-block h4 { font-size: 0.9rem; margin-bottom: 0.8rem; color: var(--text-muted); }
+  .share-text {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.8rem 1rem;
+    font-size: 0.9rem; color: var(--text);
+    margin-bottom: 1rem; line-height: 1.5;
+  }
+  .share-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .share-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 0.9rem; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); font-size: 0.8rem; font-weight: 500;
+    cursor: pointer; text-decoration: none; transition: all 0.15s;
+  }
+  .share-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .share-btn.copied { border-color: var(--success); color: var(--success); }
+
+  /* Centerpiece widget: Decision Matrix */
+  .decision-widget {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem; margin: 2.5rem 0;
+  }
+  .decision-widget h3 { margin-top: 0; font-size: 1.1rem; }
+  .decision-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 1rem 0;
+  }
+  .decision-cell {
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 1rem; cursor: pointer; transition: all 0.2s;
+    background: var(--bg);
+  }
+  .decision-cell:hover { border-color: var(--border-strong); }
+  .decision-cell.selected {
+    border-color: var(--accent); background: var(--accent-soft);
+  }
+  .decision-cell .cell-label {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-dim); margin-bottom: 0.3rem;
+  }
+  .decision-cell .cell-title { font-weight: 600; font-size: 0.95rem; }
+  .decision-result {
+    margin-top: 1rem; padding: 1rem; border-radius: 10px;
+    background: var(--bg); border: 1px dashed var(--border);
+    font-size: 0.9rem; color: var(--text-muted); min-height: 60px;
+  }
+  .decision-result.active {
+    border-style: solid; border-color: var(--accent);
+    background: var(--accent-soft); color: var(--text);
+  }
+  @media (max-width: 600px) {
+    .decision-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  /* Three Things tracker */
+  .three-things {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.2rem; margin: 2rem 0;
+    position: sticky; top: 80px;
+  }
+  .three-things h4 {
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-dim); margin-bottom: 0.8rem;
+  }
+  .thing {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.5rem 0; font-size: 0.85rem;
+    color: var(--text-dim); border-bottom: 1px solid var(--border);
+  }
+  .thing:last-child { border-bottom: none; }
+  .thing .thing-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 600; flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .thing.unlocked { color: var(--text); }
+  .thing.unlocked .thing-num {
+    background: var(--accent); border-color: var(--accent); color: var(--bg);
+  }
+
+  /* Checklist */
+  .checklist { list-style: none; padding: 0; margin: 1.5rem 0; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 0.7rem;
+    padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+    cursor: pointer; user-select: none;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist .chk {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 2px solid var(--border-strong); flex-shrink: 0;
+    margin-top: 2px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .checklist li.done .chk {
+    background: var(--success); border-color: var(--success);
+  }
+  .checklist li.done .chk::after {
+    content: "✓"; color: #fff; font-size: 0.75rem; font-weight: 700;
+  }
+  .checklist li.done span { text-decoration: line-through; opacity: 0.5; }
+
+  /* Recall cards */
+  .recall-cards {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0;
+  }
+  .recall-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.2rem; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .recall-card:hover { border-color: var(--border-strong); }
+  .recall-card .recall-q { font-weight: 500; margin-bottom: 0.5rem; }
+  .recall-card .recall-a {
+    max-height: 0; overflow: hidden; opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    color: var(--text-muted); font-size: 0.9rem;
+  }
+  .recall-card.open .recall-a { max-height: 200px; opacity: 1; margin-top: 0.5rem; }
+  .recall-card .recall-hint {
+    font-size: 0.75rem; color: var(--text-dim); margin-top: 0.5rem;
+  }
+  @media (max-width: 600px) { .recall-cards { grid-template-columns: 1fr; } }
+
+  /* Concept map SVG */
+  .concept-map {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem; margin: 2rem 0; text-align: center;
+  }
+  .concept-map figcaption {
+    font-size: 0.8rem; color: var(--text-dim); margin-top: 0.8rem;
+  }
+  .concept-map svg { max-width: 100%; height: auto; }
+
+  /* Drawer */
+  .drawer { }
+  .drawer-section {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.2rem; margin-bottom: 1.2rem;
+  }
+  .drawer-section h4 {
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-dim); margin-bottom: 0.6rem;
+  }
+  .drawer-section p, .drawer-section li {
+    font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;
+  }
+  .drawer-section ul { padding-left: 1.2rem; }
+  .drawer-section li { margin-bottom: 0.3rem; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border); padding: 3rem 1.5rem;
+    text-align: center; color: var(--text-dim); font-size: 0.85rem;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+  .to-top {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    margin-top: 1rem; padding: 0.5rem 1rem; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg-card);
+    color: var(--text); font-size: 0.8rem; cursor: pointer;
+  }
+  .to-top:hover { border-color: var(--accent); }
+
+  /* Beat markers */
+  .beat-marker {
+    display: inline-block; font-family: var(--font-mono); font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 0.15rem 0.5rem; border-radius: 4px;
+    background: var(--accent-soft); color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Inline highlight */
+  .hl { background: rgba(245,158,11,0.15); padding: 0.05rem 0.25rem; border-radius: 4px; }
+
+  /* Figure captions */
+  figcaption {
+    font-size: 0.8rem; color: var(--text-dim); text-align: center;
+    margin-top: 0.6rem; font-style: italic;
+  }
+
+  /* Aside */
+  .aside {
+    background: var(--bg); border: 1px dashed var(--border);
+    border-radius: 10px; padding: 1rem 1.2rem; margin: 1.5rem 0;
+    font-size: 0.9rem; color: var(--text-muted);
+  }
+  .aside-label {
+    font-family: var(--font-mono); font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent); margin-bottom: 0.4rem;
+  }
+
+  /* Mobile drawer toggle */
+  .mobile-drawer {
+    display: none;
+  }
+  @media (max-width: 880px) {
+    .mobile-drawer {
+      display: block; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 1rem; margin: 1rem 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav id="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-left">
+      <a href="https://iggym.github.io/fde-field-notes/">← Home</a>
+      <span class="breadcrumb">Field Notes / <span>Customer Context</span></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span class="reading-time">6 min read</span>
+      <button class="hamburger" onclick="document.querySelector('.drawer').classList.toggle('open')" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <main>
+    <header class="hero">
+      <div class="hero-label">Field Note — January 6, 2026</div>
+      <h1>The Courage to Not Build</h1>
+      <p class="hero-sub">Customer-context judgment calls and the "don't build this yet" moments that separate trusted FDEs from liabilities.</p>
+      <div class="meta-line">
+        <span>📅 Jan 6, 2026</span>
+        <span>🔬 Research window: Jan 2025 – Jan 2026</span>
+        <span>🏷️ Judgment & Trust</span>
+      </div>
+    </header>
+
+    <article>
+      <p>In July 2025, MIT's Project NANDA published a finding that should have changed how every FDE starts their day. After interviewing 150 leaders, surveying 350 employees, and analyzing 300 public AI deployments, the researchers concluded that <span class="hl">95% of enterprise generative AI pilots delivered zero measurable P&L impact</span>. Not low impact. Zero. The $30–40 billion enterprises had poured into these initiatives was, by the study's own accounting, largely unaccounted for in any profit-and-loss statement.</p>
+
+      <p>A manufacturing COO told the researchers something quieter and more devastating than the headline: <em>"The hype on LinkedIn says everything has changed, but in our operations, nothing fundamental has shifted."</em> That sentence is the FDE's briefing. Not a technical spec. A statement about organizational reality.</p>
+
+      <div class="spectrum reveal" id="spectrum-widget">
+        <div class="spectrum-header">
+          <span class="spectrum-title">The Build Spectrum</span>
+          <span style="font-size:0.8rem;color:var(--text-dim);">Where does your engagement sit?</span>
+        </div>
+        <div class="spectrum-bar" role="img" aria-label="Spectrum from stop to build">
+          <div class="spectrum-marker" id="spectrum-marker" style="left:15%;"></div>
+        </div>
+        <div class="spectrum-labels">
+          <span>Stop — data silos, no owner</span>
+          <span>Scope down — partial readiness</span>
+          <span>Build — clean data, clear owner</span>
+        </div>
+        <p class="spectrum-caption">Click any engagement on the decision matrix below to see where it lands.</p>
+      </div>
+
+      <span class="beat-marker">Beat 1 — Before / Turn / After</span>
+      <h2>Your Job Is to Stop</h2>
+
+      <p>Most engineers enter this role believing their value is measured in shipped code. The posting you answered promised production-grade solutions. Your interview tested system design, data modeling, and customer communication. Quarterly reviews reward only deployment velocity. Every signal in your environment points toward building.</p>
+
+      <p>Here is the turn. <span class="hl">Your highest-leverage act is often refusing to build</span>. When a customer's data lives in three silos with no named owner, when the compliance review has not started, when the success metric is "make leadership happy"—the correct engineering decision is to halt. Not to slow down. Stop, name the blocker, and refuse to accumulate sunk cost.</p>
+
+      <p>Companies hire FDEs for their ability to ship. They retain the great ones for their ability to recognize when shipping is the wrong move. The skill that separates a trusted FDE from a liability is not technical depth; it is the willingness to be disliked for twelve minutes in a conference room.</p>
+
+      <div class="pull-quote reveal">
+        <p>The FDE who can read the pre-build signals prevents their company from becoming another line in next year's failure statistics.</p>
+      </div>
+
+      <h2>The Numbers Behind the No</h2>
+
+      <p>The MIT finding is not an outlier. RAND Corporation interviewed 65 experienced AI practitioners and found that more than 80% of AI projects fail, with the rate roughly double that of non-AI IT projects. The highest-impact failure cause was not technical. It was misaligned incentives and the absence of end-user co-design. S&P Global Market Intelligence reported in 2025 that 42% of U.S. companies had abandoned most of their AI initiatives, up from 17% the prior year. Gartner predicted 60% of AI projects lacking AI-ready data would be abandoned through 2026.</p>
+
+      <p>These numbers describe a market drowning in pilots that should never have been approved. The FDE who sees the pre-build signals—data fragmented across silos, no named owner with decision authority, success metrics defined after sprint one—prevents their company from becoming another line in next year's failure statistics.</p>
+
+      <div class="aside">
+        <div class="aside-label">Honest aside</div>
+        <p>I have never met an FDE who regretted stopping a bad-fit engagement early. I have met many who regretted not stopping one. The regret curve is asymmetric. The twelve minutes of discomfort in the room are cheaper than six months of explaining why the perfectly functional model nobody uses is not their fault.</p>
+      </div>
+
+      <h2>How Palantir Filters Before Building</h2>
+
+      <p>Palantir understood this structurally. Their bootcamp model, which helped drive U.S. commercial revenue up 137% year-over-year by Q4 2025, compresses the discovery phase into one to five days of working directly on the customer's data and actual operational problems. The bootcamp is not a sales tactic. It is a filtering mechanism. If the customer's data cannot support a functioning capability in five days, the engagement is scoped differently—or not at all.</p>
+
+      <p>Mark Coleman, co-founder of NetBox Labs, captured the FDE's actual function when he told <em>The New Stack</em>: <em>"People don't know what they want until they see something they don't want."</em> The FDE's value is not in delivering the perfect solution on the first attempt. It is in running the cheap experiment that reveals the real requirement.</p>
+
+      <span class="beat-marker">Beat 2 — Before / Turn / After</span>
+      <h2>Failure Wears a Different Face</h2>
+
+      <p>Before you have watched a few engagements die, failure looks like a broken model. Accuracy drops. Latency spikes. The demo crashes. These are visible, fixable, and almost never the real reason a project ends.</p>
+
+      <p>The turn comes when you realize that <span class="hl">failure usually looks like a perfectly working model that nobody uses</span>. MIT found that internal AI builds succeed roughly a third as often as purchased solutions. The difference is not the technology. It is the presence of an external voice willing to name the friction that internal teams are politically constrained to ignore.</p>
+
+      <p>After this shift, you stop judging readiness by technical feasibility. You judge it by organizational friction. Can one person decide? Does the data have an owner? Has the workflow been observed, not described? These are the gates that matter.</p>
+
+      <h2>Shadow AI Is a Diagnostic</h2>
+
+      <p>MIT's report documented what it called a "shadow AI economy." Even when official pilots fail, 90% of employees use personal AI tools for job tasks. At one Fortune 500 insurer, the sanctioned GenAI pilot collapsed because it could not retain context, while employees quietly relied on personal tools to speed claims processing.</p>
+
+      <p>Most organizations treat shadow AI as a governance threat. The practiced FDE treats it as a map. Shadow adoption reveals where real workflow demand lives. Before you design the official solution, map the shadow usage. It will tell you more about what the customer actually needs than any requirements document.</p>
+
+      <div class="decision-widget reveal" id="decision-widget">
+        <h3>Early Signal Diagnostic</h3>
+        <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem;">Select the customer's condition. The diagnostic reveals the recommended posture.</p>
+        <div class="decision-grid">
+          <div class="decision-cell" data-signal="data" onclick="selectSignal(this)">
+            <div class="cell-label">Data Condition</div>
+            <div class="cell-title">Data in 3+ silos, no owner</div>
+          </div>
+          <div class="decision-cell" data-signal="owner" onclick="selectSignal(this)">
+            <div class="cell-label">Ownership</div>
+            <div class="cell-title">No named decision-maker</div>
+          </div>
+          <div class="decision-cell" data-signal="metrics" onclick="selectSignal(this)">
+            <div class="cell-label">Success Definition</div>
+            <div class="cell-title">Metrics defined after sprint one</div>
+          </div>
+          <div class="decision-cell" data-signal="shadow" onclick="selectSignal(this)">
+            <div class="cell-label">Adoption Signal</div>
+            <div class="cell-title">High shadow AI, low official use</div>
+          </div>
+        </div>
+        <div class="decision-result" id="decision-result">
+          Tap a signal above to reveal the diagnostic recommendation.
+        </div>
+        <figcaption>Figure: Early Signal Diagnostic — four pre-build conditions and their recommended posture</figcaption>
+      </div>
+
+      <h2>Four Practices to Adopt</h2>
+
+      <p>If you are early in this career, or considering it, here is what to practice.</p>
+
+      <ul class="checklist" id="guidance-checklist">
+        <li onclick="this.classList.toggle('done')"><div class="chk"></div><span>Run a five-minute data audit before agreeing to any scope. Ask: what system holds the data, who owns it, and when did it last change?</span></li>
+        <li onclick="this.classList.toggle('done')"><div class="chk"></div><span>Define the "no" in writing before sprint one. Document what would make you recommend stopping. Show it to the customer.</span></li>
+        <li onclick="this.classList.toggle('done')"><div class="chk"></div><span>Map shadow AI usage before designing the official solution. It reveals real workflow demand.</span></li>
+        <li onclick="this.classList.toggle('done')"><div class="chk"></div><span>Calibrate your "no" to the customer's maturity. A startup with clean data can absorb a fast build. A siloed enterprise cannot.</span></li>
+      </ul>
+
+      <h2>The Strongest Counterargument</h2>
+
+      <p>The obvious objection is that saying "no" loses deals. In a market where OpenAI's FDE team grew from two engineers to ten-plus across eight cities in under two years, and where job postings for the role increased 800% between January and September 2025, the pressure to say yes is enormous.</p>
+
+      <p>But the MIT data cuts the other way. Vendor-led projects succeed roughly 67% of the time, while internal builds succeed only about 33%. The difference is not the technology. It is the presence of an external voice willing to name the friction that internal teams are politically constrained to ignore. The FDE who says "not yet" is not losing the deal. They are preserving the relationship for the moment when the customer is actually ready to succeed.</p>
+
+      <div class="share-block reveal">
+        <h4>Share the reframe</h4>
+        <div class="share-text" id="share-text">The FDE's highest-leverage act is often refusing to build. 95% of AI pilots fail not because models break, but because organizations build before they're ready.</div>
+        <div class="share-actions">
+          <button class="share-btn" id="copy-btn" onclick="copyShare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Text & Link
+          </button>
+          <a class="share-btn" id="x-share" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            Share on X
+          </a>
+          <a class="share-btn" id="li-share" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            Share on LinkedIn
+          </a>
+        </div>
+      </div>
+
+      <h2>Recall Check</h2>
+      <div class="recall-cards">
+        <div class="recall-card" onclick="this.classList.toggle('open')">
+          <div class="recall-q">What percentage of enterprise GenAI pilots showed zero P&L impact in MIT's 2025 study?</div>
+          <div class="recall-a">95%. The study covered 300 public AI deployments and found only 5% achieved rapid revenue acceleration.</div>
+          <div class="recall-hint">Tap to reveal</div>
+        </div>
+        <div class="recall-card" onclick="this.classList.toggle('open')">
+          <div class="recall-q">What is the highest-impact failure cause in RAND's AI practitioner interviews?</div>
+          <div class="recall-a">Misaligned incentives and the absence of end-user co-design—not technical failure.</div>
+          <div class="recall-hint">Tap to reveal</div>
+        </div>
+        <div class="recall-card" onclick="this.classList.toggle('open')">
+          <div class="recall-q">What does shadow AI reveal about a customer's true needs?</div>
+          <div class="recall-a">Shadow adoption maps real workflow demand. Employees use personal AI where official tools fail to fit their actual work.</div>
+          <div class="recall-hint">Tap to reveal</div>
+        </div>
+        <div class="recall-card" onclick="this.classList.toggle('open')">
+          <div class="recall-q">Why do vendor-led AI projects succeed roughly twice as often as internal builds?</div>
+          <div class="recall-a">External FDEs can name friction that internal teams are politically constrained to ignore.</div>
+          <div class="recall-hint">Tap to reveal</div>
+        </div>
+      </div>
+
+      <div class="concept-map reveal">
+        <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+          <!-- Nodes -->
+          <rect x="300" y="20" width="120" height="40" rx="8" fill="#1a1d26" stroke="#f59e0b" stroke-width="2"/>
+          <text x="360" y="45" text-anchor="middle" fill="#e4e6eb" font-size="13" font-family="Inter, sans-serif" font-weight="600">FDE Judgment</text>
+
+          <rect x="60" y="120" width="130" height="36" rx="8" fill="#1a1d26" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="125" y="142" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="Inter, sans-serif">Data Readiness</text>
+
+          <rect x="240" y="120" width="130" height="36" rx="8" fill="#1a1d26" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="305" y="142" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="Inter, sans-serif">Named Owner</text>
+
+          <rect x="420" y="120" width="130" height="36" rx="8" fill="#1a1d26" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="485" y="142" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="Inter, sans-serif">Shadow AI Map</text>
+
+          <rect x="580" y="120" width="130" height="36" rx="8" fill="#1a1d26" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="645" y="142" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="Inter, sans-serif">Success Metrics</text>
+
+          <rect x="180" y="220" width="140" height="36" rx="8" fill="#1a1d26" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="250" y="242" text-anchor="middle" fill="#fca5a5" font-size="12" font-family="Inter, sans-serif">Stop / Scope Down</text>
+
+          <rect x="400" y="220" width="140" height="36" rx="8" fill="#1a1d26" stroke="#10b981" stroke-width="1.5"/>
+          <text x="470" y="242" text-anchor="middle" fill="#6ee7b7" font-size="12" font-family="Inter, sans-serif">Build With Guardrails</text>
+
+          <!-- Connections -->
+          <line x1="340" y1="60" x2="140" y2="120" stroke="#6b7280" stroke-width="1.5" opacity="0.5"/>
+          <line x1="360" y1="60" x2="305" y2="120" stroke="#6b7280" stroke-width="1.5" opacity="0.5"/>
+          <line x1="380" y1="60" x2="485" y2="120" stroke="#6b7280" stroke-width="1.5" opacity="0.5"/>
+          <line x1="400" y1="60" x2="645" y2="120" stroke="#6b7280" stroke-width="1.5" opacity="0.5"/>
+
+          <line x1="125" y1="156" x2="250" y2="220" stroke="#ef4444" stroke-width="1.5" opacity="0.4"/>
+          <line x1="305" y1="156" x2="250" y2="220" stroke="#ef4444" stroke-width="1.5" opacity="0.4"/>
+          <line x1="485" y1="156" x2="470" y2="220" stroke="#10b981" stroke-width="1.5" opacity="0.4"/>
+          <line x1="645" y1="156" x2="470" y2="220" stroke="#10b981" stroke-width="1.5" opacity="0.4"/>
+
+          <!-- Labels -->
+          <text x="200" y="190" fill="#6b7280" font-size="10" font-family="JetBrains Mono, monospace">MISSING →</text>
+          <text x="520" y="190" fill="#6b7280" font-size="10" font-family="JetBrains Mono, monospace">← PRESENT</text>
+        </svg>
+        <figcaption>Figure: Concept map — FDE judgment sits at the intersection of four pre-build signals that determine whether to stop or build</figcaption>
+      </div>
+
+      <h2>Your Move</h2>
+      <p>In the next 24 hours, find one active or proposed engagement on your plate. Ask one question you have been avoiding: <em>what would have to be true about this customer's data, ownership, and workflow for this project to survive first contact with production?</em> Write the answer in one sentence. If you cannot, you have found your next conversation.</p>
+    </article>
+  </main>
+
+  <aside class="drawer" id="drawer">
+    <div class="three-things" id="three-things">
+      <h4>Three Things Unlocked</h4>
+      <div class="thing" data-threshold="spectrum-widget">
+        <div class="thing-num">1</div>
+        <div>The "don't build" signal is almost always upstream of the model—in data readiness, not model capability.</div>
+      </div>
+      <div class="thing" data-threshold="decision-widget">
+        <div class="thing-num">2</div>
+        <div>The 5% who succeed design for friction; they don't try to eliminate it.</div>
+      </div>
+      <div class="thing" data-threshold="guidance-checklist">
+        <div class="thing-num">3</div>
+        <div>Shadow AI is a diagnostic, not a threat—it reveals where real workflow demand actually lives.</div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <h4>Research Window</h4>
+      <p>Jan 6, 2025 – Jan 6, 2026</p>
+      <p style="margin-top:0.5rem;">All sources published within this window. No post-dated material.</p>
+    </div>
+
+    <div class="drawer-section">
+      <h4>Key Sources</h4>
+      <ul>
+        <li>MIT NANDA — <em>The GenAI Divide: State of AI in Business 2025</em> (July 2025)</li>
+        <li>RAND Corporation — AI practitioner interviews (2024)</li>
+        <li>S&P Global Market Intelligence — AI initiative abandonment data (2025)</li>
+        <li>Gartner — AI-ready data predictions (Feb 2025)</li>
+        <li>Cisco — AI Readiness Report (2025)</li>
+        <li>Palantir — Bootcamp model & commercial revenue (Q4 2025)</li>
+        <li><em>The New Stack</em> — Mark Coleman interview on FDE role (2026)</li>
+      </ul>
+    </div>
+
+    <div class="drawer-section">
+      <h4>Topic</h4>
+      <p>Customer-context judgment calls — "don't build this yet" moments and how they're recognized.</p>
+    </div>
+  </aside>
+
+  <div class="mobile-drawer" id="mobile-drawer">
+    <div class="three-things">
+      <h4>Three Things Unlocked</h4>
+      <div class="thing"><div class="thing-num">1</div><div>The "don't build" signal is almost always upstream of the model—in data readiness, not model capability.</div></div>
+      <div class="thing"><div class="thing-num">2</div><div>The 5% who succeed design for friction; they don't try to eliminate it.</div></div>
+      <div class="thing"><div class="thing-num">3</div><div>Shadow AI is a diagnostic, not a threat—it reveals where real workflow demand actually lives.</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p><a href="https://iggym.github.io/fde-field-notes/">← FDE Field Notes</a></p>
+  <p style="margin-top:0.5rem;">Sources: MIT NANDA 2025, RAND Corporation 2024, S&P Global 2025, Gartner 2025, Cisco 2025, Palantir Q4 2025, The New Stack 2026.</p>
+  <button class="to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    Back to top
+  </button>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    document.getElementById('progress').style.width = pct + '%';
+  });
+
+  // IntersectionObserver for reveals
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Three Things tracker
+  const thingObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        document.querySelectorAll('.thing[data-threshold]').forEach(thing => {
+          if (thing.dataset.threshold === id) thing.classList.add('unlocked');
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('#spectrum-widget, #decision-widget, #guidance-checklist').forEach(el => thingObserver.observe(el));
+
+  // Decision widget
+  const signalData = {
+    data: {
+      text: "STOP. Data in 3+ silos with no owner is not a build blocker—it is the build. The FDE who starts here is committing to a data migration disguised as an AI project. Scope a data consolidation phase first, or walk away.",
+      pos: 10
+    },
+    owner: {
+      text: "STOP. No named decision-maker means no one can resolve the conflicts that will surface in week three. The FDE becomes the default owner, which is a staffing model, not an engagement model. Require a named owner before sprint one.",
+      pos: 10
+    },
+    metrics: {
+      text: "SCOPE DOWN. Metrics defined after sprint one guarantee a project that cannot be evaluated. Force a one-page charter with a baseline number, a target number, and a date before any code is written.",
+      pos: 50
+    },
+    shadow: {
+      text: "BUILD WITH GUARDRAILS. High shadow AI means real demand exists. The official tool failed because it lacked context or memory. Design for the friction shadow users already solved—and learn from their workaround.",
+      pos: 85
+    }
+  };
+  function selectSignal(cell) {
+    document.querySelectorAll('.decision-cell').forEach(c => c.classList.remove('selected'));
+    cell.classList.add('selected');
+    const key = cell.dataset.signal;
+    const result = document.getElementById('decision-result');
+    result.textContent = signalData[key].text;
+    result.classList.add('active');
+    document.getElementById('spectrum-marker').style.left = signalData[key].pos + '%';
+  }
+
+  // Social share
+  const shareText = "The FDE's highest-leverage act is often refusing to build. 95% of AI pilots fail not because models break, but because organizations build before they're ready.";
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : 'https://iggym.github.io/fde-field-notes/';
+  const encodedText = encodeURIComponent(shareText);
+  const encodedUrl = encodeURIComponent(shareUrl);
+  document.getElementById('x-share').href = `https://x.com/intent/post?text=${encodedText}&url=${encodedUrl}`;
+  document.getElementById('li-share').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+
+  function copyShare() {
+    const full = shareText + " " + shareUrl;
+    navigator.clipboard.writeText(full).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.classList.add('copied');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Text & Link';
+      }, 2000);
+    });
+  }
+
+  // Mobile drawer toggle sync
+  document.querySelector('.hamburger').addEventListener('click', () => {
+    document.getElementById('drawer').classList.toggle('open');
+  });
+</script>
+
+</body>
+</html>
