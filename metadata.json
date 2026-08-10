@@ -61,6 +61,20 @@
       "research_window": "2025-02-18 to 2026-02-18"
     },
     {
+  "id": "00021",
+  "slug": "the-courage-to-not-build",
+  "title": "The Courage to Not Build",
+  "hook": "The FDE's highest-leverage act is often refusing to build. 95% of AI pilots fail not because models break, but because organizations build before they're ready.",
+  "path": "articles/the-courage-to-not-build.html",
+  "date": "2026-01-06",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "judgment", "customer-context", "ai-pilots", "career-craft"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2025-01-06 to 2026-01-06"
+},
+    {
       "id": "0003",
       "slug": "when-the-building-stops",
       "title": "When the Building Stops",
