@@ -70,6 +70,19 @@
   "reading_time_minutes": 6,
   "pinned": false,
   "research_window": "2024-12-18 to 2025-01-22"
+}, {
+  "id": "0001",
+  "slug": "code-is-just-a-receipt",
+  "title": "Code Is Just a Receipt",
+  "hook": "In forward-deployed engineering, discovery isn't a prelude to the engagement. It IS the engagement. The code that follows is just the receipt.",
+  "path": "articles/code-is-just-a-receipt.html",
+  "date": "2025-03-08",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["discovery", "scoping", "fde", "customer-engagement", "palantir", "snowflake", "salesforce"],
+  "reading_time_minutes": 5,
+  "pinned": false,
+  "research_window": "2025-02-02 to 2025-03-08"
 }
   ]
 }
