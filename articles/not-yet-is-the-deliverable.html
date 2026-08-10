@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Not Yet Is the Deliverable — FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f4ef; --fg:#1c1a17; --fg-soft:#57534a; --accent:#a8461f; --accent-soft:#e8c9b8;
+    --card:#ffffff; --border:#e2ddd2; --glass:rgba(246,244,239,0.72);
+    --mono: 'Inter', sans-serif; --serif:'Fraunces', serif;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--mono);line-height:1.6;}
+  a{color:var(--accent);}
+  #progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),#d98a4e);width:0%;z-index:1000;transition:width .1s linear;}
+
+  #topbar{position:sticky;top:0;z-index:900;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:.7rem 1.2rem;display:flex;align-items:center;gap:1rem;justify-content:space-between;}
+  .topbar-left{display:flex;align-items:center;gap:.9rem;font-size:.85rem;color:var(--fg-soft);min-width:0;}
+  .topbar-left a{text-decoration:none;font-weight:600;color:var(--fg);}
+  .crumb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .readtime{padding:.2rem .55rem;border:1px solid var(--border);border-radius:999px;font-size:.75rem;white-space:nowrap;}
+  #hamburger{display:none;background:none;border:1px solid var(--border);border-radius:8px;width:38px;height:34px;cursor:pointer;}
+  #hamburger span{display:block;width:18px;height:2px;background:var(--fg);margin:4px auto;}
+
+  .layout{max-width:var(--maxw);margin:0 auto;padding:2rem 1.2rem 4rem;display:grid;grid-template-columns:1fr 300px;gap:2.5rem;}
+  main{min-width:0;}
+
+  .hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(2rem,5.5vw,3.4rem);line-height:1.08;margin:.2rem 0 1rem;}
+  .hero .meta{font-size:.85rem;color:var(--fg-soft);margin-bottom:1.5rem;}
+
+  .spectrum{border:1px solid var(--border);background:var(--card);border-radius:14px;padding:1.2rem 1.4rem;margin:1.6rem 0 2rem;}
+  .spectrum-track{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,#cfc9bb,var(--accent));margin:1.1rem 0 .6rem;}
+  .spectrum-labels{display:flex;justify-content:space-between;font-size:.8rem;color:var(--fg-soft);}
+  .spectrum-labels b{color:var(--fg);}
+  figcaption{font-size:.8rem;color:var(--fg-soft);margin-top:.5rem;font-style:italic;}
+
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.3rem,3vw,1.7rem);margin:2.4rem 0 1rem;}
+  p{margin:0 0 1.05rem;}
+
+  .stat-block{border:1px solid var(--border);border-radius:14px;background:var(--card);padding:1.1rem 1.3rem;margin:1.3rem 0;transition:all .5s ease;}
+  .stat-block.revealed{background:#fff8f2;border-color:var(--accent-soft);}
+  .stat-bars{display:none;gap:.6rem;margin-top:.8rem;}
+  .stat-block.revealed .stat-bars{display:flex;align-items:flex-end;height:70px;}
+  .bar{flex:1;background:var(--accent);border-radius:4px 4px 0 0;position:relative;transition:height .8s ease;}
+  .bar span{position:absolute;top:-1.3rem;left:0;right:0;text-align:center;font-size:.7rem;font-weight:600;}
+  .bar.b1{background:#cfc9bb;}
+
+  blockquote.pull{font-family:var(--serif);font-size:clamp(1.1rem,2.6vw,1.5rem);font-weight:600;line-height:1.35;border-left:4px solid var(--accent);padding:.3rem 0 .3rem 1.2rem;margin:2rem 0;color:var(--fg);}
+
+  .share{border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem;background:var(--card);display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;margin:1.6rem 0;}
+  .share textarea{flex:1;min-width:220px;resize:none;height:52px;border:1px solid var(--border);border-radius:8px;padding:.5rem;font-family:var(--mono);font-size:.8rem;background:#fbfaf7;}
+  .share button{border:none;background:var(--fg);color:#fff;padding:.55rem .9rem;border-radius:8px;cursor:pointer;font-size:.8rem;}
+
+  /* Centerpiece arc widget */
+  .arc-wrap{border:1px solid var(--border);border-radius:16px;background:var(--card);padding:1.3rem;margin:1.6rem 0;}
+  .arc-steps{display:flex;gap:.5rem;flex-wrap:wrap;}
+  .arc-step{flex:1;min-width:120px;border:1px solid var(--border);border-radius:10px;padding:.7rem .6rem;text-align:center;cursor:pointer;background:#fbfaf7;font-size:.85rem;font-weight:600;transition:all .25s ease;}
+  .arc-step.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .arc-detail{margin-top:1rem;padding:1rem;border-radius:10px;background:#fbfaf7;border:1px dashed var(--border);font-size:.92rem;display:none;}
+  .arc-detail.show{display:block;}
+  .arc-branch-btn{margin-top:.8rem;background:none;border:1px solid var(--accent);color:var(--accent);padding:.4rem .7rem;border-radius:8px;font-size:.78rem;cursor:pointer;}
+  .arc-branch{display:none;margin-top:.8rem;padding:.8rem;border-left:3px solid var(--accent);background:#fff3ea;font-size:.88rem;}
+  .arc-branch.show{display:block;}
+
+  /* Three things tracker */
+  aside{position:sticky;top:5.2rem;align-self:start;}
+  .tracker{border:1px solid var(--border);border-radius:14px;background:var(--card);padding:1rem 1.1rem;margin-bottom:1.2rem;}
+  .tracker h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;margin:.1rem 0 .8rem;color:var(--fg-soft);}
+  .tracker-item{display:flex;gap:.6rem;align-items:flex-start;font-size:.82rem;padding:.5rem 0;border-top:1px solid var(--border);opacity:.4;transition:opacity .4s ease;}
+  .tracker-item:first-child{border-top:none;}
+  .tracker-item.unlocked{opacity:1;}
+  .tracker-dot{width:9px;height:9px;border-radius:50%;background:#cfc9bb;margin-top:.25rem;flex-shrink:0;}
+  .tracker-item.unlocked .tracker-dot{background:var(--accent);}
+
+  /* checklist */
+  .checklist{list-style:none;padding:0;margin:1rem 0;}
+  .checklist li{display:flex;gap:.6rem;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;margin-bottom:.6rem;background:var(--card);cursor:pointer;}
+  .checklist li input{margin-top:.2rem;}
+  .checklist li.checked{background:#fff8f2;border-color:var(--accent-soft);}
+
+  /* recall cards */
+  .recall-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:1.3rem 0;}
+  .flip{perspective:1000px;height:150px;cursor:pointer;}
+  .flip-inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d;}
+  .flip.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{position:absolute;inset:0;border-radius:12px;border:1px solid var(--border);padding:.9rem;backface-visibility:hidden;font-size:.85rem;display:flex;align-items:center;background:var(--card);}
+  .flip-back{transform:rotateY(180deg);background:#fff8f2;}
+
+  .concept-map{border:1px solid var(--border);border-radius:14px;background:var(--card);padding:1rem;margin:1.4rem 0;}
+
+  footer{border-top:1px solid var(--border);margin-top:3rem;padding:2rem 1.2rem;}
+  .footer-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:.8rem;color:var(--fg-soft);}
+  .footer-inner ol{padding-left:1.1rem;}
+  #totop{border:1px solid var(--border);background:var(--card);border-radius:8px;padding:.4rem .8rem;cursor:pointer;font-size:.8rem;}
+
+  @media (max-width:880px){
+    .layout{grid-template-columns:1fr;}
+    aside{position:fixed;top:0;right:0;height:100vh;width:82%;max-width:320px;background:var(--bg);border-left:1px solid var(--border);transform:translateX(100%);transition:transform .3s ease;z-index:950;padding:5rem 1.2rem 2rem;overflow-y:auto;}
+    aside.open{transform:translateX(0);}
+    #hamburger{display:block;}
+    .recall-grid{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<header id="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-left">
+      <a href="https://iggym.github.io/fde-field-notes/">FDE Field Notes</a>
+      <span class="crumb">/ Customer judgment / Not Yet Is the Deliverable</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem;">
+      <span class="readtime" id="readtime">6 min read</span>
+      <button id="hamburger" aria-label="Open panel" onclick="document.getElementById('side').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+<main id="main">
+
+  <section class="hero">
+    <h1>Not Yet Is the Deliverable</h1>
+    <div class="meta">Field note · Customer-context judgment calls · research window 2026-02-10 to 2026-03-17</div>
+
+    <figure class="spectrum">
+      <div class="spectrum-labels"><b>Ship the demo</b><b>Prove it's ready</b></div>
+      <div class="spectrum-track"></div>
+      <figcaption>The reframe in one line: the job isn't measured on the left side of this bar.</figcaption>
+    </figure>
+  </section>
+
+  <section data-reveal>
+    <h2>The Clean Room Problem</h2>
+    <p>Week one of a new engagement usually looks the same. Someone from the customer's team has already built a demo — a Jupyter notebook, a Slack bot duct-taped to an internal wiki, something that answered three good questions in front of the VP and got the project greenlit. Now they want the FDE to make it real. The instinct, on both sides of the table, is to start typing. Nobody schedules a kickoff meeting to talk about what might be wrong with the plan.</p>
+
+    <div class="stat-block" id="statblock" data-insight="1">
+      <p>A survey of 650 enterprise technology leaders run between February and March 2026 found that only 14 percent of companies with active AI agent pilots had reached production scale, while 86 percent were stuck somewhere before it. The same survey traced 89 percent of those stalls to one specific gap: the difference between the curated data environment that made the pilot look good and the messy environment the system would actually have to run in.</p>
+      <div class="stat-bars" aria-hidden="true">
+        <div class="bar b1" style="height:0%"><span>86%</span></div>
+        <div class="bar" style="height:0%"><span>14%</span></div>
+      </div>
+      <figcaption>Stalled vs. reached production, n=650 enterprise tech leaders, Feb–Mar 2026. The demo worked because someone quietly cleaned the inputs.</figcaption>
+    </div>
+    <p>That is not a confession. It is how demos get built. But it means a working prototype tells you almost nothing about whether the underlying problem is ready to be solved, and it means the FDE who inherits that prototype is inheriting a question, not an answer.</p>
+  </section>
+
+  <section data-reveal data-insight="2">
+    <h2>What Discovery Is For</h2>
+    <p>This is the reframe, and it runs against how the job gets described in postings and career-advice threads: the value of an FDE is not the code they ship. It is the judgment call, made early and often under real pressure, to not ship yet — and to be able to say, specifically, what has to be true before they will.</p>
+    <p>At PostHog, this is not a personality trait some engineers happen to have. It is written into how the company runs FDE engagements: discovery and scoping is free and time-boxed, and if a customer wants more before signing, that becomes a separate, paid proof-of-concept. Every engagement needs a written outcome and a shared definition of done before delivery starts. A deliverable that grows mid-engagement is not handled with goodwill; it gets a new quote. Refusing to build is not an act of individual nerve you have to summon in the room. It is the default state, and building is what has to be earned.</p>
+    <p><em>[BEAT — AFTER] Once you see it that way, "don't build this yet" stops being a soft skill and starts being closer to an engineering gate, something with conditions attached, not a feeling you develop with enough scar tissue.</em></p>
+    <blockquote class="pull">The FDEs trusted with the messiest engagements aren't the ones who say yes fastest. They're the ones whose "not yet" comes with a falsifiable reason attached.</blockquote>
+  </section>
+
+  <section class="arc-wrap" aria-label="Engagement arc widget">
+    <h2 style="margin-top:0">Click Through The Arc</h2>
+    <div class="arc-steps" id="arcSteps">
+      <div class="arc-step" data-step="discovery">Discovery</div>
+      <div class="arc-step" data-step="prototype">Prototype</div>
+      <div class="arc-step" data-step="eval">Eval harness</div>
+      <div class="arc-step" data-step="productize">Productize</div>
+    </div>
+
+    <div class="arc-detail" id="d-discovery">
+      <p>Free, time-boxed, and diagnostic. The goal isn't rapport — it's a written answer to "what has to be true in the real data for this to work."</p>
+      <button class="arc-branch-btn" id="branchBtn">Reveal the branch most people skip</button>
+      <div class="arc-branch" id="branch">
+        This is the hidden branch: sometimes discovery's honest output is "don't build this yet." Not a delay tactic — a specific, written condition (a missing data source, an un-owned decision, an unverified assumption) that has to resolve first. Teams that name this branch out loud recover faster than teams that quietly build anyway and let the pilot fail on its own.
+      </div>
+    </div>
+    <div class="arc-detail" id="d-prototype">
+      <p>A narrow slice against real data, shipped in days, not a full architecture. The point is proof, not elegance.</p>
+    </div>
+    <div class="arc-detail" id="d-eval">
+      <p>Built from this customer's worst real records — duplicates, half-empty fields, the edge cases support already complains about. A prototype that only shines on clean inputs is still a demo.</p>
+    </div>
+    <div class="arc-detail" id="d-productize">
+      <p>What worked gets pulled out of the one-off engagement and merged into the actual product, so it survives the FDE leaving.</p>
+    </div>
+    <figcaption>Click a stage. Discovery hides a branch — click into it to see what most engagements skip.</figcaption>
+  </section>
+
+  <section data-reveal>
+    <h2>The Case Against Waiting</h2>
+    <p>None of this holds up if it just becomes an excuse to stall. The strongest counterargument is a real one: enterprise buying cycles are already slow, competitors move while you are scoping, and a customer who wanted a partner, not a consultant, can read caution as reluctance. Some FDEs have watched a careful discovery phase cost them the deal to a competitor who just built something, anything, and let the customer feel momentum in a way that a written scoping document never will.</p>
+    <p><em>[BEAT — TURN] The answer is not always wait. It is that the wait has to be time-boxed and diagnostic, not open-ended.</em> MIT's Project NANDA studied more than 300 disclosed AI initiatives, plus dozens of structured interviews, and found that roughly 95 percent of enterprise generative AI pilots delivered no measurable financial return, while about 5 percent extracted real value. The split was not mainly about model quality. Organizations that bought from specialized vendors and built partnerships succeeded around 67 percent of the time; organizations that built alone succeeded roughly a third as often. The 5 percent were not the teams that moved fastest. They were the teams that had already answered the question a good discovery phase exists to ask, before a line of production code got written: does this system need to be built at all, or does it need to be bought, deferred, or aimed at a smaller target first.</p>
+    <p>That is the actual shape of the job people are hiring for right now, whether the posting says it or not, and it is why the interview loops for this role keep testing scoping instinct instead of algorithms.</p>
+  </section>
+
+  <section data-reveal data-insight="3">
+    <h2>Test What You Just Read</h2>
+    <div class="recall-grid">
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="flip-face flip-front">What share of AI agent pilots reached production, per the Feb–Mar 2026 survey?</div>
+        <div class="flip-face flip-back">14%, out of 650 enterprise tech leaders surveyed. 86% stalled first.</div>
+      </div></div>
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="flip-face flip-front">What separated the MIT NANDA report's 5% from the 95%?</div>
+        <div class="flip-face flip-back">Not model quality — buying/partnering succeeded ~67% of the time vs. roughly a third for solo internal builds.</div>
+      </div></div>
+    </div>
+    <figcaption>Click a card. Retrieval, not re-reading, is what makes a stat stick past this scroll.</figcaption>
+  </section>
+
+  <section data-reveal>
+    <h2>What To Look For</h2>
+    <p>If you are weighing whether this work fits you, or you are already in an engagement and something feels off, here is what the pattern actually looks like from the inside.</p>
+    <ul class="checklist" id="checklist">
+      <li><input type="checkbox"><span>Get the "what has to be true in real data" answer in writing before touching an IDE.</span></li>
+      <li><input type="checkbox"><span>Ask whether the demo's success depended on hand-picked inputs — if so, it proves nothing yet.</span></li>
+      <li><input type="checkbox"><span>Treat mid-engagement scope growth as a new deliverable, not a favor.</span></li>
+      <li><input type="checkbox"><span>Tie every addition back to the metric agreed on in discovery.</span></li>
+    </ul>
+  </section>
+
+  <section class="concept-map" data-reveal>
+    <h2 style="margin-top:0">How This Fits The Arc</h2>
+    <svg viewBox="0 0 640 200" width="100%" role="img" aria-label="Concept map relating this note to the wider engagement arc">
+      <g font-family="Inter" font-size="12" fill="#1c1a17">
+        <circle cx="90" cy="100" r="42" fill="#fff8f2" stroke="#a8461f"/>
+        <text x="90" y="96" text-anchor="middle">Discovery &</text>
+        <text x="90" y="110" text-anchor="middle">judgment</text>
+        <circle cx="320" cy="45" r="38" fill="#fff" stroke="#e2ddd2"/>
+        <text x="320" y="42" text-anchor="middle">Prototype</text>
+        <text x="320" y="55" text-anchor="middle">(narrow)</text>
+        <circle cx="320" cy="155" r="38" fill="#fff" stroke="#e2ddd2"/>
+        <text x="320" y="152" text-anchor="middle">Eval tuned</text>
+        <text x="320" y="165" text-anchor="middle">to customer</text>
+        <circle cx="550" cy="100" r="42" fill="#fff" stroke="#e2ddd2"/>
+        <text x="550" y="96" text-anchor="middle">Productize</text>
+        <text x="550" y="110" text-anchor="middle">& handoff</text>
+        <line x1="130" y1="90" x2="284" y2="55" stroke="#c9c2b3"/>
+        <line x1="130" y1="112" x2="284" y2="145" stroke="#c9c2b3"/>
+        <line x1="356" y1="52" x2="512" y2="92" stroke="#c9c2b3"/>
+        <line x1="356" y1="148" x2="512" y2="108" stroke="#c9c2b3"/>
+      </g>
+    </svg>
+    <figcaption>This note sits at the first node — the judgment call the rest of the arc depends on.</figcaption>
+  </section>
+
+  <section>
+    <h2>Do This Today</h2>
+    <p>Pick one active or upcoming engagement. Before you write another line of code on it, write down the single sentence that says what has to be true in the customer's real, uncurated data for this build to be worth doing — and send it to your customer counterpart today, asking them to confirm or correct it. If you cannot write that sentence yet, that is the answer. You are still in discovery, and now you both know it.</p>
+
+    <div class="share">
+      <textarea readonly id="shareText">The best FDEs aren't measured by what they ship — they're measured by what they refuse to build until the customer's real data proves it's ready. Not yet is the deliverable.</textarea>
+      <button onclick="navigator.clipboard && navigator.clipboard.writeText(document.getElementById('shareText').value)">Copy</button>
+    </div>
+  </section>
+
+</main>
+
+<aside id="side">
+  <div class="tracker">
+    <h3>Three things you'll pick up</h3>
+    <div class="tracker-item" data-track="1"><div class="tracker-dot"></div><span>"Don't build yet" can be a written policy, not a personal risk.</span></div>
+    <div class="tracker-item" data-track="2"><div class="tracker-dot"></div><span>The pilot-to-production gap is a testable data condition.</span></div>
+    <div class="tracker-item" data-track="3"><div class="tracker-dot"></div><span>The 95/5 split tracks how teams decided to build at all.</span></div>
+  </div>
+  <div class="tracker">
+    <h3>On this page</h3>
+    <div style="font-size:.82rem;line-height:2;">
+      <a href="#main">Top</a><br>
+      <a href="#statblock">The clean room</a><br>
+      <a href="#checklist">Checklist</a>
+    </div>
+  </div>
+</aside>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <strong>Citations</strong>
+      <ol>
+        <li>MIT Media Lab, Project NANDA — "The GenAI Divide: State of AI in Business 2025."</li>
+        <li>PostHog — public engineering handbook, "How forward deployed engineers work" (posthog.com/handbook).</li>
+        <li>Digital Applied — survey of 650 enterprise technology leaders, Feb–Mar 2026.</li>
+      </ol>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.6rem;align-items:flex-start;">
+      <a href="https://iggym.github.io/fde-field-notes/">← Home</a>
+      <button id="totop" onclick="window.scrollTo({top:0,behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})">Back to top</button>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // progress bar
+  var bar = document.getElementById('progress');
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement;
+    var pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    bar.style.width = pct + '%';
+  });
+
+  // reading time
+  var words = document.getElementById('main').innerText.trim().split(/\s+/).length;
+  document.getElementById('readtime').textContent = Math.max(1, Math.round(words/220)) + ' min read';
+
+  // scroll reveal: content shape change
+  var statblock = document.getElementById('statblock');
+  function revealStat(){
+    statblock.classList.add('revealed');
+    var bars = statblock.querySelectorAll('.bar');
+    if(!reduced){
+      requestAnimationFrame(function(){
+        bars[0].style.height = '86%';
+        bars[1].style.height = '14%';
+      });
+    } else {
+      bars[0].style.height = '86%';
+      bars[1].style.height = '14%';
+    }
+  }
+  if('IntersectionObserver' in window){
+    var revealObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ revealStat(); revealObs.unobserve(e.target); } });
+    }, {threshold:.4});
+    revealObs.observe(statblock);
+
+    // three things tracker unlocking
+    var insightEls = document.querySelectorAll('[data-insight]');
+    var trackObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          var n = e.target.getAttribute('data-insight');
+          var item = document.querySelector('.tracker-item[data-track="'+n+'"]');
+          if(item) item.classList.add('unlocked');
+        }
+      });
+    }, {threshold:.3});
+    insightEls.forEach(function(el){ trackObs.observe(el); });
+  } else {
+    revealStat();
+    document.querySelectorAll('.tracker-item').forEach(function(i){ i.classList.add('unlocked'); });
+  }
+
+  // hamburger drawer
+  document.addEventListener('click', function(ev){
+    var side = document.getElementById('side');
+    if(!side.contains(ev.target) && ev.target.id !== 'hamburger' && side.classList.contains('open') && window.innerWidth < 880){
+      if(!ev.target.closest('#hamburger')) side.classList.remove('open');
+    }
+  });
+
+  // centerpiece arc widget
+  var steps = document.querySelectorAll('.arc-step');
+  var details = document.querySelectorAll('.arc-detail');
+  steps.forEach(function(step){
+    step.addEventListener('click', function(){
+      steps.forEach(function(s){ s.classList.remove('active'); });
+      details.forEach(function(d){ d.classList.remove('show'); });
+      step.classList.add('active');
+      document.getElementById('d-'+step.dataset.step).classList.add('show');
+    });
+  });
+  var branchBtn = document.getElementById('branchBtn');
+  if(branchBtn){
+    branchBtn.addEventListener('click', function(){
+      document.getElementById('branch').classList.toggle('show');
+    });
+  }
+
+  // checklist
+  document.querySelectorAll('#checklist li').forEach(function(li){
+    li.addEventListener('click', function(e){
+      var box = li.querySelector('input');
+      if(e.target !== box) box.checked = !box.checked;
+      li.classList.toggle('checked', box.checked);
+    });
+  });
+
+  // recall flip cards
+  document.querySelectorAll('.flip').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('flipped'); });
+    card.addEventListener('keypress', function(e){ if(e.key==='Enter') card.classList.toggle('flipped'); });
+  });
+})();
+</script>
+</body>
+</html>
