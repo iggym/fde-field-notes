@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Is Just a Receipt — FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1a1814;--bg2:#242018;--fg:#e8e0d4;--muted:#8a8278;
+  --accent:#d4943a;--accent-dim:#a6712a;--accent-glow:rgba(212,148,58,.12);
+  --card:#2a2520;--border:#3a352e;
+  --serif:'Source Serif 4',Georgia,serif;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+  --radius:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:var(--sans);font-weight:400;color:var(--fg);background:var(--bg);line-height:1.7;font-size:16px;
+  background-image:radial-gradient(ellipse at 15% 50%,rgba(212,148,58,.04) 0%,transparent 50%),radial-gradient(ellipse at 85% 15%,rgba(139,69,19,.03) 0%,transparent 40%)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+::selection{background:var(--accent-dim);color:var(--bg)}
+
+/* Progress bar */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:10001;transition:width .1s linear}
+
+/* Topbar */
+#topbar{position:sticky;top:0;z-index:10000;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(26,24,20,.75);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:16px}
+#topbar .home{font-family:var(--serif);font-weight:700;font-size:15px;color:var(--fg);white-space:nowrap}
+#topbar .home:hover{color:var(--accent);text-decoration:none}
+.breadcrumb{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.breadcrumb span{color:var(--muted)}
+.breadcrumb .sep{margin:0 6px;opacity:.5}
+.reading-time{margin-left:auto;color:var(--muted);font-size:13px;white-space:nowrap}
+#hamburger{display:none;background:none;border:none;color:var(--fg);cursor:pointer;padding:4px}
+#hamburger svg{width:24px;height:24px;stroke:var(--fg)}
+
+/* Drawer */
+#drawer{position:fixed;top:56px;right:-300px;width:280px;bottom:0;background:var(--bg2);border-left:1px solid var(--border);z-index:9999;padding:24px;transition:right .3s ease;overflow-y:auto}
+#drawer.open{right:0}
+#drawer h3{font-family:var(--serif);font-size:16px;font-weight:700;margin-bottom:16px;color:var(--fg)}
+#drawer .drawer-section{margin-bottom:24px}
+#drawer .drawer-section p{font-size:13px;color:var(--muted);margin-bottom:8px}
+.drawer-close{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px}
+.drawer-overlay{display:none;position:fixed;inset:0;top:56px;background:rgba(0,0,0,.5);z-index:9998}
+.drawer-overlay.open{display:block}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:40px;max-width:1120px;margin:0 auto;padding:0 24px 80px}
+main{padding-top:32px}
+
+/* Hero */
+.hero{padding:48px 0 40px;border-bottom:1px solid var(--border);margin-bottom:40px}
+.hero h1{font-family:var(--serif);font-weight:900;font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.12;color:var(--fg);margin-bottom:12px;letter-spacing:-.02em}
+.hero .meta{color:var(--muted);font-size:14px;display:flex;gap:16px;flex-wrap:wrap}
+
+/* Article body */
+.article-body h2{font-family:var(--serif);font-weight:700;font-size:1.5rem;margin:40px 0 16px;color:var(--fg)}
+.article-body p{margin-bottom:18px;color:var(--fg);opacity:.92}
+.article-body p.lead{font-size:1.05rem;line-height:1.75}
+
+/* Beat markers */
+.beat{display:block;margin:28px 0;padding:16px 20px;border-left:3px solid var(--accent);background:var(--accent-glow);border-radius:0 var(--radius) var(--radius) 0;font-size:14px;line-height:1.65}
+.beat strong{color:var(--accent);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.08em}
+
+/* Pull quote */
+.pull-quote{margin:36px 0;padding:24px 0 24px 24px;border-left:3px solid var(--accent);font-family:var(--serif);font-style:italic;font-size:1.3rem;line-height:1.5;color:var(--fg)}
+
+/* Spectrum widget */
+.spectrum{margin:36px 0;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.spectrum-bar{position:relative;height:6px;background:var(--border);border-radius:3px;margin:16px 0 8px;overflow:visible}
+.spectrum-fill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--muted),var(--accent));border-radius:3px;width:0;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+.spectrum-dot{position:absolute;top:50%;width:14px;height:14px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);left:0;transition:left 1.2s cubic-bezier(.22,1,.36,1);box-shadow:0 0 12px rgba(212,148,58,.4)}
+.spectrum-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.spectrum-labels .active-label{color:var(--accent);font-weight:600}
+
+/* Scroll reveal sections */
+.reveal-section{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
+.reveal-section.visible{opacity:1;transform:translateY(0)}
+.reveal-width{max-width:65%;transition:max-width .8s cubic-bezier(.22,1,.36,1)}
+.reveal-width.visible{max-width:100%}
+
+/* Centerpiece: Engagement Arc */
+.arc-widget{margin:40px 0;padding:28px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.arc-widget h3{font-family:var(--serif);font-weight:700;font-size:1.15rem;margin-bottom:20px}
+.arc-stages{display:flex;align-items:center;gap:0;margin-bottom:20px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+.arc-stage{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;padding:8px 12px;min-width:80px;flex:1}
+.arc-stage:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius)}
+.arc-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--muted);background:transparent;transition:all .3s ease;flex-shrink:0}
+.arc-stage.active .arc-dot{border-color:var(--accent);background:var(--accent);box-shadow:0 0 10px rgba(212,148,58,.3)}
+.arc-label{font-size:11px;color:var(--muted);text-align:center;transition:color .3s ease;white-space:nowrap}
+.arc-stage.active .arc-label{color:var(--accent);font-weight:600}
+.arc-connector{flex:0 0 24px;height:2px;background:var(--border);margin-bottom:22px;min-width:16px}
+.arc-connector.filled{background:var(--accent-dim)}
+.arc-panel{min-height:80px;padding:20px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);font-size:14px;line-height:1.7;color:var(--fg);opacity:.92}
+.arc-panel h4{font-family:var(--serif);font-weight:700;font-size:1rem;margin-bottom:8px;color:var(--fg)}
+.arc-hidden-branch{margin-top:16px;padding:16px;border:1px dashed var(--accent-dim);border-radius:var(--radius);background:rgba(212,148,58,.06);display:none;font-size:13px;color:var(--accent);line-height:1.6}
+.arc-hidden-branch.revealed{display:block;animation:fadeSlideIn .4s ease forwards}
+.arc-look-deeper{display:inline-block;margin-top:12px;font-size:12px;color:var(--muted);cursor:pointer;border:none;background:none;text-decoration:underline;text-underline-offset:2px;padding:0}
+.arc-look-deeper:hover{color:var(--accent)}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Checklist */
+.checklist{margin:20px 0;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.checklist h3{font-family:var(--serif);font-weight:700;font-size:1.1rem;margin-bottom:16px}
+.checklist-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;cursor:pointer;padding:8px;border-radius:var(--radius);transition:background .2s}
+.checklist-item:hover{background:rgba(212,148,58,.05)}
+.checklist-box{flex-shrink:0;width:20px;height:20px;border:2px solid var(--muted);border-radius:4px;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all .2s}
+.checklist-item.checked .checklist-box{border-color:var(--accent);background:var(--accent)}
+.checklist-item.checked .checklist-box::after{content:'';display:block;width:6px;height:10px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.checklist-text{font-size:14px;line-height:1.6;color:var(--fg);opacity:.9}
+.checklist-item.checked .checklist-text{opacity:.5;text-decoration:line-through}
+
+/* Recall cards */
+.recall-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:36px 0}
+.recall-card{perspective:600px;height:180px;cursor:pointer}
+.recall-card-inner{position:relative;width:100%;height:100%;transition:transform .5s ease;transform-style:preserve-3d}
+.recall-card.flipped .recall-card-inner{transform:rotateY(180deg)}
+.recall-card-front,.recall-card-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;justify-content:center}
+.recall-card-front{background:var(--card);border:1px solid var(--border)}
+.recall-card-back{background:var(--accent-dim);border:1px solid var(--accent);transform:rotateY(180deg);font-size:13px;line-height:1.6}
+.recall-card-front p{font-size:13px;color:var(--muted);margin-bottom:8px}
+.recall-card-front h4{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--fg);line-height:1.4}
+.recall-hint{font-size:11px;color:var(--muted);margin-top:auto;opacity:.6}
+
+/* Concept map */
+.concept-map{margin:24px 0;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.concept-map svg{width:100%;height:auto;display:block}
+
+/* Sidebar */
+aside{position:sticky;top:72px;align-self:start}
+.sidebar-block{margin-bottom:28px;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.sidebar-block h3{font-family:var(--serif);font-weight:700;font-size:14px;margin-bottom:14px;color:var(--fg)}
+.insight-tracker{list-style:none}
+.insight-tracker li{padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:8px;transition:color .3s}
+.insight-tracker li:last-child{border-bottom:none}
+.insight-tracker li.unlocked{color:var(--fg)}
+.insight-lock{flex-shrink:0;width:16px;height:16px;opacity:.4;transition:opacity .3s}
+.insight-tracker li.unlocked .insight-lock{opacity:1}
+.share-block .share-text{font-size:13px;color:var(--fg);opacity:.85;line-height:1.5;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:4px;margin-bottom:12px;font-style:italic}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
+.share-btn:hover{background:var(--accent-dim)}
+.share-btn.copied{background:#5a8a3a}
+
+/* Figcaptions */
+figcaption{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;font-style:italic}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:40px 24px;max-width:1120px;margin:0 auto}
+footer h3{font-family:var(--serif);font-weight:700;font-size:14px;margin-bottom:12px}
+.citations{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:24px}
+.citations li{margin-bottom:4px}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-bottom a{font-size:13px;color:var(--muted)}
+.scroll-top-btn{padding:6px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--muted);font-size:13px;cursor:pointer;transition:all .2s}
+.scroll-top-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Aside note */
+.aside-note{font-size:13px;color:var(--muted);font-style:italic;padding:12px 16px;border-left:2px solid var(--border);margin:24px 0;line-height:1.6}
+
+/* Responsive */
+@media(max-width:880px){
+  #hamburger{display:block}
+  .reading-time{display:none}
+  .layout{grid-template-columns:1fr;gap:24px}
+  aside{position:static}
+  .breadcrumb{display:none}
+  .arc-stages{gap:0}
+  .arc-stage{min-width:64px;padding:6px 6px}
+  .arc-label{font-size:10px}
+  .arc-connector{flex:0 0 12px;min-width:8px}
+  .reveal-width{max-width:100%}
+}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .reveal-section,.reveal-width{opacity:1;transform:none;max-width:100%}
+  .spectrum-fill{width:100%!important}
+  .spectrum-dot{left:100%!important}
+  .arc-hidden-branch{display:block!important}
+  .recall-card-inner{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div id="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<header id="topbar">
+  <a href="https://iggym.github.io/fde-field-notes/" class="home">FDE Field Notes</a>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <span>Home</span><span class="sep">/</span><span>Field Notes</span><span class="sep">/</span><span>Code Is Just a Receipt</span>
+  </nav>
+  <span class="reading-time">5 min read</span>
+  <button id="hamburger" aria-label="Open sidebar menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<nav id="drawer" aria-label="Sidebar">
+  <button class="drawer-close" aria-label="Close sidebar">&times;</button>
+  <div class="drawer-section">
+    <h3>Insights Unlocked</h3>
+    <ul class="insight-tracker" id="drawerTracker">
+      <li data-insight="1"><svg class="insight-lock" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="7" width="10" height="8" rx="1.5"/><path d="M5 7V4.5a3 3 0 0 1 6 0V7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>The 80% conversion comes from scoping, not technology</span></li>
+      <li data-insight="2"><svg class="insight-lock" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="7" width="10" height="8" rx="1.5"/><path d="M5 7V4.5a3 3 0 0 1 6 0V7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Snowflake restructured because discovery and building are different skills</span></li>
+      <li data-insight="3"><svg class="insight-lock" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="7" width="10" height="8" rx="1.5"/><path d="M5 7V4.5a3 3 0 0 1 6 0V7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>AI scoping asks a different question than feature scoping</span></li>
+    </ul>
+  </div>
+  <div class="drawer-section">
+    <h3>Share</h3>
+    <p class="share-text" style="font-style:italic">In forward-deployed engineering, discovery isn't a prelude to the engagement. It IS the engagement. The code that follows is just the receipt.</p>
+    <button class="share-btn" id="drawerShareBtn">Copy to clipboard</button>
+  </div>
+</nav>
+
+<main>
+<div class="layout">
+
+<article>
+  <section class="hero">
+    <h1>Code Is Just a Receipt</h1>
+    <div class="meta">
+      <span>March 8, 2025</span>
+      <span>Discovery &amp; Scoping</span>
+      <span>5 min read</span>
+    </div>
+  </section>
+
+  <div class="article-body">
+
+    <p class="lead" data-insight="1">On February 3rd, Palantir reported $722 million in commercial revenue for 2024, up 36 percent. On the earnings call, the number that should have stopped every forward-deployed engineer in the room wasn't the revenue. It was the bootcamp conversion rate. Palantir's AIP Bootcamps — those multi-day sessions where FDEs show up at a customer site and work alongside their team — convert pilots to contracts at roughly 80 percent. Eighty percent. For enterprise software, where typical pilot-to-production conversion languishes somewhere south of 30 percent, that figure is obscene. The gap between 30 and 80 isn't a technology advantage. It's a process advantage, and the process is almost entirely discovery. The kind where you bring their data to the table and start finding out what's actually broken, rather than taking requests.</p>
+
+    <p>Here's what actually happens in those bootcamps, based on what the company has described publicly and what practitioners have corroborated: FDEs walk in with no pre-built demo. They ask the customer for access to their own data. Over three to five days, they work side-by-side with the customer's engineers and domain experts to identify three to five use cases that could run on the customer's actual infrastructure with the customer's actual data. Then they build a rapid prototype of the highest-priority one. Before the bootcamp, there's a vague sense of what might be useful. After it, there's a prioritized, validated backlog with a working prototype on real data and a room full of customer stakeholders who've personally touched it.</p>
+
+    <p>The code they write during those three to five days isn't the point. It's evidence that the scoping was right.</p>
+
+    <div class="beat">
+      <strong>[BEAT 1]</strong> BEFORE: Discovery is what you do before the real work starts. AFTER: Discovery is the work. Everything after is just execution against a judgment call you already made. TURN: Palantir's bootcamps convert at 80% specifically because they treat the scoping session as the deliverable, not the setup for one.
+    </div>
+
+    <!-- Spectrum widget for Bold Reframe -->
+    <figure class="spectrum reveal-section" data-reveal>
+      <div class="spectrum-labels"><span>Discovery is prelude</span><span class="active-label">Discovery IS the work</span></div>
+      <div class="spectrum-bar">
+        <div class="spectrum-fill" id="spectrumFill"></div>
+        <div class="spectrum-dot" id="spectrumDot"></div>
+      </div>
+      <figcaption>The shift from treating discovery as setup to treating it as the deliverable — reflected in how three major companies reorganized around it in a single week.</figcaption>
+    </figure>
+
+    <div class="reveal-section" data-reveal style="margin:32px 0">
+      <p style="font-family:var(--serif);font-size:1.25rem;font-weight:700;line-height:1.5;color:var(--fg)">In forward-deployed engineering, the discovery phase isn't a prelude to the engagement. It IS the engagement. The code that follows is just the receipt.</p>
+    </div>
+
+    <blockquote class="pull-quote">A surgeon doesn't start cutting to figure out where the problem is. Neither should you.</blockquote>
+
+    <p data-insight="2">The evidence that this distinction is hard — and that most organizations get it wrong — showed up twice in the same week in late February. Snowflake's earnings call on February 26th included $146 million in professional services revenue for the quarter, but the more telling moment came when CEO Sridhar Ramaswamy explained they were restructuring field technical teams to separate "solution design and discovery" from "implementation delivery." One of the largest data infrastructure companies on earth concluded, on a public earnings call, that the people good at scoping are not the same people good at building, and that pretending otherwise was actively hurting customer outcomes. They didn't say it gently. They said it as a structural problem requiring an org-chart fix. What that looks like in practice: implementation engineers who were being asked to also run discovery sessions were defaulting to "build what the customer asked for" because they didn't have the context or the mandate to push back on bad requests.</p>
+
+    <p data-insight="3">Same day, different call. Salesforce reported $1.47 billion in professional services revenue. Marc Benioff discussed Agentforce AI agent deployments and noted, with unusual directness, that scoping sessions for AI use cases were "more complex than traditional implementations" and were straining professional services capacity. The old discovery model — sit down, map the customer's requirements to your feature set, build it — breaks completely when the customer doesn't know what's possible with AI and you don't know what decisions they're making badly. You can't map requirements to features when the requirements are really just unexamined judgment calls. A customer asking for "an AI agent that handles customer support" hasn't done any discovery. They've named a product category. The FDE's job in that moment is to figure out which specific decisions the customer's support team is making badly, and whether an agent can actually improve them.</p>
+
+    <!-- Scroll-driven width reveal on counterargument -->
+    <div class="reveal-width reveal-section" data-reveal style="margin:28px 0">
+      <p>The strongest counterargument here is straightforward: if discovery is the deliverable, why do customers pay for implementation at all? Because scoping judgment is necessary but not sufficient. Someone still has to build the thing, validate it against the customer's actual failure modes, and hand it off sustainably. Discovery doesn't replace implementation. It makes implementation possible instead of speculative. Skip it, and you get the pattern every FDE has seen: a polished prototype the customer loved in the demo, abandoned three months later because it was scoped to a hallucinated problem.</p>
+    </div>
+
+    <div class="beat">
+      <strong>[BEAT 2]</strong> BEFORE: If I'm not writing code, I'm not adding value. AFTER: The code is the receipt. The judgment embedded in the scoping is the value. TURN: Snowflake had to restructure their entire field organization around the realization that asking engineers who are good at building to also be good at discovering is like asking a surgeon to also run diagnostic imaging.
+    </div>
+
+    <div class="aside-note">Working memory holds roughly four chunks of novel information at once. When you walk into a discovery session with twenty unsorted customer requests and no framework for prioritizing them, you've already exceeded cognitive capacity before you've started. Structure the input, or your brain will silently drop half of it.</div>
+
+    <h2>How to Tell</h2>
+
+    <!-- Interactive checklist -->
+    <div class="checklist" role="group" aria-label="Discovery quality checklist">
+      <h3>Scoping quality checklist</h3>
+      <div class="checklist-item" tabindex="0" role="checkbox" aria-checked="false">
+        <div class="checklist-box"></div>
+        <div class="checklist-text">Spend the first half-day refusing to open an IDE. Write down every assumption the customer has, then ask which ones they've tested against real data. Most haven't tested any. That list of untested assumptions is your real deliverable.</div>
+      </div>
+      <div class="checklist-item" tabindex="0" role="checkbox" aria-checked="false">
+        <div class="checklist-box"></div>
+        <div class="checklist-text">When a customer says "we need a dashboard for X," ask "what decision will someone make differently after looking at this?" If they can't answer in one sentence, the scope problem isn't the dashboard — it's that they haven't identified the decision.</div>
+      </div>
+      <div class="checklist-item" tabindex="0" role="checkbox" aria-checked="false">
+        <div class="checklist-box"></div>
+        <div class="checklist-text">Track what percentage of your engagement time is pre-commit. Under 25% means you're almost certainly under-scoping. Palantir's bootcamps invert the ratio — the majority of time is pre-code. That's the point.</div>
+      </div>
+      <div class="checklist-item" tabindex="0" role="checkbox" aria-checked="false">
+        <div class="checklist-box"></div>
+        <div class="checklist-text">If you finish discovery and the customer's original request list looks exactly the same as when you walked in, you didn't do discovery. You took notes.</div>
+      </div>
+    </div>
+    <figcaption>Check off each practice as you evaluate your last engagement against it — if fewer than two apply, the scoping was likely order-taking.</figcaption>
+
+    <!-- Engagement Arc Centerpiece Widget -->
+    <figure>
+      <div class="arc-widget" role="region" aria-label="Interactive engagement arc diagram">
+        <h3>The engagement arc, with the hidden branch</h3>
+        <div class="arc-stages">
+          <button class="arc-stage active" data-stage="discovery" aria-expanded="true">
+            <span class="arc-dot"></span><span class="arc-label">Discovery</span>
+          </button>
+          <div class="arc-connector"></div>
+          <button class="arc-stage" data-stage="prototype" aria-expanded="false">
+            <span class="arc-dot"></span><span class="arc-label">Prototype</span>
+          </button>
+          <div class="arc-connector"></div>
+          <button class="arc-stage" data-stage="eval" aria-expanded="false">
+            <span class="arc-dot"></span><span class="arc-label">Eval Harness</span>
+          </button>
+          <div class="arc-connector"></div>
+          <button class="arc-stage" data-stage="productize" aria-expanded="false">
+            <span class="arc-dot"></span><span class="arc-label">Productize</span>
+          </button>
+        </div>
+        <div class="arc-panel" id="arcPanel" aria-live="polite">
+          <h4>Discovery</h4>
+          <p>During discovery, the FDE works with the customer to identify use cases, test assumptions against real data, and build a prioritized backlog. The key judgment: which of the customer's assumptions are actually tested, and which are just comfortable guesses?</p>
+          <button class="arc-look-deeper" id="lookDeeper" aria-expanded="false">Look deeper into the discovery judgment</button>
+          <div class="arc-hidden-branch" id="hiddenBranch">
+            <strong>Don't build this yet.</strong> If more than half the customer's assumptions are untested, the right move is to stop and validate before prototyping. This is the invisible judgment call that determines whether the prototype will be useful or wasted effort. Most engagements skip this branch entirely — they jump straight to building because the customer expects to see code. Resisting that expectation is the skill.
+          </div>
+        </div>
+      </div>
+      <figcaption>Each stage in an FDE engagement, with the hidden "don't build this yet" branch embedded in discovery — click through the stages, then look deeper to find it.</figcaption>
+    </figure>
+
+    <p style="margin-top:32px">Within 24 hours: find the last engagement you shipped. Open your notes from day one. Count how many of the customer's original requests you actually built versus how many you reframed, combined, or declined. If the ratio is above 80 percent built-as-requested, you didn't do discovery. You took orders.</p>
+
+    <!-- Recall cards -->
+    <div class="recall-cards" role="group" aria-label="Recall practice cards">
+      <div class="recall-card" tabindex="0" role="button" aria-label="Recall card 1, click to flip">
+        <div class="recall-card-inner">
+          <div class="recall-card-front">
+            <p>What percentage of engagement time should be pre-commit?</p>
+            <h4>The scoping ratio</h4>
+            <span class="recall-hint">Click to reveal</span>
+          </div>
+          <div class="recall-card-back">
+            Above 25%, ideally a majority. Palantir's bootcamps invert the typical ratio — most time is pre-code. That's not inefficiency. That's the point.
+          </div>
+        </div>
+      </div>
+      <div class="recall-card" tabindex="0" role="button" aria-label="Recall card 2, click to flip">
+        <div class="recall-card-inner">
+          <div class="recall-card-front">
+            <p>Why did Snowflake restructure their field teams?</p>
+            <h4>The org-chart signal</h4>
+            <span class="recall-hint">Click to reveal</span>
+          </div>
+          <div class="recall-card-back">
+            To separate solution design and discovery from implementation delivery. They concluded these are different skills — people good at scoping aren't necessarily good at building, and pretending otherwise hurt customer outcomes.
+          </div>
+        </div>
+      </div>
+      <div class="recall-card" tabindex="0" role="button" aria-label="Recall card 3, click to flip">
+        <div class="recall-card-inner">
+          <div class="recall-card-front">
+            <p>What question replaces "which features do you need?"</p>
+            <h4>The AI scoping question</h4>
+            <span class="recall-hint">Click to reveal</span>
+          </div>
+          <div class="recall-card-back">
+            "What decision will someone make differently?" — the Salesforce problem in miniature. You can't map requirements to features when the requirements are unexamined decisions.
+          </div>
+        </div>
+      </div>
+    </div>
+    <figcaption>Flip each card to check your recall of the article's key claims — no scores, just honest self-assessment.</figcaption>
+
+  </div>
+</article>
+
+<aside>
+  <div class="sidebar-block">
+    <h3>Insights Unlocked</h3>
+    <ul class="insight-tracker" id="sidebarTracker">
+      <li data-insight="1"><svg class="insight-lock" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="7" width="10" height="8" rx="1.5"/><path d="M5 7V4.5a3 3 0 0 1 6 0V7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>The 80% conversion comes from scoping, not technology</span></li>
+      <li data-insight="2"><svg class="insight-lock" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="7" width="10" height="8" rx="1.5"/><path d="M5 7V4.5a3 3 0 0 1 6 0V7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Snowflake restructured because discovery and building are different skills</span></li>
+      <li data-insight="3"><svg class="insight-lock" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="7" width="10" height="8" rx="1.5"/><path d="M5 7V4.5a3 3 0 0 1 6 0V7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>AI scoping asks a different question than feature scoping</span></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-block share-block">
+    <h3>Share this reframe</h3>
+    <div class="share-text">In forward-deployed engineering, discovery isn't a prelude to the engagement. It IS the engagement. The code that follows is just the receipt.</div>
+    <button class="share-btn" id="shareBtn">Copy to clipboard</button>
+  </div>
+
+  <div class="concept-map">
+    <h3 style="font-family:var(--serif);font-weight:700;font-size:14px;margin-bottom:12px;color:var(--fg)">Practice map</h3>
+    <svg viewBox="0 0 300 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Concept map showing discovery judgment at the center connected to customer problems, backlog, implementation, and don't build signal">
+      <!-- Lines first (behind nodes) -->
+      <line x1="60" y1="52" x2="130" y2="100" stroke="#3a352e" stroke-width="1.5"/>
+      <line x1="240" y1="52" x2="170" y2="100" stroke="#3a352e" stroke-width="1.5"/>
+      <line x1="60" y1="188" x2="130" y2="140" stroke="#a6712a" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <line x1="240" y1="188" x2="170" y2="140" stroke="#3a352e" stroke-width="1.5"/>
+      <!-- Central node -->
+      <circle cx="150" cy="120" r="32" fill="#d4943a"/>
+      <text x="150" y="115" text-anchor="middle" fill="#1a1814" font-family="Source Serif 4,serif" font-size="10" font-weight="700">Discovery</text>
+      <text x="150" y="128" text-anchor="middle" fill="#1a1814" font-family="Source Serif 4,serif" font-size="10" font-weight="700">Judgment</text>
+      <!-- Top-left: Customer's Real Problem -->
+      <circle cx="60" cy="48" r="26" fill="#2a2520" stroke="#3a352e" stroke-width="1.5"/>
+      <text x="60" y="44" text-anchor="middle" fill="#e8e0d4" font-family="IBM Plex Sans,sans-serif" font-size="8">Customer's</text>
+      <text x="60" y="55" text-anchor="middle" fill="#e8e0d4" font-family="IBM Plex Sans,sans-serif" font-size="8">Real Problem</text>
+      <!-- Top-right: Use-Case Backlog -->
+      <circle cx="240" cy="48" r="26" fill="#2a2520" stroke="#3a352e" stroke-width="1.5"/>
+      <text x="240" y="44" text-anchor="middle" fill="#e8e0d4" font-family="IBM Plex Sans,sans-serif" font-size="8">Use-Case</text>
+      <text x="240" y="55" text-anchor="middle" fill="#e8e0d4" font-family="IBM Plex Sans,sans-serif" font-size="8">Backlog</text>
+      <!-- Bottom-left: Don't Build Signal (dashed) -->
+      <circle cx="60" cy="192" r="26" fill="#2a2520" stroke="#a6712a" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="60" y="188" text-anchor="middle" fill="#d4943a" font-family="IBM Plex Sans,sans-serif" font-size="8">Don't Build</text>
+      <text x="60" y="199" text-anchor="middle" fill="#d4943a" font-family="IBM Plex Sans,sans-serif" font-size="8">Signal</text>
+      <!-- Bottom-right: Implementation -->
+      <circle cx="240" cy="192" r="26" fill="#2a2520" stroke="#3a352e" stroke-width="1.5"/>
+      <text x="240" y="186" text-anchor="middle" fill="#e8e0d4" font-family="IBM Plex Sans,sans-serif" font-size="8">Implementation</text>
+      <text x="240" y="198" text-anchor="middle" fill="#8a8278" font-family="IBM Plex Sans,sans-serif" font-size="7">(Receipt)</text>
+    </svg>
+    <figcaption>The relationship between scoping judgment and its outputs — the dashed line to "Don't Build" is the call most engagements never make.</figcaption>
+  </div>
+</aside>
+
+</div>
+</main>
+
+<footer>
+  <h3>Citations</h3>
+  <ol class="citations">
+    <li>Palantir Technologies, Q4 2024 Earnings Report and Shareholder Letter, February 3, 2025. Commercial revenue: $722M, +36% YoY. AIP Bootcamp conversion rate discussed on earnings call.</li>
+    <li>Snowflake Inc., Q4 FY2025 Earnings Call Transcript, February 26, 2025. Professional services and other revenue: $146M. CEO Sridhar Ramaswamy on restructuring field teams to separate discovery from implementation.</li>
+    <li>Salesforce Inc., Q4 FY2025 Earnings Call Transcript, February 26, 2025. Total revenue: $9.99B. Professional services: $1.47B. CEO Marc Benioff on Agentforce AI scoping complexity and professional services capacity strain.</li>
+  </ol>
+  <div class="footer-bottom">
+    <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+    <button class="scroll-top-btn" id="scrollTopBtn">Back to top</button>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* === Reduced motion detection === */
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* === Progress bar === */
+  const progressBar = document.getElementById('progress');
+  function updateProgress(){
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    const s = h > 0 ? (window.scrollY / h) * 100 : 0;
+    progressBar.style.width = s + '%';
+    progressBar.setAttribute('aria-valuenow', Math.round(s));
+  }
+  window.addEventListener('scroll', updateProgress, {passive:true});
+  updateProgress();
+
+  /* === Mobile drawer === */
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const drawerClose = drawer.querySelector('.drawer-close');
+  function toggleDrawer(open){
+    drawer.classList.toggle('open', open);
+    overlay.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', open);
+  }
+  hamburger.addEventListener('click', () => toggleDrawer(true));
+  drawerClose.addEventListener('click', () => toggleDrawer(false));
+  overlay.addEventListener('click', () => toggleDrawer(false));
+
+  /* === Spectrum widget animation === */
+  const spectrumFill = document.getElementById('spectrumFill');
+  const spectrumDot = document.getElementById('spectrumDot');
+  let spectrumAnimated = false;
+  function animateSpectrum(){
+    if(spectrumAnimated || prefersReduced) return;
+    spectrumAnimated = true;
+    requestAnimationFrame(() => {
+      spectrumFill.style.width = '100%';
+      spectrumDot.style.left = '100%';
+    });
+  }
+
+  /* === Scroll-driven reveals === */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        /* Trigger spectrum if it's the spectrum widget */
+        if(e.target.classList.contains('spectrum')) animateSpectrum();
+      }
+    });
+  }, {threshold: 0.2, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+  /* === Insight tracker === */
+  const unlockedInsights = new Set();
+  function unlockInsight(n){
+    if(unlockedInsights.has(n)) return;
+    unlockedInsights.add(n);
+    document.querySelectorAll(`[data-insight="${n}"]`).forEach(li => {
+      li.classList.add('unlocked');
+      /* Replace lock icon with check */
+      const svg = li.querySelector('.insight-lock');
+      if(svg){
+        svg.innerHTML = '<path d="M3 8l4 4 8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+      }
+    });
+  }
+  const insightObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting && e.target.dataset.insight){
+        unlockInsight(e.target.dataset.insight);
+      }
+    });
+  }, {threshold: 0.5});
+  document.querySelectorAll('[data-insight]').forEach(el => {
+    /* Only observe article paragraphs, not tracker items */
+    if(el.closest('.insight-tracker')) return;
+    insightObserver.observe(el);
+  });
+
+  /* === Engagement Arc Widget === */
+  const stageData = {
+    discovery: {
+      title: 'Discovery',
+      body: 'During discovery, the FDE works with the customer to identify use cases, test assumptions against real data, and build a prioritized backlog. The key judgment: which of the customer\'s assumptions are actually tested, and which are just comfortable guesses?',
+      hasBranch: true
+    },
+    prototype: {
+      title: 'Prototype',
+      body: 'A rapid build on the customer\'s real data. Purpose: validate the scoping judgment, not build production software. If the prototype doesn\'t confirm what discovery predicted, the problem was in scoping — not in engineering.',
+      hasBranch: false
+    },
+    eval: {
+      title: 'Eval Harness',
+      body: 'Evaluation criteria tuned to THIS customer\'s failure modes. Not a generic benchmark — a specific test of whether the prototype addresses the decision identified in discovery. The eval harness is where technical craft and customer judgment fuse.',
+      hasBranch: false
+    },
+    productize: {
+      title: 'Productize',
+      body: 'The pattern gets extracted, generalized, and fed back into the product or into reusable playbooks. This is where discovery judgment compounds — one good scoping framework applied across dozens of customers.',
+      hasBranch: false
+    }
+  };
+  const stages = document.querySelectorAll('.arc-stage');
+  const connectors = document.querySelectorAll('.arc-connector');
+  const panel = document.getElementById('arcPanel');
+  const hiddenBranch = document.getElementById('hiddenBranch');
+  const lookDeeper = document.getElementById('lookDeeper');
+
+  function renderStage(key){
+    const data = stageData[key];
+    const idx = Object.keys(stageData).indexOf(key);
+    let html = '<h4>' + data.title + '</h4><p>' + data.body + '</p>';
+    if(data.hasBranch){
+      html += '<button class="arc-look-deeper" id="lookDeeper" aria-expanded="false">Look deeper into the discovery judgment</button>';
+      html += '<div class="arc-hidden-branch" id="hiddenBranch"><strong>Don\'t build this yet.</strong> If more than half the customer\'s assumptions are untested, the right move is to stop and validate before prototyping. This is the invisible judgment call that determines whether the prototype will be useful or wasted effort. Most engagements skip this branch entirely — they jump straight to building because the customer expects to see code. Resisting that expectation is the skill.</div>';
+    }
+    panel.innerHTML = html;
+    hiddenBranch = null; // will re-query
+    /* Re-bind look deeper if present */
+    const newLookDeeper = panel.querySelector('.arc-look-deeper');
+    const newBranch = panel.querySelector('.arc-hidden-branch');
+    if(newLookDeeper && newBranch){
+      newLookDeeper.addEventListener('click', () => {
+        newBranch.classList.add('revealed');
+        newLookDeeper.setAttribute('aria-expanded', 'true');
+        newLookDeeper.style.display = 'none';
+      });
+    }
+    /* Update active states */
+    stages.forEach((s, i) => {
+      s.classList.toggle('active', i === idx);
+      s.setAttribute('aria-expanded', i === idx ? 'true' : 'false');
+    });
+    connectors.forEach((c, i) => {
+      c.classList.toggle('filled', i < idx);
+    });
+  }
+
+  stages.forEach(s => {
+    s.addEventListener('click', () => renderStage(s.dataset.stage));
+  });
+
+  /* Initial look-deeper binding */
+  if(lookDeeper && hiddenBranch){
+    lookDeeper.addEventListener('click', () => {
+      hiddenBranch.classList.add('revealed');
+      lookDeeper.setAttribute('aria-expanded', 'true');
+      lookDeeper.style.display = 'none';
+    });
+  }
+
+  /* === Checklist === */
+  document.querySelectorAll('.checklist-item').forEach(item => {
+    function toggle(){
+      const checked = item.classList.toggle('checked');
+      item.setAttribute('aria-checked', checked ? 'true' : 'false');
+    }
+    item.addEventListener('click', toggle);
+    item.addEventListener('keydown', e => { if(e.key === ' ' || e.key === 'Enter'){e.preventDefault(); toggle();} });
+  });
+
+  /* === Recall cards === */
+  document.querySelectorAll('.recall-card').forEach(card => {
+    function flip(){
+      card.classList.toggle('flipped');
+    }
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', e => { if(e.key === ' ' || e.key === 'Enter'){e.preventDefault(); flip();} });
+  });
+
+  /* === Share buttons === */
+  const shareText = 'In forward-deployed engineering, discovery isn\'t a prelude to the engagement. It IS the engagement. The code that follows is just the receipt.';
+  function copyShare(btn){
+    navigator.clipboard.writeText(shareText).then(() => {
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy to clipboard'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      /* Fallback for older browsers */
+      const ta = document.createElement('textarea');
+      ta.value = shareText;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy to clipboard'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+  document.getElementById('shareBtn').addEventListener('click', function(){ copyShare(this); });
+  document.getElementById('drawerShareBtn').addEventListener('click', function(){ copyShare(this); });
+
+  /* === Scroll to top === */
+  document.getElementById('scrollTopBtn').addEventListener('click', () => {
+    window.scrollTo({top:0, behavior: prefersReduced ? 'auto' : 'smooth'});
+  });
+
+  /* === If reduced motion, trigger all reveals immediately === */
+  if(prefersReduced){
+    document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('visible'));
+    animateSpectrum();
+    document.querySelectorAll('[data-insight]').forEach(el => {
+      if(!el.closest('.insight-tracker')) unlockInsight(el.dataset.insight);
+    });
+  }
+})();
+</script>
+</body>
+</html>
