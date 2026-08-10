@@ -59,8 +59,6 @@ This web application is built with extreme minimalism and zero build friction in
 
 - 🎨 **Frontend:** Vanilla HTML5, CSS3, and modern ECMAScript (ES6+)
 - 🚀 **Zero Dependencies:** No React, Tailwind, Vite, or npm bundle overhead
-- 📱 **iPad & Terminal-Free Friendly:** Single-file architectures designed to be deployed and maintained anywhere
-- 🌐 **Hosting:** [GitHub Pages](https://iggym.github.io/fde-field-notes)
 
 ---
 
