@@ -18,6 +18,19 @@
   "tags": ["comp", "titles", "FDE", "negotiation", "market-data"],
   "path": "articles/what-the-title-actually-prices.html",
   "id": "title-pr"
-  }
+  },{
+  "slug": "the-title-is-the-price",
+  "title": "The Title Is the Price",
+  "hook": "Your title isn't describing your work. It's naming who absorbs the cost when an engagement goes sideways.",
+  "path": "articles/the-title-is-the-price.html",
+  "date": "2025-03-14",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["comp", "titles", "FDE", "solutions-engineer", "career", "negotiation", "risk-pricing"],
+  "reading_time_minutes": 5,
+  "readingTime": "~5 min",
+  "pinned": false,
+  "research_window": "2025-02-07 to 2025-03-14"
+}
   ]
 }
