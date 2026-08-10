@@ -274,6 +274,19 @@
   "reading_time_minutes": 6,
   "pinned": false,
   "research_window": "2025-03-14 to 2026-03-14"
+},{
+  "id": "00101",
+  "slug": "lost-before-you-type",
+  "title": "Lost Before You Type",
+  "hook": "Every failed engagement was lost in the first two weeks. The code just hadn't been written yet.",
+  "path": "articles/lost-before-you-type.html",
+  "date": "2025-03-03",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "discovery", "scoping", "engagement-lifecycle"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2024-03-03 to 2025-03-03"
 }
   ]
 }
