@@ -31,6 +31,19 @@
   "readingTime": "~5 min",
   "pinned": false,
   "research_window": "2025-02-07 to 2025-03-14"
+},{
+  "id": "0001",
+  "slug": "the-code-you-dont-write",
+  "title": "The Code You Don't Write",
+  "hook": "The real product an FDE ships is a \"don't build\" list. Everything else is evidence for why each item belongs on it.",
+  "path": "articles/the-code-you-dont-write.html",
+  "date": "2025-03-03",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["discovery", "scoping", "customer-judgment", "bootcamp", "discovery-spike", "escalating-commitment"],
+  "reading_time_minutes": 5,
+  "pinned": false,
+  "research_window": "2025-01-27 to 2025-03-03"
 }
   ]
 }
