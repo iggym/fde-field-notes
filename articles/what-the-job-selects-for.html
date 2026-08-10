@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What the Job Selects For — FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F0E8;--fg:#1A1A1A;--muted:#8B8178;--accent:#C4472A;
+  --secondary:#2D4A3E;--card:#FFFDF8;--border:#D9D0C4;
+  --radius:6px;--font-body:'Lora',Georgia,serif;--font-mono:'Space Mono',monospace;
+}
+html{scroll-behavior:smooth;font-size:17px}
+body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.7;overflow-x:hidden}
+
+/* Progress bar */
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);width:0%;z-index:1001;transition:width .1s linear}
+
+/* Topbar */
+#topbar{position:sticky;top:0;z-index:1000;background:rgba(245,240,232,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 1.5rem}
+#topbar nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;height:52px;gap:.75rem;font-family:var(--font-mono);font-size:.75rem}
+#topbar a{color:var(--secondary);text-decoration:none;font-weight:700}
+#topbar a:hover{text-decoration:underline}
+.breadcrumb-sep{color:var(--muted)}
+.breadcrumb-current{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+.reading-time{color:var(--muted);margin-left:auto;white-space:nowrap}
+#hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--fg);padding:4px;margin-left:auto}
+#hamburger svg{display:block}
+
+/* Drawer */
+#drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1002;opacity:0;pointer-events:none;transition:opacity .25s}
+#drawer-overlay.open{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;right:0;bottom:0;width:300px;max-width:85vw;background:var(--card);z-index:1003;transform:translateX(100%);transition:transform .25s;padding:1.5rem;overflow-y:auto;border-left:1px solid var(--border)}
+#drawer.open{transform:translateX(0)}
+#drawer-close{background:none;border:none;cursor:pointer;color:var(--fg);float:right;padding:4px}
+#drawer h3{font-family:var(--font-mono);font-size:.8rem;margin:2rem 0 .75rem;color:var(--secondary);text-transform:uppercase;letter-spacing:.05em}
+#drawer p{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:.5rem}
+#drawer a{color:var(--accent);text-decoration:none}
+#drawer a:hover{text-decoration:underline}
+
+/* Grid layout */
+.layout-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 300px;gap:2.5rem;padding:2rem 1.5rem 4rem}
+.layout-grid main{min-width:0}
+
+/* Sidebar */
+.sidebar{position:sticky;top:70px;align-self:start}
+.sidebar .share-block{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.sidebar .share-block label{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:block;margin-bottom:.5rem}
+.sidebar .share-block textarea{width:100%;font-family:var(--font-mono);font-size:.72rem;line-height:1.5;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:.6rem;resize:none;color:var(--fg);height:72px}
+.sidebar .share-block button{margin-top:.5rem;font-family:var(--font-mono);font-size:.72rem;background:var(--secondary);color:#fff;border:none;border-radius:4px;padding:.45rem .9rem;cursor:pointer;width:100%}
+.sidebar .share-block button:hover{background:var(--accent)}
+.sidebar .share-block .copied{color:var(--accent);font-family:var(--font-mono);font-size:.68rem;margin-top:.35rem;display:none}
+.sidebar .toc{font-size:.82rem}
+.sidebar .toc h3{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.75rem}
+.sidebar .toc a{display:block;color:var(--secondary);text-decoration:none;padding:.25rem 0;border-bottom:1px solid var(--border)}
+.sidebar .toc a:hover{color:var(--accent)}
+
+/* Hero */
+.hero-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;color:var(--fg);margin-bottom:.35rem;letter-spacing:-.02em}
+.dateline{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);margin-bottom:2rem}
+
+/* Article typography */
+article p{margin-bottom:1.15rem}
+article h2{font-family:var(--font-mono);font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--secondary);margin:2.5rem 0 1rem}
+article strong{font-weight:700}
+article em{font-style:italic}
+
+/* Beat blocks */
+.beat-block{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius);padding:1.25rem 1.5rem;margin:1.5rem 0;font-size:.9rem}
+.beat-block .beat-label{font-family:var(--font-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.5rem;display:block}
+.beat-before{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border)}
+.beat-after{color:var(--accent);font-weight:600}
+.beat-turn{font-weight:700;color:var(--secondary);margin-top:.35rem;display:block}
+
+/* Pull quote */
+.pull-quote{border-left:3px solid var(--secondary);padding:.75rem 0 .75rem 1.5rem;margin:2rem 0;font-size:1.15rem;font-weight:600;font-style:italic;color:var(--secondary);line-height:1.5}
+
+/* Spectrum widget */
+.spectrum-widget{margin:2rem 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.spectrum-toggle{display:flex;border-bottom:1px solid var(--border)}
+.spectrum-toggle button{flex:1;padding:.7rem .5rem;font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;background:none;border:none;cursor:pointer;color:var(--muted);transition:color .2s,background .2s}
+.spectrum-toggle button.active{color:var(--fg);background:var(--bg);font-weight:700}
+.spectrum-toggle button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.spectrum-content{position:relative;min-height:140px;padding:1.25rem 1.5rem}
+.spectrum-panel{transition:opacity .35s,transform .35s}
+.spectrum-panel.hidden{position:absolute;inset:0;padding:1.25rem 1.5rem;opacity:0;transform:translateY(8px);pointer-events:none}
+.spectrum-panel.visible{opacity:1;transform:translateY(0);pointer-events:auto;position:relative}
+.spectrum-panel ul{list-style:none;padding:0}
+.spectrum-panel li{padding:.4rem 0;font-size:.88rem;display:flex;align-items:flex-start;gap:.6rem}
+.spectrum-panel li::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;margin-top:.55rem;flex-shrink:0}
+.spectrum-panel.posting li::before{background:var(--muted)}
+.spectrum-panel.actual li::before{background:var(--accent)}
+.spectrum-panel.posting li{color:var(--muted)}
+.spectrum-panel.actual li{color:var(--fg);font-weight:600}
+
+/* Engagement arc widget */
+.engagement-arc{margin:2.5rem 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+.arc-stages{display:flex;align-items:center;justify-content:space-between;position:relative;margin-bottom:1.5rem;padding:0 .5rem}
+.arc-stages::before{content:'';position:absolute;top:16px;left:32px;right:32px;height:2px;background:var(--border);z-index:0}
+.arc-stage-btn{position:relative;z-index:1;width:32px;height:32px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.65rem;color:var(--muted);transition:border-color .2s,background .2s,color .2s}
+.arc-stage-btn:hover{border-color:var(--secondary)}
+.arc-stage-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.arc-stage-btn.focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.arc-stage-label{position:absolute;top:40px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:.6rem;color:var(--muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+.arc-content{min-height:120px;position:relative}
+.arc-panel{display:none;padding:.5rem 0}
+.arc-panel.active{display:block;animation:fadeUp .3s ease}
+.arc-panel h4{font-family:var(--font-mono);font-size:.75rem;color:var(--secondary);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.04em}
+.arc-panel p{font-size:.85rem;color:var(--fg);margin-bottom:.75rem}
+.arc-hidden-branch{margin-top:.75rem;padding:.75rem;border:1px dashed var(--accent);border-radius:4px;background:rgba(196,71,42,.04);display:none}
+.arc-hidden-branch.revealed{display:block;animation:fadeUp .3s ease}
+.arc-hidden-trigger{font-family:var(--font-mono);font-size:.68rem;color:var(--muted);background:none;border:1px dashed var(--border);border-radius:4px;padding:.35rem .6rem;cursor:pointer;margin-top:.5rem;display:inline-flex;align-items:center;gap:.35rem;transition:color .2s,border-color .2s}
+.arc-hidden-trigger:hover{color:var(--accent);border-color:var(--accent)}
+.arc-hidden-trigger svg{width:12px;height:12px}
+.arc-beat-reveal{display:none;margin-top:.75rem;padding:.75rem 1rem;background:var(--secondary);color:#fff;border-radius:4px;font-size:.82rem;font-weight:600;line-height:1.4}
+.arc-beat-reveal.show{display:block;animation:fadeUp .4s ease}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Scroll reveal — Beat 2 */
+.scroll-reveal-section{overflow:hidden}
+.scroll-reveal-inner{max-height:0;opacity:0;transition:max-height .6s ease,opacity .5s ease,padding .4s ease;padding:0 1rem}
+.scroll-reveal-inner.revealed{max-height:400px;opacity:1;padding:1rem}
+.scroll-reveal-trigger{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem 1.1rem;cursor:pointer;font-family:var(--font-body);font-size:.85rem;color:var(--muted);transition:color .2s}
+.scroll-reveal-trigger:hover{color:var(--fg)}
+.scroll-reveal-trigger .arrow{display:inline-block;transition:transform .3s;margin-left:.4rem;font-size:.7rem}
+.scroll-reveal-trigger.expanded .arrow{transform:rotate(90deg)}
+
+/* Three things tracker */
+.three-things{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem .9rem;font-family:var(--font-mono);font-size:.6rem;box-shadow:0 4px 20px rgba(0,0,0,.08);max-width:220px;transition:opacity .3s}
+.three-things-title{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.three-thing-item{display:flex;align-items:flex-start;gap:.45rem;padding:.3rem 0;color:var(--border);transition:color .4s}
+.three-thing-item.unlocked{color:var(--fg)}
+.three-thing-icon{width:14px;height:14px;flex-shrink:0;margin-top:1px}
+.three-thing-icon.locked{fill:var(--border)}
+.three-thing-icon.unlocked{fill:var(--accent)}
+
+/* Checklist */
+.guidance-checklist{list-style:none;padding:0;margin:1rem 0}
+.guidance-checklist li{display:flex;align-items:flex-start;gap:.65rem;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.9rem;cursor:pointer;transition:color .2s;user-select:none}
+.guidance-checklist li:last-child{border-bottom:none}
+.guidance-checklist .check-box{width:20px;height:20px;flex-shrink:0;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:background .2s,border-color .2s}
+.guidance-checklist li.checked .check-box{background:var(--accent);border-color:var(--accent)}
+.guidance-checklist li.checked .check-box svg{opacity:1}
+.guidance-checklist .check-box svg{opacity:0;transition:opacity .2s}
+.guidance-checklist li.checked{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border)}
+
+/* Recall cards */
+.recall-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2rem 0}
+.recall-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;min-height:140px;position:relative;perspective:600px}
+.recall-card-inner{position:relative;width:100%;height:100%;min-height:140px;transition:transform .45s;transform-style:preserve-3d}
+.recall-card.flipped .recall-card-inner{transform:rotateY(180deg)}
+.recall-front,.recall-back{position:absolute;inset:0;backface-visibility:hidden;padding:1rem;display:flex;flex-direction:column;justify-content:center}
+.recall-front{background:var(--card)}
+.recall-back{background:var(--secondary);color:#fff;transform:rotateY(180deg);font-size:.85rem;line-height:1.5}
+.recall-front .recall-q{font-family:var(--font-mono);font-size:.72rem;color:var(--secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem}
+.recall-front .recall-prompt{font-size:.88rem;color:var(--fg);font-weight:600}
+.recall-front .recall-hint{font-size:.65rem;color:var(--muted);margin-top:.5rem;font-family:var(--font-mono)}
+
+/* Concept map */
+.concept-map{margin:2.5rem 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;overflow-x:auto}
+.concept-map svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.concept-map svg text{font-family:var(--font-mono);font-size:10px;fill:var(--fg)}
+.concept-map svg text.label{font-size:8.5px;fill:var(--muted)}
+.concept-map svg .node-rect{fill:var(--bg);stroke:var(--border);stroke-width:1.5;rx:4}
+.concept-map svg .node-accent{fill:rgba(196,71,42,.08);stroke:var(--accent);stroke-width:1.5;rx:4}
+.concept-map svg .node-secondary{fill:rgba(45,74,62,.08);stroke:var(--secondary);stroke-width:1.5;rx:4}
+.concept-map svg line{stroke:var(--border);stroke-width:1}
+.concept-map svg line.accent{stroke:var(--accent);stroke-dasharray:4 3}
+.concept-map svg line.secondary{stroke:var(--secondary);stroke-dasharray:4 3}
+
+/* Aside / note block */
+.note-aside{font-size:.85rem;color:var(--muted);font-style:italic;border-left:2px solid var(--border);padding-left:1rem;margin:1.5rem 0;line-height:1.6}
+
+/* Footer */
+footer{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 3rem;border-top:1px solid var(--border)}
+footer .citations{font-family:var(--font-mono);font-size:.68rem;color:var(--muted);line-height:1.8;margin-bottom:1.5rem}
+footer .citations strong{color:var(--fg);font-weight:600}
+footer .footer-actions{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+footer .footer-actions a,footer .footer-actions button{font-family:var(--font-mono);font-size:.72rem;color:var(--secondary);text-decoration:none;background:none;border:1px solid var(--border);border-radius:4px;padding:.4rem .8rem;cursor:pointer;transition:background .2s,color .2s}
+footer .footer-actions a:hover,footer .footer-actions button:hover{background:var(--secondary);color:#fff;border-color:var(--secondary)}
+
+/* Figcaptions */
+figcaption{font-family:var(--font-mono);font-size:.68rem;color:var(--muted);margin-top:.6rem;line-height:1.5}
+
+/* Responsive */
+@media(max-width:880px){
+  .layout-grid{grid-template-columns:1fr;padding:1.25rem 1rem 3rem}
+  .sidebar{display:none}
+  #hamburger{display:block}
+  .reading-time{display:none}
+  .recall-cards{grid-template-columns:1fr}
+  .three-things{bottom:1rem;right:1rem;max-width:180px;font-size:.55rem}
+  .arc-stage-label{display:none}
+}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+  .scroll-reveal-inner{max-height:none;opacity:1;padding:1rem}
+  .scroll-reveal-trigger{display:none}
+  .arc-hidden-branch{display:block;border-style:solid}
+  .arc-hidden-trigger{display:none}
+  .spectrum-panel.hidden{position:relative;opacity:1;transform:none;pointer-events:auto;display:none}
+  .spectrum-panel.visible{display:block}
+  .recall-card-inner{transition:none}
+  .recall-card.flipped .recall-card-inner{transform:none}
+  .recall-card.flipped .recall-front{display:none}
+  .recall-card.flipped .recall-back{position:relative;transform:none;backface-visibility:visible}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- Topbar -->
+<header id="topbar">
+  <nav>
+    <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+    <span class="breadcrumb-sep" aria-hidden="true">›</span>
+    <span class="breadcrumb-current">What the Job Selects For</span>
+    <span class="reading-time" aria-label="Reading time: 6 minutes">6 min</span>
+    <button id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/></svg>
+    </button>
+  </nav>
+</header>
+
+<!-- Drawer overlay -->
+<div id="drawer-overlay" aria-hidden="true"></div>
+
+<!-- Mobile drawer -->
+<aside id="drawer" aria-hidden="true" role="dialog" aria-label="Menu">
+  <button id="drawer-close" aria-label="Close menu">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"/><line x1="16" y1="4" x2="4" y2="16"/></svg>
+  </button>
+  <div style="clear:both"></div>
+  <h3>Share</h3>
+  <p id="drawer-share-text" style="font-style:italic">The FDE role doesn't select for people skills. It selects for the ability to know the customer is wrong and say nothing — for three weeks.</p>
+  <button onclick="copyShareText()" style="font-family:var(--font-mono);font-size:.72rem;background:var(--secondary);color:#fff;border:none;border-radius:4px;padding:.4rem .8rem;cursor:pointer;margin-top:.3rem">Copy</button>
+  <h3>Sections</h3>
+  <p><a href="#opening">Opening</a></p>
+  <p><a href="#reframe">What Postings Miss</a></p>
+  <p><a href="#evidence">The Evidence</a></p>
+  <p><a href="#how-to-tell">How to Tell</a></p>
+  <p><a href="#career-risk">Career Risk</a></p>
+  <p><a href="#recall">Recall Check</a></p>
+  <p><a href="#concept-map">Practice Arc Map</a></p>
+</aside>
+
+<!-- Main grid -->
+<div class="layout-grid">
+  <main>
+    <article>
+      <!-- Hero -->
+      <h1 class="hero-title">What the Job Selects For</h1>
+      <p class="dateline">January 22, 2025</p>
+
+      <!-- Opening -->
+      <section id="opening" data-insight="1">
+        <p>In December 2024, a Palantir Forward Deployed Software Engineer with three years in role posted on Blind that their RSUs — granted when the stock sat under $20 — were now worth over four times that after shares crossed $100. The post wasn't a celebration. It was a question: "I don't know if I'm actually good at this job or if I just got lucky on timing, and I have no way to evaluate that."</p>
+        <p>That question is the career problem. Comp, title, and exit opportunities are red herrings. It's the inability to self-assess because the job's selection criteria are invisible to the people being selected. Unlike a backend engineer, you can't point to a deploy and say "that's mine." Unlike a product engineer, you can't point to a metric and say "I moved that." The work lives in conversations, decisions not made, and code the customer's team eventually owns.</p>
+      </section>
+
+      <!-- Beat 1 -->
+      <div class="beat-block" data-beat="1">
+        <span class="beat-label">Perspective Shift</span>
+        <p class="beat-before">The FDE role is about building things for customers.</p>
+        <p class="beat-after">The FDE role is mostly about preventing things from being built.</p>
+        <span class="beat-turn">The craft isn't construction — it's controlled demolition of bad requirements.</span>
+      </div>
+
+      <!-- Bold Reframe -->
+      <section id="reframe" data-insight="reframe">
+        <h2>What Postings Miss</h2>
+        <p>The FDE role doesn't select for people who are good with customers. It selects for people who can stand in a room full of stakeholders, know the thing they're all asking for is wrong, and say nothing — for three weeks.</p>
+
+        <!-- Spectrum widget -->
+        <figure>
+          <div class="spectrum-widget">
+            <div class="spectrum-toggle" role="tablist">
+              <button class="active" role="tab" aria-selected="true" data-panel="posting" id="tab-posting">What postings say</button>
+              <button role="tab" aria-selected="false" data-panel="actual" id="tab-actual">What actually selects</button>
+            </div>
+            <div class="spectrum-content">
+              <div class="spectrum-panel posting visible" role="tabpanel" aria-labelledby="tab-posting">
+                <ul>
+                  <li>Strong communication skills</li>
+                  <li>Technical breadth across stacks</li>
+                  <li>Customer empathy and relationship building</li>
+                  <li>Ability to translate business needs into solutions</li>
+                </ul>
+              </div>
+              <div class="spectrum-panel actual hidden" role="tabpanel" aria-labelledby="tab-actual">
+                <ul>
+                  <li>Restrained silence under stakeholder pressure</li>
+                  <li>Tolerance for sustained ambiguity — weeks, not hours</li>
+                  <li>Willingness to hold incompatible mental models simultaneously</li>
+                  <li>Deferred commitment until the last responsible moment</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <figcaption>Slide between what the job posting promises and what the role actually demands of you.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Pull quote — perspective-snap line -->
+      <blockquote class="pull-quote">Every engagement you've seen that "failed to launch" didn't fail because of bad code. It failed because someone talked too soon.</blockquote>
+
+      <!-- Credibility / Evidence -->
+      <section id="evidence" data-insight="2">
+        <h2>The Evidence</h2>
+        <p>Palantir's Q3 2024 earnings highlighted 30% year-over-year revenue growth to $725 million, with management crediting expansion of AIP deployments — the customer-specific AI integration work that FDEs execute. When the stock surged past $100 in late December, up from under $20 nine months earlier, it created a comp event that masked craft development. If your total comp quadruples because of equity appreciation, you lose the price signal that normally tells you whether your skills are advancing. You can't calibrate.</p>
+        <p>Simultaneously, the role was fragmenting. Vercel posted "Frontier Engineer" positions in late 2024 — explicitly FDE-patterned work — specifying "experience deploying LLM applications in production with real customers." That requirement encodes a craft expectation: you have shipped something a non-technical end user touched, and it broke in a way you had to fix while they watched. A different filter than "strong communication skills," which is what most FDE-adjacent postings still lead with. Vercel wasn't alone in this window — multiple companies posted FDE-adjacent roles with different titles and subtly different expectations, but Vercel's posting stood out for making the production-deployment requirement explicit rather than burying it.</p>
+        <p>The comp data from this period makes the fragmentation concrete. On Levels.fyi, "Forward Deployed Engineer" roles at companies keeping that title showed total comp bands roughly $30–50K higher than "Solutions Engineer" or "Customer Engineer" roles at similarly staged companies, for job descriptions overlapping by roughly 70%. The premium didn't map to strategic importance or customer-facing scope. It mapped to production code responsibility — whether you were expected to commit code running in the customer's environment. A meaningful daily-work difference the JD blurs entirely. And that premium can vanish in a reorg when someone decides to "align titles across go-to-market."</p>
+
+        <p class="note-aside">Holding two incompatible mental models of a customer's problem simultaneously feels genuinely unpleasant — it's working memory operating near capacity, the same load you feel doing mental math while someone talks to you. The job trains you to live in that state for weeks. Not a superpower. A tolerance you build, like cold exposure.</p>
+
+        <p>The strongest counterargument is that this framing romanticizes inaction — that FDEs need decisiveness, and that failed engagements more often stem from analysis paralysis than premature commitment. But the Standish Group's CHAOS research through 2024 continues to show "incomplete requirements" and "lack of user involvement" as leading failure drivers, both downstream effects of committing to a technical direction before the problem space stabilizes. The restraint I'm describing isn't passivity. It's active information gathering that happens to look like patience.</p>
+      </section>
+
+      <!-- Centerpiece widget: Engagement Arc -->
+      <figure>
+        <div class="engagement-arc" id="engagement-arc">
+          <div class="arc-stages">
+            <button class="arc-stage-btn active" data-stage="discovery" aria-label="Discovery stage">1<span class="arc-stage-label">Discovery</span></button>
+            <button class="arc-stage-btn" data-stage="prototype" aria-label="Prototype stage">2<span class="arc-stage-label">Prototype</span></button>
+            <button class="arc-stage-btn" data-stage="eval" aria-label="Eval harness stage">3<span class="arc-stage-label">Eval</span></button>
+            <button class="arc-stage-btn" data-stage="productize" aria-label="Productize stage">4<span class="arc-stage-label">Productize</span></button>
+          </div>
+          <div class="arc-content">
+            <div class="arc-panel active" id="panel-discovery">
+              <h4>Discovery</h4>
+              <p>You're listening, not building. The goal is to leave the customer's room with more questions than you brought in. Most of your output here is a private document nobody else will see — your own uncertainty map.</p>
+            </div>
+            <div class="arc-panel" id="panel-prototype">
+              <h4>Prototype</h4>
+              <p>The customer wants to see something. Your instinct says it's too early. This is the moment the selection pressure peaks.</p>
+              <button class="arc-hidden-trigger" id="reveal-hidden-branch">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><line x1="6" y1="3" x2="6" y2="6.5"/><line x1="6" y1="6.5" x2="8.5" y2="5"/></svg>
+                What if you don't build it?
+              </button>
+              <div class="arc-hidden-branch" id="hidden-branch">
+                <p style="margin:0;font-size:.85rem"><strong>Don't build this yet.</strong> Replace the prototype request with a structured conversation artifact — a decision matrix the customer fills out with you. You've just done the hardest thing in the job: prevented code that would have been wrong.</p>
+              </div>
+              <div class="arc-beat-reveal" id="arc-beat-text">The craft isn't construction — it's controlled demolition of bad requirements.</div>
+            </div>
+            <div class="arc-panel" id="panel-eval">
+              <h4>Eval Harness</h4>
+              <p>You're measuring what the customer actually fails at, not what they say they need. The harness is tuned to their specific failure modes — not a generic benchmark, not a demo, but a thing that breaks in the way their production system would break.</p>
+            </div>
+            <div class="arc-panel" id="panel-productize">
+              <h4>Productize</h4>
+              <p>The pattern that survived contact with the customer gets abstracted into something repeatable. This is where your work outlives your involvement — or doesn't. Most FDE work dies here, not because the code was bad, but because the handoff was.</p>
+            </div>
+          </div>
+        </div>
+        <figcaption>Where the "don't build this yet" moment lives — click the prototype stage and look for what's hiding.</figcaption>
+      </figure>
+
+      <!-- Guidance section as checklist -->
+      <section id="how-to-tell" data-insight="3">
+        <h2>How to Tell</h2>
+        <ul class="guidance-checklist">
+          <li onclick="toggleCheck(this)">
+            <span class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="2,6 5,9 10,3"/></svg></span>
+            <span>This week, count how many customer meetings you left without stating your technical opinion. If zero, you're committing too early.</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <span class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="2,6 5,9 10,3"/></svg></span>
+            <span>Wait for a customer to repeat a requirement in different words than they originally used. That's the abstraction settling.</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <span class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="2,6 5,9 10,3"/></svg></span>
+            <span>Check your offer letter title, not the JD. Ask how long they expect you on a single engagement — the answer determines the daily experience.</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <span class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="2,6 5,9 10,3"/></svg></span>
+            <span>Find one requirement you've mentally committed to. Write down the specific evidence that would make you abandon it. If you can't, you committed too early.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Beat 2 — scroll reveal -->
+      <section id="career-risk" class="scroll-reveal-section">
+        <button class="scroll-reveal-trigger" aria-expanded="false">
+          FDE career risk is about getting pigeonholed<span class="arrow">▶</span>
+        </button>
+        <div class="scroll-reveal-inner" data-beat="2">
+          <div class="beat-block">
+            <span class="beat-label">Perspective Shift</span>
+            <p class="beat-before">FDE career risk is about getting pigeonholed.</p>
+            <p class="beat-after">FDE career risk is about losing the ability to commit to a single technical direction because you've trained yourself out of it.</p>
+            <span class="beat-turn">The skill that makes you good at the job — holding options open — becomes the thing that makes you bad at the next one.</span>
+          </div>
+          <p>After two or three years of deliberately not committing to a technical direction until the last responsible moment, you develop a reflexive aversion to commitment that doesn't turn off when you change roles. FDEs who move to staff engineering or architecture positions often struggle not because they lack technical depth, but because they keep generating options when the situation demands a decision. Someone asks "should we use Kafka or Redpanda?" and instead of picking one, you produce a four-page comparison. I've watched three former FDEs flounder in staff roles for exactly this reason. Smart people, strong technically, but unable to stop qualifying every recommendation with "on the other hand." The org reads it as lack of conviction. It's actually a trained reflex that served them well for years. The job trains a specific cognitive habit, and that habit has a half-life.</p>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section style="margin-top:2rem">
+        <p style="font-family:var(--font-mono);font-size:.78rem;color:var(--secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Within 24 hours</p>
+        <p>Find one requirement in your current engagement that you've already mentally committed to, and write down the specific piece of evidence that would make you abandon it. If you can't name that evidence, you committed too early.</p>
+      </section>
+
+      <!-- Recall cards -->
+      <section id="recall" style="margin-top:2.5rem">
+        <h2>Recall Check</h2>
+        <div class="recall-cards">
+          <div class="recall-card" onclick="flipCard(this)" tabindex="0" role="button" aria-label="Flip to reveal answer">
+            <div class="recall-card-inner">
+              <div class="recall-front">
+                <span class="recall-q">Question</span>
+                <span class="recall-prompt">What signal tells you a customer's mental model has stabilized?</span>
+                <span class="recall-hint">Click to reveal</span>
+              </div>
+              <div class="recall-back">
+                They repeat a requirement back to you using different words than they originally used — not paraphrasing, genuinely different words.
+              </div>
+            </div>
+          </div>
+          <div class="recall-card" onclick="flipCard(this)" tabindex="0" role="button" aria-label="Flip to reveal answer">
+            <div class="recall-card-inner">
+              <div class="recall-front">
+                <span class="recall-q">Question</span>
+                <span class="recall-prompt">What does the FDE-vs-Solutions-Engineer comp premium actually correlate with?</span>
+                <span class="recall-hint">Click to reveal</span>
+              </div>
+              <div class="recall-back">
+                Production code responsibility — whether you commit code that runs in the customer's environment. Not strategic importance, not seniority.
+              </div>
+            </div>
+          </div>
+          <div class="recall-card" onclick="flipCard(this)" tabindex="0" role="button" aria-label="Flip to reveal answer">
+            <div class="recall-card-inner">
+              <div class="recall-front">
+                <span class="recall-q">Question</span>
+                <span class="recall-prompt">What's the real career risk of the FDE path — the one nobody discusses?</span>
+                <span class="recall-hint">Click to reveal</span>
+              </div>
+              <div class="recall-back">
+                Losing the ability to commit to a single technical direction because you've trained yourself to hold options open — a reflex that doesn't turn off when you change roles.
+              </div>
+            </div>
+          </div>
+          <div class="recall-card" onclick="flipCard(this)" tabindex="0" role="button" aria-label="Flip to reveal answer">
+            <div class="recall-card-inner">
+              <div class="recall-front">
+                <span class="recall-q">Question</span>
+                <span class="recall-prompt">Why did the Palantir FDE's stock surge destroy their ability to self-assess?</span>
+                <span class="recall-hint">Click to reveal</span>
+              </div>
+              <div class="recall-back">
+                A 4x RSU appreciation from equity movement — not skill growth — eliminated the price signal that normally tells you whether your craft is advancing.
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>Cover the answer, state it aloud, then check — you'll retain it longer than if you just re-read.</figcaption>
+      </section>
+
+      <!-- Concept map -->
+      <figure class="concept-map" id="concept-map">
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg">
+          <!-- Lines first (behind nodes) -->
+          <line class="accent" x1="260" y1="50" x2="100" y2="140"/>
+          <line class="accent" x1="260" y1="50" x2="260" y2="140"/>
+          <line class="accent" x1="260" y1="50" x2="420" y2="140"/>
+          <line x1="100" y1="180" x2="100" y2="240"/>
+          <line x1="260" y1="180" x2="260" y2="240"/>
+          <line x1="420" y1="180" x2="420" y2="240"/>
+          <line class="secondary" x1="260" y1="280" x2="160" y2="310"/>
+          <line class="secondary" x1="260" y1="280" x2="360" y2="310"/>
+
+          <!-- Central node -->
+          <rect class="node-accent" x="175" y="22" width="170" height="38"/>
+          <text x="260" y="46" text-anchor="middle" font-weight="700" fill="#C4472A">Selection: Restraint</text>
+
+          <!-- Top row labels on lines -->
+          <text class="label" x="165" y="88" text-anchor="middle" transform="rotate(-18,165,88)">where silence</text>
+          <text class="label" x="260" y="88" text-anchor="middle">is the tool</text>
+          <text class="label" x="355" y="88" text-anchor="middle" transform="rotate(18,355,88)">not yet</text>
+
+          <!-- Middle row: practice arc stages -->
+          <rect class="node-rect" x="40" y="140" width="120" height="38"/>
+          <text x="100" y="164" text-anchor="middle">Discovery</text>
+
+          <rect class="node-rect" x="195" y="140" width="130" height="38"/>
+          <text x="260" y="164" text-anchor="middle">Prototype</text>
+
+          <rect class="node-rect" x="360" y="140" width="120" height="38"/>
+          <text x="420" y="164" text-anchor="middle">Eval Harness</text>
+
+          <!-- Bottom row: consequences -->
+          <rect class="node-rect" x="30" y="240" width="140" height="38"/>
+          <text x="100" y="264" text-anchor="middle">Title Fragmentation</text>
+
+          <rect class="node-rect" x="190" y="240" width="140" height="38"/>
+          <text x="260" y="264" text-anchor="middle">Comp Premium</text>
+
+          <rect class="node-secondary" x="355" y="240" width="130" height="38"/>
+          <text x="420" y="264" text-anchor="middle">Career Risk</text>
+
+          <!-- Labels on bottom lines -->
+          <text class="label" x="100" y="216" text-anchor="middle">encodes duration</text>
+          <text class="label" x="260" y="216" text-anchor="middle">= code responsibility</text>
+          <text class="label" x="420" y="216" text-anchor="middle">commitment aversion</text>
+
+          <!-- Bottom consequences -->
+          <rect class="node-rect" x="95" y="300" width="130" height="30"/>
+          <text x="160" y="320" text-anchor="middle" font-size="9">JDs blur the difference</text>
+
+          <rect class="node-rect" x="295" y="300" width="130" height="30"/>
+          <text x="360" y="320" text-anchor="middle" font-size="9">options reflex</text>
+        </svg>
+        <figcaption>How the selection pressure in this note threads through the full engagement arc and into career consequences.</figcaption>
+      </figure>
+
+    </article>
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="share-block">
+      <label>Share this reframe</label>
+      <textarea id="share-text" readonly>The FDE role doesn't select for people skills. It selects for the ability to know the customer is wrong and say nothing — for three weeks.</textarea>
+      <button onclick="copyShareText()">Copy to clipboard</button>
+      <p class="copied" id="copy-feedback">Copied</p>
+    </div>
+    <div class="toc">
+      <h3>Sections</h3>
+      <a href="#opening">Opening</a>
+      <a href="#reframe">What Postings Miss</a>
+      <a href="#evidence">The Evidence</a>
+      <a href="#how-to-tell">How to Tell</a>
+      <a href="#career-risk">Career Risk</a>
+      <a href="#recall">Recall Check</a>
+      <a href="#concept-map">Practice Arc Map</a>
+    </div>
+  </aside>
+</div>
+
+<!-- Three things tracker -->
+<div class="three-things" id="three-things" aria-live="polite">
+  <div class="three-things-title">Insights unlocked</div>
+  <div class="three-thing-item" id="tt-1">
+    <svg class="three-thing-icon locked" id="tt-icon-1" viewBox="0 0 14 14"><rect x="2" y="6" width="10" height="7" rx="1" fill="currentColor"/><path d="M4 6V4a3 3 0 016 0v2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+    <span>Selection is restraint</span>
+  </div>
+  <div class="three-thing-item" id="tt-2">
+    <svg class="three-thing-icon locked" id="tt-icon-2" viewBox="0 0 14 14"><rect x="2" y="6" width="10" height="7" rx="1" fill="currentColor"/><path d="M4 6V4a3 3 0 016 0v2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+    <span>Title = engagement length</span>
+  </div>
+  <div class="three-thing-item" id="tt-3">
+    <svg class="three-thing-icon locked" id="tt-icon-3" viewBox="0 0 14 14"><rect x="2" y="6" width="10" height="7" rx="1" fill="currentColor"/><path d="M4 6V4a3 3 0 016 0v2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+    <span>Comp premium = code duty</span>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="citations">
+    <strong>Sources</strong><br>
+    Palantir Q3 2024 earnings report, October 2024. Revenue: $725M, 30% YoY growth. AIP deployment expansion cited as primary driver.<br>
+    Palantir stock price trajectory, January–December 2024: ~$20 to >$100 (public market data).<br>
+    Vercel "Frontier Engineer" job postings, November–December 2024. Requirement: "experience deploying LLM applications in production with real customers."<br>
+    Levels.fyi compensation data, searched December 2024 – January 2025. FDE vs. Solutions Engineer / Customer Engineer total comp comparison at similarly staged companies.<br>
+    Standish Group CHAOS Report, 2024 edition. "Incomplete requirements" and "lack of user involvement" cited as leading software project failure drivers.
+  </div>
+  <div class="footer-actions">
+    <button onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</button>
+    <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+  </div>
+</footer>
+
+<script>
+/* === Progress bar === */
+const progressBar = document.getElementById('progress');
+function updateProgress() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progressBar.style.width = pct + '%';
+  progressBar.setAttribute('aria-valuenow', Math.round(pct));
+}
+window.addEventListener('scroll', updateProgress, {passive: true});
+updateProgress();
+
+/* === Mobile drawer === */
+const hamburger = document.getElementById('hamburger');
+const drawer = document.getElementById('drawer');
+const drawerOverlay = document.getElementById('drawer-overlay');
+const drawerClose = document.getElementById('drawer-close');
+
+function openDrawer() {
+  drawer.classList.add('open');
+  drawerOverlay.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  drawerOverlay.setAttribute('aria-hidden', 'false');
+  hamburger.setAttribute('aria-expanded', 'true');
+  drawerClose.focus();
+}
+function closeDrawer() {
+  drawer.classList.remove('open');
+  drawerOverlay.classList.remove('open');
+  drawer.setAttribute('aria-hidden', 'true');
+  drawerOverlay.setAttribute('aria-hidden', 'true');
+  hamburger.setAttribute('aria-expanded', 'false');
+  hamburger.focus();
+}
+hamburger.addEventListener('click', openDrawer);
+drawerClose.addEventListener('click', closeDrawer);
+drawerOverlay.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+});
+
+/* === Spectrum widget === */
+const specTabs = document.querySelectorAll('.spectrum-toggle button');
+const specPanels = document.querySelectorAll('.spectrum-panel');
+specTabs.forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    const target = this.getAttribute('data-panel');
+    specTabs.forEach(function(t) { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    specPanels.forEach(function(p) { p.classList.remove('visible'); p.classList.add('hidden'); });
+    this.classList.add('active');
+    this.setAttribute('aria-selected', 'true');
+    document.querySelector('.spectrum-panel.' + target).classList.remove('hidden');
+    document.querySelector('.spectrum-panel.' + target).classList.add('visible');
+  });
+});
+
+/* === Engagement arc widget === */
+const arcBtns = document.querySelectorAll('.arc-stage-btn');
+const arcPanels = document.querySelectorAll('.arc-panel');
+arcBtns.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const stage = this.getAttribute('data-stage');
+    arcBtns.forEach(function(b) { b.classList.remove('active'); });
+    arcPanels.forEach(function(p) { p.classList.remove('active'); });
+    this.classList.add('active');
+    document.getElementById('panel-' + stage).classList.add('active');
+  });
+});
+
+/* Hidden branch reveal */
+const hiddenTrigger = document.getElementById('reveal-hidden-branch');
+const hiddenBranch = document.getElementById('hidden-branch');
+const arcBeatText = document.getElementById('arc-beat-reveal');
+if (hiddenTrigger) {
+  hiddenTrigger.addEventListener('click', function() {
+    hiddenBranch.classList.add('revealed');
+    arcBeatText.classList.add('show');
+    this.style.display = 'none';
+  });
+}
+
+/* === Scroll-driven reveal for Beat 2 === */
+const scrollRevealSection = document.querySelector('.scroll-reveal-section');
+const scrollTrigger = document.querySelector('.scroll-reveal-trigger');
+const scrollInner = document.querySelector('.scroll-reveal-inner');
+
+if (scrollRevealSection && scrollInner && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const scrollObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        scrollInner.classList.add('revealed');
+        scrollTrigger.classList.add('expanded');
+        scrollTrigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+  }, {threshold: 0.4});
+  scrollObserver.observe(scrollRevealSection);
+
+  /* Also allow manual toggle */
+  scrollTrigger.addEventListener('click', function() {
+    const isRevealed = scrollInner.classList.contains('revealed');
+    if (isRevealed) {
+      scrollInner.classList.remove('revealed');
+      scrollTrigger.classList.remove('expanded');
+      scrollTrigger.setAttribute('aria-expanded', 'false');
+    } else {
+      scrollInner.classList.add('revealed');
+      scrollTrigger.classList.add('expanded');
+      scrollTrigger.setAttribute('aria-expanded', 'true');
+    }
+  });
+} else if (scrollTrigger) {
+  /* Reduced motion: hide the trigger, always show content */
+  scrollTrigger.style.display = 'none';
+}
+
+/* === Three things tracker === */
+const insightMap = {
+  '1': 'tt-1',
+  '2': 'tt-2',
+  '3': 'tt-3',
+  'reframe': 'tt-1'
+};
+const unlockedInsights = new Set();
+
+const insightSections = document.querySelectorAll('[data-insight]');
+const insightObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      const key = entry.target.getAttribute('data-insight');
+      const trackerId = insightMap[key];
+      if (trackerId && !unlockedInsights.has(trackerId)) {
+        unlockedInsights.add(trackerId);
+        const trackerEl = document.getElementById(trackerId);
+        const iconEl = document.getElementById(trackerId.replace('tt-', 'tt-icon-'));
+        if (trackerEl) trackerEl.classList.add('unlocked');
+        if (iconEl) {
+          iconEl.classList.remove('locked');
+          iconEl.classList.add('unlocked');
+          /* Replace lock SVG with checkmark */
+          iconEl.innerHTML = '<circle cx="7" cy="7" r="6" fill="currentColor"/><polyline points="4,7 6.5,9.5 10.5,4.5" fill="none" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>';
+        }
+      }
+    }
+  });
+}, {threshold: 0.3});
+
+insightSections.forEach(function(s) { insightObserver.observe(s); });
+
+/* === Guidance checklist === */
+function toggleCheck(li) {
+  li.classList.toggle('checked');
+}
+
+/* === Recall cards === */
+function flipCard(card) {
+  card.classList.toggle('flipped');
+}
+/* Keyboard support for recall cards */
+document.querySelectorAll('.recall-card').forEach(function(card) {
+  card.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      flipCard(card);
+    }
+  });
+});
+
+/* === Share text copy === */
+function copyShareText() {
+  const text = document.getElementById('share-text').value || document.getElementById('drawer-share-text').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    const feedback = document.getElementById('copy-feedback');
+    if (feedback) {
+      feedback.style.display = 'block';
+      setTimeout(function() { feedback.style.display = 'none'; }, 2000);
+    }
+  });
+}
+</script>
+</body>
+</html>
