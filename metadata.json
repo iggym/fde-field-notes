@@ -57,6 +57,19 @@
   "reading_time_minutes": 6,
   "pinned": false,
   "research_window": "2026-02-10 to 2026-03-17"
+},{
+  "id": "0002",
+  "slug": "what-the-job-selects-for",
+  "title": "What the Job Selects For",
+  "hook": "The FDE role doesn't select for people skills. It selects for the ability to know the customer is wrong and say nothing — for three weeks.",
+  "path": "articles/what-the-job-selects-for.html",
+  "date": "2025-01-22",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde-career", "selection-pressure", "craft-reflection", "role-clarity"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2024-12-18 to 2025-01-22"
 }
   ]
 }
