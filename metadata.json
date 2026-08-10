@@ -109,6 +109,19 @@
   "reading_time_minutes": 6,
   "pinned": false,
   "research_window": "2024-03-18 to 2025-03-18"
+},{
+  "id": "0008",
+  "slug": "youre-not-deploying-youre-correcting",
+  "title": "You're Not Deploying, You're Correcting",
+  "hook": "Your highest-output work isn't what you ship to the customer. It's what you ship back to your own product team.",
+  "path": "articles/youre-not-deploying-youre-correcting.html",
+  "date": "2025-02-18",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "internal-advocacy", "product-roadmap", "field-signals"],
+  "reading_time_minutes": 5,
+  "pinned": false,
+  "research_window": "2024-02-18 to 2025-02-18"
 }
   ]
 }
