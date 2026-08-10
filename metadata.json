@@ -7,5 +7,16 @@
     "audience": "Forward Deployed Engineers and job-seekers in that market",
     "description": "Field notes on deployment-engineering practice — discovery, scoping, customer judgment calls, and the skill nobody puts in the job posting."
   },
-  "articles": []
+  "articles": [
+  {
+  "title": "What the Title Actually Prices",
+  "hook": "The title on your offer letter isn't describing the work — it's describing the pricing bracket.",
+  "date": "2025-03-14",
+  "status": "published",
+  "pinned": false,
+  "reading_time_minutes": 5,
+  "tags": ["comp", "titles", "FDE", "negotiation", "market-data"],
+  "path": "articles/what-the-title-actually-prices.html",
+  "id": "title-pr
+  ]
 }
