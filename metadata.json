@@ -9,6 +9,20 @@
   },
   "articles": [
     {
+  "id": "000101",
+  "slug": "same-work-different-price",
+  "title": "Same Work, Different Price",
+  "hook": "The title fragmentation in FDE-adjacent roles isn't a taxonomy — it's a pricing mechanism. Same responsibilities, 30% comp gap, anchored to five words.",
+  "path": "articles/same-work-different-price.html",
+  "date": "2025-03-14",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "comp", "title-fragmentation", "negotiation", "market-signals"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2024-03-14 to 2025-03-14"
+},
+    {
       "id": "0001",
       "slug": "not-yet-is-the-deliverable",
       "title": "Not Yet Is the Deliverable",
