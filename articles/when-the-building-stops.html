@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>When the Building Stops — FDE Field Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF7F2;--fg:#2A2520;--muted:#8A7E72;--accent:#B87333;--accent-light:#D4956B;
+  --card:#FFFFFF;--border:#E0D8CC;--sidebar-bg:#F3EDE4;--success:#5B7553;--warn:#C17817;
+  --radius:8px;--shadow:0 2px 12px rgba(42,37,32,.07);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;font-weight:400;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400;line-height:1.25}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+/* Progress bar */
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:1001;width:0;transition:width .1s linear}
+
+/* Top bar */
+#topbar{position:sticky;top:3px;z-index:1000;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(250,247,242,.82);border-bottom:1px solid var(--border);padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;font-size:.85rem}
+#topbar .home-link{font-weight:600;color:var(--fg);white-space:nowrap}
+#topbar .breadcrumb{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#topbar .read-time{margin-left:auto;color:var(--muted);white-space:nowrap}
+#hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--fg)}
+#hamburger svg{width:22px;height:22px}
+
+/* Mobile drawer */
+#drawer-overlay{position:fixed;inset:0;background:rgba(42,37,32,.35);z-index:999;opacity:0;pointer-events:none;transition:opacity .25s}
+#drawer-overlay.open{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;right:0;bottom:0;width:320px;max-width:85vw;background:var(--sidebar-bg);z-index:1000;transform:translateX(100%);transition:transform .3s ease;padding:1.5rem;overflow-y:auto;border-left:1px solid var(--border)}
+#drawer.open{transform:translateX(0)}
+#drawer-close{position:absolute;top:.8rem;right:.8rem;background:none;border:none;cursor:pointer;color:var(--fg);font-size:1.4rem;line-height:1}
+
+/* Main grid */
+.main-grid{display:grid;grid-template-columns:1fr 320px;gap:2.5rem;max-width:1140px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
+.article-col{min-width:0}
+.sidebar-col{position:relative}
+
+/* Hero */
+.hero-title{font-size:clamp(2rem,5vw,3.2rem);margin-bottom:.4rem;letter-spacing:-.01em}
+.article-meta{color:var(--muted);font-size:.88rem;margin-bottom:2rem;display:flex;flex-wrap:wrap;gap:.4rem 1.2rem}
+.article-meta span{display:inline-flex;align-items:center;gap:.3rem}
+
+/* Article prose */
+.article-body h2{font-size:1.5rem;margin:2.5rem 0 .8rem;color:var(--fg)}
+.article-body p{margin-bottom:1.1rem;max-width:640px}
+.article-body em{font-style:italic;color:var(--muted);display:block;margin:1.2rem 0;padding-left:1rem;border-left:2px solid var(--border)}
+
+/* Beat markers */
+.beat{background:linear-gradient(135deg,rgba(184,115,51,.08),rgba(184,115,51,.03));border-left:3px solid var(--accent);padding:.9rem 1.1rem;margin:1.5rem 0;border-radius:0 var(--radius) var(--radius) 0;font-size:.95rem}
+.beat strong{color:var(--accent);font-weight:600}
+
+/* Pull quote */
+.pull-quote{border-left:3px solid var(--accent);padding:1rem 0 1rem 1.4rem;margin:2rem 0;font-family:'DM Serif Display',serif;font-size:1.15rem;color:var(--fg);line-height:1.5;max-width:540px}
+
+/* Spectrum widget */
+.spectrum-wrap{margin:2.2rem 0;padding:1.4rem 1.6rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.spectrum-labels{display:flex;justify-content:space-between;font-size:.78rem;font-weight:500;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.04em}
+.spectrum-bar{position:relative;height:10px;background:var(--border);border-radius:5px;overflow:visible}
+.spectrum-fill{height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--border) 0%,var(--accent) 100%);transition:width 1s ease}
+.spectrum-marker{position:absolute;top:-6px;width:22px;height:22px;background:var(--accent);border:3px solid var(--card);border-radius:50%;right:-2px;transform:translateX(50%);box-shadow:0 1px 6px rgba(184,115,51,.3);opacity:0;transition:opacity .5s .8s}
+.spectrum-marker.visible{opacity:1}
+.spectrum-note{margin-top:.8rem;font-size:.85rem;color:var(--muted);line-height:1.5}
+
+/* Scroll reveal section */
+.scroll-reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.scroll-reveal.revealed{opacity:1;transform:translateY(0)}
+
+/* Diagnostic tree */
+.tree-wrap{margin:2.2rem 0;padding:1.6rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tree-step{display:none}.tree-step.active{display:block}
+.tree-question{font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:1rem;line-height:1.4}
+.tree-options{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
+.tree-opt{display:block;width:100%;text-align:left;padding:.7rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--fg);transition:border-color .15s,background .15s}
+.tree-opt:hover{border-color:var(--accent);background:rgba(184,115,51,.05)}
+.tree-opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tree-result{padding:1rem;border-radius:var(--radius);font-size:.92rem;line-height:1.55}
+.tree-result.stop{background:rgba(193,120,23,.08);border:1px solid rgba(193,120,23,.25)}
+.tree-result.dead{background:rgba(180,60,50,.06);border:1px solid rgba(180,60,50,.18)}
+.tree-result.go{background:rgba(91,117,83,.08);border:1px solid rgba(91,117,83,.2)}
+.tree-result strong{display:block;margin-bottom:.3rem}
+.tree-reset{display:inline-block;margin-top:.8rem;padding:.45rem 1rem;background:none;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:inherit;font-size:.82rem;color:var(--muted);transition:border-color .15s}
+.tree-reset:hover{border-color:var(--accent);color:var(--fg)}
+
+/* Checklist */
+.checklist{list-style:none;margin:1rem 0 1.5rem}
+.checklist li{display:flex;align-items:flex-start;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.93rem;cursor:pointer}
+.checklist li:last-child{border-bottom:none}
+.checklist input[type=checkbox]{margin-top:.25rem;width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.checklist li.done{color:var(--muted);text-decoration:line-through}
+
+/* Social share */
+.share-block{margin:2.5rem 0;padding:1.4rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.share-text{font-size:.88rem;color:var(--fg);padding:.8rem;background:var(--bg);border-radius:var(--radius);margin-bottom:1rem;line-height:1.5;border:1px solid var(--border)}
+.share-buttons{display:flex;flex-wrap:wrap;gap:.5rem}
+.share-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:500;color:var(--fg);transition:border-color .15s,background .15s}
+.share-btn:hover{border-color:var(--accent);background:rgba(184,115,51,.05)}
+.share-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.share-btn.copied{border-color:var(--success);color:var(--success)}
+
+/* Recall cards */
+.recall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:2rem 0}
+.recall-card{perspective:600px;height:140px;cursor:pointer}
+.recall-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.recall-card.flipped .recall-inner{transform:rotateY(180deg)}
+.recall-front,.recall-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--radius);padding:1rem;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.88rem;line-height:1.45;border:1px solid var(--border);box-shadow:var(--shadow)}
+.recall-front{background:var(--card);color:var(--fg);font-weight:500}
+.recall-back{background:var(--accent);color:#fff;transform:rotateY(180deg)}
+.recall-hint{font-size:.72rem;color:var(--muted);margin-top:.3rem;text-align:center}
+
+/* Concept map */
+.concept-map{margin:2rem 0;text-align:center}
+.concept-map svg{max-width:100%;height:auto}
+
+/* Sidebar: THREE THINGS */
+.things-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.2rem;position:sticky;top:60px}
+.things-card h3{font-size:1rem;margin-bottom:1rem;color:var(--fg)}
+.thing-item{display:flex;align-items:flex-start;gap:.6rem;padding:.65rem 0;border-bottom:1px solid var(--border);font-size:.83rem;line-height:1.45;transition:color .3s}
+.thing-item:last-child{border-bottom:none}
+.thing-icon{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;color:var(--border);transition:border-color .3s,color .3s,background .3s}
+.thing-item.unlocked .thing-icon{border-color:var(--accent);color:#fff;background:var(--accent)}
+.thing-item.unlocked{color:var(--fg)}
+.thing-item.locked{color:var(--muted)}
+
+/* Sidebar: Mini TOC */
+.mini-toc{margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border)}
+.mini-toc h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.7rem;font-family:'IBM Plex Sans',sans-serif;font-weight:600}
+.mini-toc ol{list-style:none;counter-reset:toc}
+.mini-toc li{counter-increment:toc;font-size:.83rem;margin-bottom:.35rem}
+.mini-toc li::before{content:counter(toc) ".";color:var(--accent);font-weight:600;margin-right:.4rem}
+.mini-toc a{color:var(--muted);text-decoration:none;transition:color .15s}
+.mini-toc a:hover{color:var(--fg);text-decoration:none}
+
+/* Footer */
+.site-footer{border-top:1px solid var(--border);padding:2rem 1.5rem;max-width:1140px;margin:0 auto}
+.footer-citations{font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:1rem}
+.footer-citations strong{color:var(--fg);font-weight:500}
+.footer-links{display:flex;gap:1.2rem;font-size:.82rem}
+.to-top-btn{background:none;border:1px solid var(--border);padding:.4rem .9rem;border-radius:var(--radius);cursor:pointer;font-family:inherit;font-size:.82rem;color:var(--muted);transition:border-color .15s}
+.to-top-btn:hover{border-color:var(--accent);color:var(--fg)}
+
+/* Figcaptions */
+figcaption{font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.45;font-style:italic}
+
+/* Responsive */
+@media(max-width:880px){
+  #hamburger{display:block}
+  .main-grid{grid-template-columns:1fr;padding-top:1.5rem}
+  .sidebar-col{display:none}
+  #drawer .things-card{position:static}
+  #drawer .mini-toc{display:block}
+}
+@media(min-width:881px){
+  #drawer .mini-toc{display:none}
+}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+  .scroll-reveal{opacity:1;transform:none;transition:none}
+  .spectrum-fill{transition:none}
+  .spectrum-marker{transition:none;opacity:1}
+  .recall-inner{transition:none}
+  #drawer,#drawer-overlay{transition:none}
+  .tree-opt,.share-btn,.thing-icon,.thing-item,.to-top-btn{transition:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress" role="progressbar" aria-label="Reading progress"></div>
+
+<!-- Top bar -->
+<header id="topbar">
+  <a href="https://iggym.github.io/fde-field-notes/" class="home-link">FDE Field Notes</a>
+  <span class="breadcrumb">/ Field Notes / When the Building Stops</span>
+  <span class="read-time">6 min read</span>
+  <button id="hamburger" aria-label="Open sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+</header>
+
+<!-- Mobile drawer -->
+<div id="drawer-overlay" aria-hidden="true"></div>
+<nav id="drawer" aria-label="Sidebar">
+  <button id="drawer-close" aria-label="Close sidebar">&times;</button>
+  <div class="things-card">
+    <h3>Three Things You Didn't Know You Needed</h3>
+    <div class="thing-item locked" data-thing="1">
+      <span class="thing-icon">&#x1f512;</span>
+      <span>The silence pattern — customer describes a solution, their engineers go quiet — is the diagnostic signal.</span>
+    </div>
+    <div class="thing-item locked" data-thing="2">
+      <span class="thing-icon">&#x1f512;</span>
+      <span>Building wrong in an FDE engagement costs more because the customer's team adapts around your work.</span>
+    </div>
+    <div class="thing-item locked" data-thing="3">
+      <span class="thing-icon">&#x1f512;</span>
+      <span>The judgment isn't technical — it's checking whether the problem has structural integrity via constraint density.</span>
+    </div>
+    <div class="mini-toc">
+      <h4>Sections</h4>
+      <ol>
+        <li><a href="#scene">The Scene</a></li>
+        <li><a href="#reframe">Not Technical, Structural</a></li>
+        <li><a href="#data">What the Data Shows</a></li>
+        <li><a href="#diagnostic">Diagnostic Tree</a></li>
+        <li><a href="#guidance">What to Actually Do</a></li>
+        <li><a href="#recall">Recall Check</a></li>
+      </ol>
+    </div>
+  </div>
+</nav>
+
+<!-- Main content -->
+<div class="main-grid">
+  <main class="article-col">
+    <article>
+      <h1 class="hero-title">When the Building Stops</h1>
+      <div class="article-meta">
+        <span>March 18, 2025</span>
+        <span>Customer-Context Judgment</span>
+      </div>
+
+      <div class="article-body">
+        <!-- Opening scene -->
+        <section id="scene">
+          <p>A Palantir forward-deployed engineer sat in a government agency conference room in early 2024, three weeks into what the contract called a "data integration sprint." Whiteboards covered every wall — boxes, arrows, labels in three different colors of marker. No code had been written. Not a line. The customer's deputy director was losing patience, the specific kind that shows up as forced cheerfulness and reheated questions about timeline. "When do we start actually building something?" The FDE pointed to the ontology map behind him, the web of data sources, decision authorities, and operational workflows, and said something close to: "We are building. Everything else depends on whether this is right."</p>
+
+          <p>That scene, described in WSJ reporting on Palantir's commercial practice, captures the uncomfortable center of customer-context judgment: the moment an FDE decides not to write code, knowing full well it will look like inaction to the person signing the checks. The pressure to produce visible output — a commit, a deploy, a dashboard — is enormous. Resisting it requires a specific kind of judgment that nobody posts about in job descriptions.</p>
+        </section>
+
+        <div class="beat" data-insight-anchor="reframe">
+          <strong>[BEAT 1]</strong> You've been told that saying "no" to a customer request is a relationship risk. The actual risk is building something that misses the real problem. The "no" isn't rejection. It's a redirect to the constraint that matters.
+        </div>
+
+        <!-- Spectrum widget -->
+        <figure class="spectrum-wrap" id="reframe">
+          <div class="spectrum-labels"><span>Technical Judgment</span><span>Information Architecture</span></div>
+          <div class="spectrum-bar">
+            <div class="spectrum-fill" id="spectrum-fill"></div>
+            <div class="spectrum-marker" id="spectrum-marker"></div>
+          </div>
+          <p class="spectrum-note">The reframe shifts the evaluation axis. "Don't build this yet" lives on the right — you're checking whether the problem's information architecture can support a solution, not whether the proposed solution is technically sound.</p>
+          <figcaption>Visualizing the reframe from technical evaluation to information-architecture assessment</figcaption>
+        </figure>
+
+        <!-- Not Technical, Structural -->
+        <section class="scroll-reveal" id="structural-section">
+          <h2>Not Technical, Structural</h2>
+          <p>"Don't build this yet" isn't a technical judgment. It's an information-architecture check. You're not evaluating the proposed solution for technical soundness. You're evaluating whether the problem itself has enough structural integrity to support any solution at all.</p>
+
+          <blockquote class="pull-quote">A problem statement without structural integrity is like a foundation with no rebar — it holds shape until you load it, then it cracks along every line you didn't inspect.</blockquote>
+
+          <p data-insight="3">Most engineers evaluate a proposed solution by asking: is this technically sound? The right question is different: is the problem specified tightly enough that "technically sound" even means anything here? A solution can be beautifully architected and still be wrong — not because the engineering was bad, but because there was nothing firm underneath it to anchor it to the customer's actual need.</p>
+        </section>
+
+        <!-- Data section -->
+        <section id="data">
+          <h2>What the Data Shows</h2>
+          <p>McKinsey's 2024 State of Organizations survey — roughly 1,500 business leaders across industries — found that organizations reporting "clearly defined transformation objectives" were 2.4x more likely to report success than those without. Yet only 18% of respondents said their organization "consistently defined problem scope before committing to solution design." The gap isn't knowledge. Everyone knows you should define the problem first. The gap is discipline — the willingness to sit in the uncomfortable space of "we don't know enough yet" while a contract clock ticks.</p>
+
+          <p>The Standish Group's 2024 CHAOS Report adds sharper teeth. "Incomplete or poorly defined requirements" appeared in 49% of canceled projects — the single most-cited failure factor, ahead of budget overruns, technical debt, and team turnover. Projects where requirements were validated with end users before development started showed a 76% higher completion rate. That validation step isn't ceremonial. It's the load-bearing element that determines whether everything downstream can hold weight.</p>
+
+          <p>The pattern across both datasets is identical: the upfront work that determines whether a solution can succeed gets compressed or skipped entirely when delivery pressure mounts. The more visible the building, the more invisible the thinking becomes.</p>
+
+          <p data-insight="2">The obvious objection: this is just requirements engineering 101, repackaged as FDE insight. Nothing new. But the asymmetry in field deployments is materially different. In a normal product cycle, you own the rework loop — you catch the gap and fix it, then ship. In an FDE engagement, the customer's engineers start adapting their own systems — their pipelines, their operational playbooks, their downstream dependencies — around whatever you build. When it turns out to be wrong, the undo cost isn't just your engineering hours. It's their adapted code, their lost trust, their blown internal timeline. The rework penalty compounds because you don't control the blast radius.</p>
+        </section>
+
+        <div class="beat">
+          <strong>[BEAT 2]</strong> You've been trained to assess whether to build by evaluating the technical merits of what was requested. Instead, assess whether a problem has been specified with enough constraints to bound a solution. Technical evaluation is premature until the problem statement passes a structural integrity check.
+        </div>
+
+        <em>I've watched senior FDEs freeze in this exact moment — not because they couldn't see the gap, but because naming it out loud in front of the customer felt like admitting they'd wasted three weeks. They hadn't. But the feeling was real.</em>
+
+        <!-- Diagnostic tree -->
+        <section id="diagnostic">
+          <figure class="tree-wrap">
+            <div class="tree-step active" data-step="0">
+              <p class="tree-question">A customer just described what they want built. What do you check first?</p>
+              <div class="tree-options">
+                <button class="tree-opt" data-next="1a">Whether the proposed solution is technically sound</button>
+                <button class="tree-opt" data-next="1b">Whether the problem has been specified with enough constraints</button>
+              </div>
+            </div>
+            <div class="tree-step" data-step="1a">
+              <div class="tree-result dead">
+                <strong>Dead End — Premature Evaluation</strong>
+                You're evaluating a solution against an unspecified problem. The result might be technically excellent and completely wrong. The technical assessment can't produce a meaningful answer until the problem structure is known.
+              </div>
+              <button class="tree-reset" data-goto="0">Try again</button>
+            </div>
+            <div class="tree-step" data-step="1b">
+              <p class="tree-question">Can you name 3+ constraints that would rule out most possible solutions?</p>
+              <div class="tree-options">
+                <button class="tree-opt" data-next="2yes">Yes, the constraints are clear</button>
+                <button class="tree-opt" data-next="2no">No, multiple approaches still seem valid</button>
+              </div>
+            </div>
+            <div class="tree-step" data-step="2no">
+              <div class="tree-result stop">
+                <strong>Stop — Under-Constrained Problem</strong>
+                The problem lacks structural integrity. Multiple valid approaches means it hasn't been specified tightly enough to bound a solution. Pull the thread further before building.
+              </div>
+              <button class="tree-reset" data-goto="0">Start over</button>
+            </div>
+            <div class="tree-step" data-step="2yes">
+              <p class="tree-question">Are the customer's own engineers contributing, or staying quiet?</p>
+              <div class="tree-options">
+                <button class="tree-opt" data-next="3engage">They're actively contributing</button>
+                <button class="tree-opt" data-next="3silent">They're quiet or deferring</button>
+              </div>
+            </div>
+            <div class="tree-step" data-step="3silent">
+              <div class="tree-result stop">
+                <strong>Stop — The Silence Is the Signal</strong>
+                Their engineers see the gap between what's requested and what's understood. Nobody has social permission to name it. As the outside engineer, you have the least to lose. Name the gap. Don't start coding.
+              </div>
+              <button class="tree-reset" data-goto="0">Start over</button>
+            </div>
+            <div class="tree-step" data-step="3engage">
+              <div class="tree-result go">
+                <strong>Proceed — With Validation</strong>
+                The problem appears to have structural integrity and the team is engaged. Validate those constraints explicitly with the engineers before writing code. The structure holds — for now.
+              </div>
+              <button class="tree-reset" data-goto="0">Start over</button>
+            </div>
+            <figcaption>Interactive diagnostic: trace the decision path to see where "don't build yet" calls originate. The dead end on the first choice demonstrates why technical evaluation is premature.</figcaption>
+          </figure>
+        </section>
+
+        <!-- Guidance -->
+        <section id="guidance">
+          <h2>What to Actually Do</h2>
+
+          <p data-insight="1">Watch for the silence. The customer describes a solution — "we need a pipeline that does X" — and their own engineers go quiet. That silence is data. It means the customer's team sees the gap between what's being requested and what's actually understood, but nobody in the room has social permission to name it. The senior engineer won't contradict the director with a vendor watching. A junior engineer won't speak first. Somewhere, a product manager is calculating the political capital cost of a pushback. Your job as the outside engineer — the person with the least organizational baggage in the room — is to have less to lose and more obligation to speak. Name the gap. Don't start coding.</p>
+
+          <p data-insight="3">Check constraint density. A problem statement with structural integrity rules out most possible solutions. If you can imagine three materially different technical approaches that all seem valid given what you've heard, the problem isn't specified yet. Keep pulling on the thread until the constraints narrow the field.</p>
+
+          <p>Produce a visible artifact from your scoping work. Palantir's ontology mapping works partly because it generates a diagram — something the customer can point to in their own internal meetings. "We spent three weeks on this" lands differently when there's a document on the table. If your problem-definition work lives only in your head or your private notes, you look idle. And the customer has no way to defend the time you spent to their own leadership.</p>
+
+          <p>When you get this right, something shifts in the room. The customer's engineers — the ones who went silent — start talking. They'll confirm what you said, sometimes eagerly, sometimes cautiously. That's your confirmation signal. You haven't just delayed building. You've given the customer's own team permission to do the work they already knew needed doing.</p>
+
+          <ul class="checklist" aria-label="Action checklist">
+            <li tabindex="0"><input type="checkbox" aria-label="Watch for the silence pattern"> Watch for the silence when a customer describes a solution</li>
+            <li tabindex="0"><input type="checkbox" aria-label="Check constraint density"> Check constraint density — can you rule out most solutions?</li>
+            <li tabindex="0"><input type="checkbox" aria-label="Produce a visible artifact"> Produce a visible artifact from your scoping work</li>
+          </ul>
+
+          <p style="margin-top:1.5rem;padding:1rem;background:var(--card);border:1px solid var(--accent);border-radius:var(--radius);font-weight:500;">In your next customer conversation, count how many times the customer describes a solution versus describes a problem. If the ratio exceeds 3:1, stop building. Open a blank document. Start mapping constraints.</p>
+        </section>
+
+        <!-- Social share -->
+        <section class="share-block">
+          <p style="font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:.6rem">Share this reframe</p>
+          <div class="share-text" id="share-text">"Don't build this yet" isn't a technical judgment — it's an information-architecture check. You're not evaluating the solution. You're evaluating whether the problem has structural integrity to support one.</div>
+          <div class="share-buttons">
+            <button class="share-btn" id="copy-btn" aria-label="Copy text and link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy Text &amp; Link
+            </button>
+            <a class="share-btn" id="share-x" href="#" target="_blank" rel="noopener" aria-label="Share to X">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Post to X
+            </a>
+            <a class="share-btn" id="share-li" href="#" target="_blank" rel="noopener" aria-label="Share to LinkedIn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              Share to LinkedIn
+            </a>
+          </div>
+        </section>
+
+        <!-- Recall cards -->
+        <section id="recall">
+          <h2>Recall Check</h2>
+          <p class="recall-hint">Click each card to reveal the answer</p>
+          <div class="recall-grid">
+            <div class="recall-card" tabindex="0" role="button" aria-label="Flip card">
+              <div class="recall-inner">
+                <div class="recall-front">What percentage of canceled projects cited "incomplete requirements" as a factor?</div>
+                <div class="recall-back">49% — the single most-cited factor in the Standish Group CHAOS Report 2024</div>
+              </div>
+            </div>
+            <div class="recall-card" tabindex="0" role="button" aria-label="Flip card">
+              <div class="recall-inner">
+                <div class="recall-front">What's the success multiplier for clearly defined transformation objectives?</div>
+                <div class="recall-back">2.4x more likely to succeed — McKinsey State of Organizations 2024</div>
+              </div>
+            </div>
+            <div class="recall-card" tabindex="0" role="button" aria-label="Flip card">
+              <div class="recall-inner">
+                <div class="recall-front">What conversational pattern signals a "don't build" moment?</div>
+                <div class="recall-back">Customer describes a solution and their own engineers go silent</div>
+              </div>
+            </div>
+            <div class="recall-card" tabindex="0" role="button" aria-label="Flip card">
+              <div class="recall-inner">
+                <div class="recall-front">What's the 3:1 ratio test?</div>
+                <div class="recall-back">If solution-descriptions exceed problem-descriptions by more than 3:1, stop and map constraints</div>
+              </div>
+            </div>
+          </div>
+          <figcaption>Test your recall of the key claims — click each card to reveal the answer</figcaption>
+        </section>
+
+        <!-- Concept map -->
+        <section>
+          <h2>How It Connects</h2>
+          <figure class="concept-map">
+            <svg viewBox="0 0 560 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Concept map showing how problem definition feeds structural integrity and the build decision">
+              <!-- Nodes -->
+              <rect x="10" y="20" width="130" height="44" rx="6" fill="#F3EDE4" stroke="#E0D8CC" stroke-width="1.5"/>
+              <text x="75" y="47" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#2A2520" font-weight="500">Customer Silence</text>
+
+              <rect x="190" y="20" width="140" height="44" rx="6" fill="#F3EDE4" stroke="#E0D8CC" stroke-width="1.5"/>
+              <text x="260" y="47" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#2A2520" font-weight="500">Problem Definition</text>
+
+              <rect x="390" y="20" width="150" height="44" rx="6" fill="#F3EDE4" stroke="#E0D8CC" stroke-width="1.5"/>
+              <text x="465" y="47" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#2A2520" font-weight="500">Constraint Density</text>
+
+              <rect x="190" y="110" width="140" height="44" rx="6" fill="rgba(184,115,51,.1)" stroke="#B87333" stroke-width="1.5"/>
+              <text x="260" y="137" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#B87333" font-weight="600">Structural Integrity</text>
+
+              <rect x="390" y="110" width="150" height="44" rx="6" fill="rgba(184,115,51,.1)" stroke="#B87333" stroke-width="1.5"/>
+              <text x="465" y="137" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#B87333" font-weight="600">Build Decision</text>
+
+              <rect x="80" y="200" width="140" height="44" rx="6" fill="rgba(193,120,23,.1)" stroke="rgba(193,120,23,.35)" stroke-width="1.5"/>
+              <text x="150" y="221" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#C17817" font-weight="500">"Don't Build</text>
+              <text x="150" y="235" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#C17817" font-weight="500">This Yet"</text>
+
+              <rect x="340" y="200" width="160" height="44" rx="6" fill="rgba(91,117,83,.1)" stroke="rgba(91,117,83,.3)" stroke-width="1.5"/>
+              <text x="420" y="221" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#5B7553" font-weight="500">Proceed with</text>
+              <text x="420" y="235" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#5B7553" font-weight="500">Validation</text>
+
+              <!-- Arrows -->
+              <line x1="140" y1="42" x2="190" y2="42" stroke="#8A7E72" stroke-width="1.2" marker-end="url(#arrow)"/>
+              <line x1="330" y1="42" x2="390" y2="42" stroke="#8A7E72" stroke-width="1.2" marker-end="url(#arrow)"/>
+              <line x1="260" y1="64" x2="260" y2="110" stroke="#8A7E72" stroke-width="1.2" marker-end="url(#arrow)"/>
+              <line x1="465" y1="64" x2="465" y2="110" stroke="#8A7E72" stroke-width="1.2" marker-end="url(#arrow)"/>
+              <line x1="330" y1="132" x2="390" y2="132" stroke="#B87333" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+              <line x1="230" y1="154" x2="165" y2="200" stroke="rgba(193,120,23,.4)" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow-warn)"/>
+              <text x="172" y="180" font-family="IBM Plex Sans" font-size="9" fill="#C17817" font-style="italic">low</text>
+
+              <line x1="490" y1="154" x2="435" y2="200" stroke="rgba(91,117,83,.4)" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow-go)"/>
+              <text x="478" y="180" font-family="IBM Plex Sans" font-size="9" fill="#5B7553" font-style="italic">high</text>
+
+              <!-- Arrow markers -->
+              <defs>
+                <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#8A7E72"/></marker>
+                <marker id="arrow-warn" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#C17817"/></marker>
+                <marker id="arrow-go" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#5B7553"/></marker>
+              </defs>
+            </svg>
+            <figcaption>How problem definition feeds constraint density, which determines structural integrity and the build-or-pause decision. The customer silence pattern is the leading indicator at the top of the chain.</figcaption>
+          </figure>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <!-- Sidebar (desktop) -->
+  <aside class="sidebar-col">
+    <div class="things-card">
+      <h3>Three Things You Didn't Know You Needed</h3>
+      <div class="thing-item locked" data-thing="1">
+        <span class="thing-icon">&#x1f512;</span>
+        <span>The silence pattern — customer describes a solution, their engineers go quiet — is the diagnostic signal.</span>
+      </div>
+      <div class="thing-item locked" data-thing="2">
+        <span class="thing-icon">&#x1f512;</span>
+        <span>Building wrong in an FDE engagement costs more because the customer's team adapts around your work.</span>
+      </div>
+      <div class="thing-item locked" data-thing="3">
+        <span class="thing-icon">&#x1f512;</span>
+        <span>The judgment isn't technical — it's checking whether the problem has structural integrity via constraint density.</span>
+      </div>
+      <div class="mini-toc">
+        <h4>Sections</h4>
+        <ol>
+          <li><a href="#scene">The Scene</a></li>
+          <li><a href="#reframe">Not Technical, Structural</a></li>
+          <li><a href="#data">What the Data Shows</a></li>
+          <li><a href="#diagnostic">Diagnostic Tree</a></li>
+          <li><a href="#guidance">What to Actually Do</a></li>
+          <li><a href="#recall">Recall Check</a></li>
+        </ol>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-citations">
+    <strong>Sources:</strong> McKinsey, "State of Organizations 2024" (Oct 2024), ~1,500 business leaders — 2.4x success multiplier for clearly defined objectives; 18% consistency rate for problem-scope-first practice. Standish Group, "CHAOS Report 2024" — 49% of canceled projects cited incomplete/poorly defined requirements; 76% higher completion rate with pre-development requirement validation. WSJ reporting on Palantir's commercial FDE practice (2024), including ontology-first deployment methodology.
+  </div>
+  <div class="footer-links">
+    <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+    <button class="to-top-btn" id="to-top">Back to top</button>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* Progress bar */
+  var prog = document.getElementById('progress');
+  function updateProgress(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = h > 0 ? (window.scrollY / h * 100) + '%' : '0%';
+  }
+  window.addEventListener('scroll', updateProgress, {passive:true});
+  updateProgress();
+
+  /* Mobile drawer */
+  var hamburger = document.getElementById('hamburger');
+  var drawer = document.getElementById('drawer');
+  var overlay = document.getElementById('drawer-overlay');
+  var closeBtn = document.getElementById('drawer-close');
+  function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); }
+  function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); }
+  hamburger.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  /* Spectrum widget — animate on scroll into view */
+  var spectrumWrap = document.querySelector('.spectrum-wrap');
+  var spectrumFill = document.getElementById('spectrum-fill');
+  var spectrumMarker = document.getElementById('spectrum-marker');
+  var spectrumAnimated = false;
+  var spectrumObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting && !spectrumAnimated){
+        spectrumAnimated = true;
+        spectrumFill.style.width = '100%';
+        spectrumMarker.classList.add('visible');
+      }
+    });
+  }, {threshold:0.4});
+  spectrumObs.observe(spectrumWrap);
+
+  /* Scroll reveal */
+  var revealEls = document.querySelectorAll('.scroll-reveal');
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting) e.target.classList.add('revealed');
+    });
+  }, {threshold:0.15});
+  revealEls.forEach(function(el){ revealObs.observe(el); });
+
+  /* THREE THINGS tracker — unlock on scroll past insight anchors */
+  var insightEls = document.querySelectorAll('[data-insight]');
+  var thingItems = document.querySelectorAll('.thing-item');
+  var unlocked = {};
+  var insightObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var id = e.target.getAttribute('data-insight');
+        if(id && !unlocked[id]){
+          unlocked[id] = true;
+          thingItems.forEach(function(item){
+            if(item.getAttribute('data-thing') === id){
+              item.classList.remove('locked');
+              item.classList.add('unlocked');
+              item.querySelector('.thing-icon').innerHTML = '&#10003;';
+            }
+          });
+        }
+      }
+    });
+  }, {threshold:0.3});
+  insightEls.forEach(function(el){ insightObs.observe(el); });
+
+  /* Diagnostic tree */
+  var treeSteps = document.querySelectorAll('.tree-step');
+  document.querySelectorAll('.tree-opt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var next = this.getAttribute('data-next');
+      treeSteps.forEach(function(s){ s.classList.remove('active'); });
+      var target = document.querySelector('.tree-step[data-step="'+next+'"]');
+      if(target) target.classList.add('active');
+    });
+  });
+  document.querySelectorAll('.tree-reset').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var goto = this.getAttribute('data-goto');
+      treeSteps.forEach(function(s){ s.classList.remove('active'); });
+      var target = document.querySelector('.tree-step[data-step="'+goto+'"]');
+      if(target) target.classList.add('active');
+    });
+  });
+
+  /* Checklist */
+  document.querySelectorAll('.checklist li').forEach(function(li){
+    li.addEventListener('click', function(){
+      var cb = this.querySelector('input[type=checkbox]');
+      cb.checked = !cb.checked;
+      this.classList.toggle('done', cb.checked);
+    });
+    li.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); }
+    });
+  });
+
+  /* Recall cards */
+  document.querySelectorAll('.recall-card').forEach(function(card){
+    function flip(){ card.classList.toggle('flipped'); }
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); flip(); }
+    });
+  });
+
+  /* Social share */
+  var shareText = document.getElementById('share-text').textContent;
+  var pageUrl = window.location.href;
+  var encodedText = encodeURIComponent(shareText);
+  var encodedUrl = encodeURIComponent(pageUrl);
+
+  document.getElementById('share-x').href = 'https://x.com/intent/post?text=' + encodedText + '&url=' + encodedUrl;
+  document.getElementById('share-li').href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodedUrl;
+
+  var copyBtn = document.getElementById('copy-btn');
+  copyBtn.addEventListener('click', function(){
+    var fullText = shareText + '\n\n' + pageUrl;
+    navigator.clipboard.writeText(fullText).then(function(){
+      copyBtn.classList.add('copied');
+      copyBtn.querySelector('svg').nextSibling.textContent = ' Copied!';
+      setTimeout(function(){
+        copyBtn.classList.remove('copied');
+        copyBtn.querySelector('svg').nextSibling.textContent = ' Copy Text & Link';
+      }, 2000);
+    });
+  });
+
+  /* Back to top */
+  document.getElementById('to-top').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>
