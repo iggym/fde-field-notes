@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're Not Deploying, You're Correcting — FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0c;
+    --bg-elevated: #141414;
+    --card: #1a1a1a;
+    --fg: #e4ddd4;
+    --fg-dim: #b8b0a6;
+    --muted: #6d665e;
+    --accent: #c77d3f;
+    --accent-bright: #dfa063;
+    --accent-dim: #8a5529;
+    --border: #2a2725;
+    --glass-bg: rgba(20, 20, 20, 0.78);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --danger: #c75454;
+    --caution: #c7a63f;
+    --success: #5aab6e;
+    --radius: 8px;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Source Serif 4', Georgia, serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.72;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ── Progress bar ── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent-bright));
+    z-index: 1001; transition: width 0.1s linear;
+  }
+
+  /* ── Topbar ── */
+  #topbar {
+    position: fixed; top: 3px; left: 0; right: 0; z-index: 1000;
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 0 1.5rem;
+    height: 52px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 1rem; }
+  .breadcrumb { font-family: var(--font-display); font-size: 0.78rem; color: var(--muted); letter-spacing: 0.02em; }
+  .breadcrumb a { color: var(--fg-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: var(--accent-bright); }
+  .breadcrumb .sep { margin: 0 0.35rem; opacity: 0.4; }
+  .topbar-right { display: flex; align-items: center; gap: 1rem; }
+  .read-time-badge {
+    font-family: var(--font-display); font-size: 0.72rem; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 20px; padding: 0.2rem 0.7rem;
+    white-space: nowrap;
+  }
+  #hamburger {
+    display: none; background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.35rem 0.5rem; cursor: pointer; color: var(--fg);
+  }
+  #hamburger svg { width: 20px; height: 20px; display: block; }
+
+  /* ── Mobile drawer ── */
+  #drawer-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    z-index: 999; opacity: 0; transition: opacity 0.25s;
+  }
+  #drawer-overlay.open { opacity: 1; }
+  #mobile-drawer {
+    position: fixed; top: 55px; right: 0; bottom: 0; width: 280px;
+    background: var(--bg-elevated); border-left: 1px solid var(--border);
+    z-index: 1000; transform: translateX(100%); transition: transform 0.3s ease;
+    padding: 1.5rem; overflow-y: auto;
+  }
+  #mobile-drawer.open { transform: translateX(0); }
+  .drawer-nav a {
+    display: block; font-family: var(--font-display); font-size: 0.85rem;
+    color: var(--fg-dim); text-decoration: none; padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border); transition: color 0.2s;
+  }
+  .drawer-nav a:hover { color: var(--accent-bright); }
+
+  /* ── Grid layout ── */
+  .grid-container {
+    display: grid; grid-template-columns: 1fr 280px;
+    gap: 2.5rem; max-width: 1100px; margin: 0 auto;
+    padding: 80px 2rem 3rem;
+  }
+
+  /* ── Hero ── */
+  .hero { margin-bottom: 2.5rem; padding-top: 1rem; }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 4.5vw, 3rem);
+    font-weight: 700; line-height: 1.15; color: var(--fg);
+    letter-spacing: -0.02em; margin-bottom: 0.8rem;
+  }
+  .hero-meta {
+    font-family: var(--font-display); font-size: 0.8rem; color: var(--muted);
+    display: flex; gap: 1.2rem; flex-wrap: wrap;
+  }
+
+  /* ── Article prose ── */
+  .article-body h2 {
+    font-family: var(--font-display); font-size: 1.3rem; font-weight: 600;
+    color: var(--fg); margin: 2.2rem 0 0.9rem; letter-spacing: -0.01em;
+  }
+  .article-body p { margin-bottom: 1.15rem; color: var(--fg-dim); }
+  .article-body strong { color: var(--fg); font-weight: 600; }
+  .article-body em { font-style: italic; color: var(--fg); }
+
+  .bold-reframe {
+    font-family: var(--font-display); font-size: 1.15rem; font-weight: 600;
+    color: var(--accent-bright); line-height: 1.4; padding: 1.3rem 1.5rem;
+    background: rgba(199, 125, 63, 0.08); border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0; margin: 1.8rem 0;
+  }
+
+  .pull-quote {
+    font-family: var(--font-display); font-size: 1.2rem; font-weight: 500;
+    color: var(--fg); text-align: center; padding: 2rem 1.5rem;
+    margin: 2rem 0; position: relative;
+  }
+  .pull-quote::before {
+    content: ''; position: absolute; left: 50%; top: 0;
+    transform: translateX(-50%); width: 48px; height: 2px;
+    background: var(--accent);
+  }
+
+  /* ── Beat markers ── */
+  .beat-marker {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-family: var(--font-display); font-size: 0.7rem;
+    color: var(--accent); margin-left: 0.4rem; cursor: default;
+    vertical-align: middle; position: relative;
+  }
+  .beat-marker .beat-icon {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1.5px solid var(--accent); display: inline-flex;
+    align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 700;
+  }
+  .beat-tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%); background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.6rem 0.8rem; width: 260px;
+    font-size: 0.72rem; line-height: 1.5; color: var(--fg-dim);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 10;
+  }
+  .beat-tooltip .bt-before { color: var(--danger); }
+  .beat-tooltip .bt-after { color: var(--success); }
+  .beat-tooltip .bt-turn { color: var(--accent-bright); font-weight: 600; }
+  .beat-marker:hover .beat-tooltip { display: block; }
+
+  /* ── Spectrum widget ── */
+  .spectrum-widget {
+    position: relative; width: 100%; height: 180px; margin: 2rem 0;
+    border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border);
+    user-select: none;
+  }
+  .spectrum-side {
+    position: absolute; top: 0; bottom: 0; display: flex;
+    align-items: center; justify-content: center; padding: 1.5rem;
+    font-family: var(--font-display); font-size: 0.95rem; line-height: 1.5;
+    text-align: center;
+  }
+  .spectrum-before {
+    left: 0; right: 50%; background: rgba(199, 84, 84, 0.08);
+    color: var(--fg-dim); border-right: none;
+  }
+  .spectrum-after {
+    left: 50%; right: 0; background: rgba(199, 125, 63, 0.08);
+    color: var(--accent-bright);
+  }
+  .spectrum-label {
+    position: absolute; top: 0.7rem; font-size: 0.65rem;
+    font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .spectrum-before .spectrum-label { left: 1rem; color: var(--danger); }
+  .spectrum-after .spectrum-label { right: 1rem; color: var(--accent); }
+  .spectrum-divider {
+    position: absolute; top: 0; bottom: 0; left: 50%; width: 3px;
+    background: var(--fg); cursor: ew-resize; z-index: 2;
+    transform: translateX(-50%);
+  }
+  .spectrum-divider::after {
+    content: '⟺'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); background: var(--fg);
+    color: var(--bg); width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+  }
+  .spectrum-clip { position: absolute; top: 0; bottom: 0; left: 0; overflow: hidden; background: rgba(199, 84, 84, 0.08); }
+  .spectrum-clip .spectrum-inner { width: 200%; display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-family: var(--font-display); font-size: 0.95rem; line-height: 1.5; text-align: center; color: var(--fg-dim); height: 100%; }
+
+  /* ── Social share block ── */
+  .social-share {
+    display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;
+    padding: 1rem 1.2rem; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); margin: 1.8rem 0;
+  }
+  .social-share-label {
+    font-family: var(--font-display); font-size: 0.72rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em; width: 100%; margin-bottom: 0.2rem;
+  }
+  .share-btn {
+    font-family: var(--font-display); font-size: 0.78rem; font-weight: 500;
+    padding: 0.45rem 0.9rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg-elevated); color: var(--fg-dim); cursor: pointer;
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
+    text-decoration: none;
+  }
+  .share-btn:hover { border-color: var(--accent); color: var(--accent-bright); }
+  .share-btn.copied { border-color: var(--success); color: var(--success); }
+
+  /* ── Decision tree widget ── */
+  .decision-tree {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem; margin: 2rem 0;
+  }
+  .dt-node {
+    margin-bottom: 0.8rem;
+  }
+  .dt-question {
+    font-family: var(--font-display); font-size: 0.9rem; font-weight: 500;
+    color: var(--fg); padding: 0.8rem 1rem; background: var(--bg-elevated);
+    border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.5rem;
+  }
+  .dt-branches { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; }
+  .dt-btn {
+    font-family: var(--font-display); font-size: 0.78rem; font-weight: 500;
+    padding: 0.4rem 1rem; border-radius: 5px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--fg-dim); cursor: pointer; transition: all 0.2s;
+  }
+  .dt-btn:hover { border-color: var(--accent); color: var(--accent-bright); }
+  .dt-btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+  .dt-child { display: none; margin-left: 1.2rem; border-left: 2px solid var(--border); padding-left: 1rem; }
+  .dt-child.visible { display: block; animation: fadeSlideIn 0.3s ease; }
+  .dt-result {
+    font-family: var(--font-display); font-size: 0.85rem; padding: 0.8rem 1rem;
+    border-radius: 6px; border-left: 3px solid;
+  }
+  .dt-result.green { background: rgba(90, 171, 110, 0.08); border-color: var(--success); color: var(--success); }
+  .dt-result.yellow { background: rgba(199, 166, 63, 0.08); border-color: var(--caution); color: var(--caution); }
+  .dt-result.red { background: rgba(199, 84, 84, 0.08); border-color: var(--danger); color: var(--danger); }
+  .dt-reset {
+    font-family: var(--font-display); font-size: 0.72rem; color: var(--muted);
+    background: none; border: none; cursor: pointer; margin-top: 0.6rem;
+    text-decoration: underline; text-underline-offset: 2px;
+  }
+  .dt-reset:hover { color: var(--fg-dim); }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Scroll reveal section ── */
+  .scroll-reveal-section {
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .scroll-reveal-section.revealed {
+    opacity: 1; transform: translateY(0);
+  }
+  .scroll-reveal-section:not(.revealed) {
+    opacity: 0; transform: translateY(24px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-reveal-section, .scroll-reveal-section.revealed {
+      opacity: 1; transform: none; transition: none;
+    }
+  }
+
+  /* ── Counterargument expand ── */
+  .counterarg-block {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    transition: all 0.5s ease;
+  }
+  .counterarg-block.expanded {
+    border-color: var(--accent-dim);
+  }
+  .counterarg-header {
+    padding: 1rem 1.2rem; font-family: var(--font-display);
+    font-size: 0.88rem; font-weight: 600; color: var(--fg);
+    cursor: default; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .counterarg-header .ca-icon {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 1.5px solid var(--muted); display: inline-flex;
+    align-items: center; justify-content: center; font-size: 0.7rem;
+    color: var(--muted); transition: all 0.3s;
+  }
+  .counterarg-block.expanded .ca-icon {
+    border-color: var(--accent); color: var(--accent); transform: rotate(45deg);
+  }
+  .counterarg-body {
+    max-height: 0; overflow: hidden; transition: max-height 0.5s ease, padding 0.5s ease;
+    padding: 0 1.2rem;
+  }
+  .counterarg-block.expanded .counterarg-body {
+    max-height: 500px; padding: 0 1.2rem 1.2rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .counterarg-body { transition: none; }
+    .counterarg-block.expanded .counterarg-body { max-height: none; }
+  }
+
+  /* ── Interactive checklist ── */
+  .checklist { list-style: none; margin: 1rem 0; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 0.7rem;
+    padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li.checked { opacity: 0.55; }
+  .checklist li.checked .cl-text { text-decoration: line-through; }
+  .cl-box {
+    width: 20px; height: 20px; min-width: 20px; border: 1.5px solid var(--border);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    margin-top: 2px; transition: all 0.2s; font-size: 0.7rem; color: transparent;
+  }
+  .checklist li.checked .cl-box {
+    border-color: var(--accent); background: var(--accent); color: var(--bg);
+  }
+  .cl-text { font-size: 0.92rem; color: var(--fg-dim); line-height: 1.55; }
+  .cl-text strong { color: var(--fg); }
+
+  /* ── Three Things tracker ── */
+  .things-tracker {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.2rem; margin: 2rem 0;
+  }
+  .things-tracker h3 {
+    font-family: var(--font-display); font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+    margin-bottom: 0.9rem;
+  }
+  .thing-item {
+    display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border); transition: opacity 0.4s;
+  }
+  .thing-item:last-child { border-bottom: none; }
+  .thing-item.locked { opacity: 0.35; }
+  .thing-item.unlocked { opacity: 1; }
+  .thing-dot {
+    width: 10px; height: 10px; min-width: 10px; border-radius: 50%;
+    border: 1.5px solid var(--muted); transition: all 0.4s;
+  }
+  .thing-item.unlocked .thing-dot { background: var(--accent); border-color: var(--accent); }
+  .thing-label { font-family: var(--font-display); font-size: 0.78rem; color: var(--fg-dim); }
+
+  /* ── Retrieval cards ── */
+  .retrieval-cards { display: grid; grid-template-columns: 1fr; gap: 0.8rem; margin: 2rem 0; }
+  .retrieval-card {
+    perspective: 800px; height: 120px; cursor: pointer;
+  }
+  .retrieval-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.5s ease; transform-style: preserve-3d;
+  }
+  .retrieval-card.flipped .retrieval-inner { transform: rotateY(180deg); }
+  @media (prefers-reduced-motion: reduce) {
+    .retrieval-inner { transition: none; }
+    .retrieval-card.flipped .retrieval-inner { transform: none; }
+    .retrieval-card.flipped .rc-front { display: none; }
+    .retrieval-card.flipped .rc-back { display: flex; }
+    .retrieval-card:not(.flipped) .rc-back { display: none; }
+  }
+  .rc-front, .rc-back {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1rem; display: flex; align-items: center; justify-content: center;
+    text-align: center; font-family: var(--font-display); font-size: 0.85rem;
+    line-height: 1.45;
+  }
+  .rc-front { background: var(--card); color: var(--fg-dim); }
+  .rc-front::after {
+    content: 'tap to reveal'; position: absolute; bottom: 0.5rem;
+    font-size: 0.6rem; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .rc-back { background: rgba(199, 125, 63, 0.08); color: var(--accent-bright); transform: rotateY(180deg); border-color: var(--accent-dim); }
+
+  /* ── Concept map SVG ── */
+  .concept-map { margin: 2rem 0; text-align: center; }
+  .concept-map svg { max-width: 100%; height: auto; }
+  .concept-map figcaption { margin-top: 0.6rem; }
+
+  /* ── Sidebar ── */
+  .sidebar { position: sticky; top: 72px; align-self: start; }
+  .sidebar-section { margin-bottom: 2rem; }
+  .sidebar-section h3 {
+    font-family: var(--font-display); font-size: 0.68rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
+    margin-bottom: 0.7rem;
+  }
+  .toc-link {
+    display: block; font-family: var(--font-display); font-size: 0.8rem;
+    color: var(--fg-dim); text-decoration: none; padding: 0.35rem 0;
+    border-left: 2px solid var(--border); padding-left: 0.8rem;
+    transition: all 0.2s;
+  }
+  .toc-link:hover, .toc-link.active { color: var(--accent-bright); border-left-color: var(--accent); }
+
+  /* ── Figcaption ── */
+  figcaption {
+    font-family: var(--font-display); font-size: 0.72rem; color: var(--muted);
+    margin-top: 0.5rem; line-height: 1.5;
+  }
+
+  /* ── Footer ── */
+  footer {
+    max-width: 1100px; margin: 3rem auto 0; padding: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .footer-citations {
+    font-family: var(--font-display); font-size: 0.75rem; color: var(--muted);
+    line-height: 1.7; margin-bottom: 1.5rem;
+  }
+  .footer-citations a { color: var(--fg-dim); text-decoration: none; }
+  .footer-citations a:hover { color: var(--accent-bright); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-bottom a {
+    font-family: var(--font-display); font-size: 0.8rem; color: var(--fg-dim);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .footer-bottom a:hover { color: var(--accent-bright); }
+  #scroll-top {
+    font-family: var(--font-display); font-size: 0.78rem; font-weight: 500;
+    padding: 0.45rem 1rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg-dim); cursor: pointer; transition: all 0.2s;
+  }
+  #scroll-top:hover { border-color: var(--accent); color: var(--accent-bright); }
+
+  /* ── Responsive ── */
+  @media (max-width: 880px) {
+    .grid-container { grid-template-columns: 1fr; padding: 72px 1.2rem 2rem; gap: 1.5rem; }
+    .sidebar { display: none; }
+    #hamburger { display: block; }
+    .spectrum-widget { height: 200px; }
+    .dt-branches { flex-direction: column; }
+  }
+  @media (max-width: 500px) {
+    .hero h1 { font-size: 1.6rem; }
+    .bold-reframe { font-size: 1rem; padding: 1rem; }
+    .social-share { flex-direction: column; }
+    .share-btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- Topbar -->
+<header id="topbar">
+  <div class="topbar-left">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+      <span class="sep">/</span>
+      <span>Field Notes</span>
+      <span class="sep">/</span>
+      <span>Internal Advocacy</span>
+    </nav>
+  </div>
+  <div class="topbar-right">
+    <span class="read-time-badge">5 min read</span>
+    <button id="hamburger" aria-label="Open navigation menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile drawer -->
+<div id="drawer-overlay" aria-hidden="true"></div>
+<nav id="mobile-drawer" aria-label="Mobile navigation">
+  <div class="drawer-nav">
+    <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+    <a href="#opening">Opening</a>
+    <a href="#reframe">The Reframe</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#diagnostic">Diagnostic</a>
+    <a href="#actions">What To Do</a>
+    <a href="#recall">Recall</a>
+  </div>
+</nav>
+
+<div class="grid-container">
+  <!-- Main column -->
+  <article class="main-column">
+    <header class="hero">
+      <h1>You're Not Deploying, You're Correcting</h1>
+      <div class="hero-meta">
+        <span>Feb 18, 2025</span>
+        <span>Internal Advocacy</span>
+      </div>
+    </header>
+
+    <div class="article-body">
+
+      <!-- Opening Scene -->
+      <section id="opening">
+        <p>You land at a mid-size financial services firm for what's scoped as a standard two-week deployment. By day three, you notice something the statement of work never mentioned: the customer's analysts keep building the same retrieval-augmented generation pipeline, step by step, engagement after engagement. Connect to their internal document store. Chunk the text. Embed it. Surface it to an LLM. Check for hallucinations. Retry on failure. You've watched three separate customer teams in the last month arrive at this exact pattern independently — none of them knew the others existed, and all of them spent four to five engineering days on plumbing that should have been a configured option.</p>
+
+        <p>You file a ticket. Not a feature request — a pattern observation, with specific evidence of convergence. Two sprints later, it ships as a first-class feature. Within the following quarter, that template gets used in forty or more deployments across the customer base.</p>
+
+        <p>Palantir's Q3 2024 earnings call credited precisely this dynamic — field-identified patterns accelerating from one-off manual builds to productized features — as a meaningful driver of their roughly 30% year-over-year commercial revenue growth. The bootcamp model their forward-deployed engineers run at customer sites isn't primarily a deployment strategy. It's a sensing strategy, and the product organization is the receiver.<span class="beat-marker" aria-label="Perspective shift beat 1"><span class="beat-icon">1</span><span class="beat-tooltip"><span class="bt-before">Before: "My job is to make this deployment succeed."</span><br><span class="bt-after">After: "My job is to make it succeed and ensure the next FDE doesn't have to solve this manually."</span><br><span class="bt-turn">Turn: A deployment you hand-built is a product failure you failed to report.</span></span></span></p>
+      </section>
+
+      <!-- Spectrum widget -->
+      <figure>
+        <div class="spectrum-widget" id="spectrum" aria-label="Before and after reframe comparison">
+          <div class="spectrum-clip" id="spectrumClip">
+            <div class="spectrum-inner">
+              <span class="spectrum-label" style="position:absolute;top:0.7rem;left:1rem;color:var(--danger);">Conventional</span>
+              The FDE's job is to deploy the product successfully at each customer site.
+            </div>
+          </div>
+          <div class="spectrum-after">
+            <span class="spectrum-label">Reframed</span>
+            The FDE's job is to correct the product based on what they observe in the field.
+          </div>
+          <div class="spectrum-divider" id="spectrumDivider" role="slider" aria-label="Drag to compare views" tabindex="0"></div>
+        </div>
+        <figcaption>Drag the divider to compare the conventional view of FDE work with the reframed perspective this article argues for.</figcaption>
+      </figure>
+
+      <!-- Bold Reframe -->
+      <section id="reframe">
+        <div class="bold-reframe">Your highest-output work isn't what you ship to the customer. It's what you ship back to your own product team.</div>
+      </section>
+
+      <!-- Perspective-snap pull quote -->
+      <blockquote class="pull-quote">A forward-deployed engineer who only deploys is a sensor that never transmits.</blockquote>
+
+      <!-- Credibility & Nuance -->
+      <section id="evidence" class="scroll-reveal-section">
+        <p>The thing most FDEs miss about internal advocacy: the signal has a half-life. Snowflake's field teams throughout 2024 kept encountering the same refrain from customers across industries — they wanted to run AI models against data already sitting in Snowflake, not extract it and ship it to a separate AI platform. Internal product direction had initially assumed the opposite trajectory: that customers would move their data to where the specialized models lived. The field signal contradicted the product assumption directly.</p>
+
+        <p>In Snowflake's Q3 FY2025 earnings call, CEO Sridhar Ramaswamy discussed how field-driven insights reshaped the Cortex AI strategy toward a bring-models-to-the-data architecture. The correction didn't originate in a quarterly business review or a customer advisory board. It came from field engineers escalating a pattern while it was still forming — before the product team committed engineering resources to the wrong direction. Once the internal assumption was locked into a sprint plan, reversing it would have cost weeks. Field engineers at other companies who sat on similar observations — waiting for the "right time" to escalate — watched their product teams commit to architectures that customers then rejected. The cost wasn't abstract. It was measured in failed proof-of-concepts and lost deals.</p>
+
+        <p>I've watched FDEs file meticulous post-engagement documents that nobody reads. The timing kills the signal every time. You filed it two weeks after the customer signed off; by then the product team is three sprints into different priorities. Your carefully written observation has become historical fiction — accurate, but irrelevant.</p>
+      </section>
+
+      <!-- Counterargument expand -->
+      <div class="counterarg-block" id="counterarg">
+        <div class="counterarg-header">
+          <span class="ca-icon">+</span>
+          <span>"But we already have feedback loops."</span>
+        </div>
+        <div class="counterarg-body">
+          <p>Those channels exist in most mature organizations. But they filter field reality through at least two translation layers before it reaches someone who can build a fix. The customer success manager summarizes what they heard. The product manager prioritizes based on a portfolio of such summaries. By arrival, the signal has been sanitized into a feature request stripped of the context that made it urgent. The FDE is the only role that observes the problem while holding the keyboard. That proximity produces a different class of data — not what customers say they want in a structured feedback session, but what their hands actually do when nobody's watching.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:1.5rem;">The transmitter is broken by default in most FDE organizations. The observations exist. The plumbing doesn't.<span class="beat-marker" aria-label="Perspective shift beat 2"><span class="beat-icon">2</span><span class="beat-tooltip"><span class="bt-before">Before: "I'll write up my findings after the engagement wraps."</span><br><span class="bt-after">After: "If I'm not feeding signals during the engagement, I'm already too late."</span><br><span class="bt-turn">Turn: Advocacy is a sprint-level practice, not a post-mortem.</span></span></span></p>
+
+      <!-- Social share -->
+      <div class="social-share" id="shareBlock">
+        <div class="social-share-label">Share this reframe</div>
+        <button class="share-btn" id="copyBtn" aria-label="Copy reframe text and link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Text &amp; Link
+        </button>
+        <a class="share-btn" id="shareX" target="_blank" rel="noopener noreferrer" aria-label="Share to X/Twitter">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X / Twitter
+        </a>
+        <a class="share-btn" id="shareLI" target="_blank" rel="noopener noreferrer" aria-label="Share to LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <!-- Decision tree centerpiece -->
+      <section id="diagnostic">
+        <h2>Should You Escalate Now?</h2>
+        <figure>
+          <div class="decision-tree" id="decisionTree">
+            <div class="dt-node">
+              <div class="dt-question">You observed something in the field that the product doesn't support. Have you seen this at more than one customer?</div>
+              <div class="dt-branches">
+                <button class="dt-btn" data-path="no1" aria-label="No, only one customer">No</button>
+                <button class="dt-btn" data-path="yes1" aria-label="Yes, multiple customers">Yes</button>
+              </div>
+              <div class="dt-child" data-child="no1">
+                <div class="dt-result red">File as a support ticket or customer request. One observation isn't yet a pattern — but document it so you can check for convergence later.</div>
+              </div>
+              <div class="dt-child" data-child="yes1">
+                <div class="dt-node">
+                  <div class="dt-question">Did those customers arrive at this workaround independently — without knowing about each other?</div>
+                  <div class="dt-branches">
+                    <button class="dt-btn" data-path="no2">No, likely influenced</button>
+                    <button class="dt-btn" data-path="yes2">Yes, independently</button>
+                  </div>
+                  <div class="dt-child" data-child="no2">
+                    <div class="dt-result yellow">May be a cascading effect or shared influence. Investigate the root cause before escalating — you need independent convergence to signal a real gap.</div>
+                  </div>
+                  <div class="dt-child" data-child="yes2">
+                    <div class="dt-node">
+                      <div class="dt-question">Is the product team currently making decisions in this area of the product?</div>
+                      <div class="dt-branches">
+                        <button class="dt-btn" data-path="no3">No, not right now</button>
+                        <button class="dt-btn" data-path="yes3">Yes, actively</button>
+                      </div>
+                      <div class="dt-child" data-child="no3">
+                        <div class="dt-result yellow">Document the pattern with evidence now. Escalate when the roadmap in this area opens — but don't let it sit in a post-engagement doc. Put it somewhere the product team will see it when they start planning.</div>
+                      </div>
+                      <div class="dt-child" data-child="yes3">
+                        <div class="dt-result green">Escalate within 48 hours. You have independent convergence and an open decision window — this is the highest-leverage moment for internal advocacy. Lead with the convergence evidence, not the feature request.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="dt-reset" id="dtReset">Reset diagnostic</button>
+          </div>
+          <figcaption>Interactive decision tree for evaluating whether a field observation warrants immediate escalation to the product team. Each branch reflects a real judgment point FDEs face.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Narrative Agency -->
+      <section id="actions">
+        <h2>So What Changes</h2>
+        <ul class="checklist" id="checklist">
+          <li>
+            <span class="cl-box" aria-hidden="true">&#10003;</span>
+            <span class="cl-text"><strong>File the pattern, not the request.</strong> One customer asking for a feature is a support ticket. Three customers independently converging on the same workaround is a roadmap signal. When you escalate, lead with the convergence — the fact that separate teams arrived at identical solutions without coordination — not the feature itself. Convergence is evidence of a real gap. A single request is an anecdote.</span>
+          </li>
+          <li>
+            <span class="cl-box" aria-hidden="true">&#10003;</span>
+            <span class="cl-text"><strong>Escalate in the same sprint you observe it.</strong> Create a standing channel — a Slack thread, a shared document, a weekly fifteen-minute sync — where raw field observations land while the engagement is still live. If your organization doesn't have one, that's the first thing you build. You're holding the observations. You're also the person best positioned to notice that the plumbing is missing.</span>
+          </li>
+          <li>
+            <span class="cl-box" aria-hidden="true">&#10003;</span>
+            <span class="cl-text"><strong>Name the product failure explicitly.</strong> When you hand-built something that should be a product feature, frame it that way: "I had to construct X manually because the product doesn't support it. Three separate customers required this. Here's why." That framing — gap, not enhancement — changes how product engineers process the information. A gap implies something is missing and causing active friction. An enhancement implies something could be nicer. Friction gets fixed. Nice-to-haves get backlogged.</span>
+          </li>
+        </ul>
+        <p>You'll know the plumbing is working when a product engineer messages you mid-engagement asking for more detail — not when you submit a post-mortem that gets a thumbs-up emoji.</p>
+
+        <h2>Do This Tonight</h2>
+        <p>Within the next 24 hours: Identify one thing you manually built or worked around on your most recent engagement that should exist as a product feature. Write exactly three sentences describing the gap. Send it to a product engineer — not a PM, an engineer who would build the fix. Observe what comes back.</p>
+      </section>
+
+      <!-- Three Things tracker -->
+      <div class="things-tracker" id="thingsTracker">
+        <h3>Insights Unlocked</h3>
+        <div class="thing-item locked" data-thing="1">
+          <span class="thing-dot"></span>
+          <span class="thing-label">Pattern, not request</span>
+        </div>
+        <div class="thing-item locked" data-thing="2">
+          <span class="thing-dot"></span>
+          <span class="thing-label">Transmitter broken by default</span>
+        </div>
+        <div class="thing-item locked" data-thing="3">
+          <span class="thing-dot"></span>
+          <span class="thing-label">Advocacy has a half-life</span>
+        </div>
+      </div>
+
+      <!-- Retrieval practice cards -->
+      <section id="recall">
+        <h2>Recall Check</h2>
+        <figure>
+          <div class="retrieval-cards">
+            <div class="retrieval-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+              <div class="retrieval-inner">
+                <div class="rc-front">What did Palantir's Q3 2024 earnings link to field pattern recognition?</div>
+                <div class="rc-back">Approximately 30% year-over-year commercial revenue growth, driven by field-identified patterns becoming productized features through the bootcamp sensing model.</div>
+              </div>
+            </div>
+            <div class="retrieval-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+              <div class="retrieval-inner">
+                <div class="rc-front">What was Snowflake's internal product assumption that field signals contradicted?</div>
+                <div class="rc-back">That customers would move data to where models lived. Field teams found customers wanted models brought to their existing Snowflake data instead.</div>
+              </div>
+            </div>
+            <div class="retrieval-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+              <div class="retrieval-inner">
+                <div class="rc-front">Why does the author call post-engagement feedback "historical fiction"?</div>
+                <div class="rc-back">Because by the time it's filed (often weeks later), the product team has moved to different priorities — the observation remains accurate but is no longer actionable.</div>
+              </div>
+            </div>
+          </div>
+          <figcaption>Tap or press Enter to flip each card. These check whether the key claims from this article stuck.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Concept map -->
+      <figure class="concept-map">
+        <svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Concept map showing where internal advocacy fits in the FDE practice arc">
+          <!-- Background connections (dimmed) -->
+          <line x1="80" y1="140" x2="190" y2="80" stroke="#2a2725" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <line x1="80" y1="140" x2="190" y2="200" stroke="#2a2725" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <line x1="310" y1="80" x2="430" y2="80" stroke="#2a2725" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <line x1="310" y1="200" x2="430" y2="200" stroke="#2a2725" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <line x1="530" y1="80" x2="530" y2="200" stroke="#2a2725" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+          <!-- Active path (this article) -->
+          <line x1="80" y1="140" x2="190" y2="140" stroke="#c77d3f" stroke-width="2"/>
+          <line x1="310" y1="140" x2="430" y2="140" stroke="#c77d3f" stroke-width="2"/>
+          <line x1="530" y1="140" x2="530" y2="80" stroke="#c77d3f" stroke-width="2" opacity="0.5"/>
+          <line x1="530" y1="140" x2="530" y2="200" stroke="#c77d3f" stroke-width="2" opacity="0.5"/>
+
+          <!-- Dimmed nodes -->
+          <rect x="10" y="120" width="140" height="40" rx="6" fill="#1a1a1a" stroke="#2a2725" stroke-width="1"/>
+          <text x="80" y="145" text-anchor="middle" fill="#6d665e" font-family="Space Grotesk, sans-serif" font-size="11">Discovery &amp; Scoping</text>
+
+          <rect x="190" y="60" width="120" height="40" rx="6" fill="#1a1a1a" stroke="#2a2725" stroke-width="1"/>
+          <text x="250" y="85" text-anchor="middle" fill="#6d665e" font-family="Space Grotesk, sans-serif" font-size="11">Pattern Recog.</text>
+
+          <rect x="190" y="180" width="120" height="40" rx="6" fill="#1a1a1a" stroke="#2a2725" stroke-width="1"/>
+          <text x="250" y="205" text-anchor="middle" fill="#6d665e" font-family="Space Grotesk, sans-serif" font-size="11">Eval Harness</text>
+
+          <rect x="430" y="60" width="120" height="40" rx="6" fill="#1a1a1a" stroke="#2a2725" stroke-width="1"/>
+          <text x="490" y="85" text-anchor="middle" fill="#6d665e" font-family="Space Grotesk, sans-serif" font-size="11">Productized</text>
+
+          <rect x="430" y="180" width="120" height="40" rx="6" fill="#1a1a1a" stroke="#2a2725" stroke-width="1"/>
+          <text x="490" y="205" text-anchor="middle" fill="#6d665e" font-family="Space Grotesk, sans-serif" font-size="11">Handoff &amp; Sust.</text>
+
+          <!-- Active (highlighted) nodes -->
+          <rect x="190" y="120" width="120" height="40" rx="6" fill="rgba(199,125,63,0.12)" stroke="#c77d3f" stroke-width="1.5"/>
+          <text x="250" y="145" text-anchor="middle" fill="#dfa063" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600">Internal Advocacy</text>
+
+          <rect x="430" y="120" width="120" height="40" rx="6" fill="rgba(199,125,63,0.12)" stroke="#c77d3f" stroke-width="1.5"/>
+          <text x="490" y="145" text-anchor="middle" fill="#dfa063" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600">Product Correction</text>
+
+          <!-- This-note indicator -->
+          <rect x="10" y="232" width="8" height="8" rx="4" fill="#c77d3f"/>
+          <text x="24" y="240" fill="#6d665e" font-family="Space Grotesk, sans-serif" font-size="10">This note's focus</text>
+          <rect x="140" y="232" width="8" height="8" rx="4" fill="#2a2725" stroke="#2a2725" stroke-width="1"/>
+          <text x="154" y="240" fill="#6d665e" font-family="Space Grotesk, sans-serif" font-size="10">Connected practice nodes</text>
+        </svg>
+        <figcaption>Where internal advocacy sits in the broader FDE practice arc. This note focuses on the sensing-to-correction path — the pipeline from field observation to product roadmap change.</figcaption>
+      </figure>
+
+      <!-- Bottom social share -->
+      <div class="social-share" id="shareBlockBottom">
+        <div class="social-share-label">Share this reframe</div>
+        <button class="share-btn" id="copyBtn2" aria-label="Copy reframe text and link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Text &amp; Link
+        </button>
+        <a class="share-btn" id="shareX2" target="_blank" rel="noopener noreferrer" aria-label="Share to X/Twitter">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X / Twitter
+        </a>
+        <a class="share-btn" id="shareLI2" target="_blank" rel="noopener noreferrer" aria-label="Share to LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+    </div><!-- /article-body -->
+  </article>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3>On This Page</h3>
+      <a class="toc-link" href="#opening">The Signal</a>
+      <a class="toc-link" href="#reframe">The Reframe</a>
+      <a class="toc-link" href="#evidence">Evidence</a>
+      <a class="toc-link" href="#diagnostic">Diagnostic</a>
+      <a class="toc-link" href="#actions">What To Do</a>
+      <a class="toc-link" href="#recall">Recall</a>
+    </div>
+    <div class="sidebar-section">
+      <h3>Practice Arc</h3>
+      <p style="font-family:var(--font-display);font-size:0.78rem;color:var(--muted);line-height:1.6;">This note covers <strong style="color:var(--accent);">Internal Advocacy</strong> — one node in the FDE practice arc from discovery through handoff.</p>
+    </div>
+  </aside>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-citations">
+    <strong style="color:var(--fg-dim);">Citations</strong><br>
+    Palantir Technologies, Q3 2024 Earnings Call, October 2024. Discussion of AIP bootcamp model, field-identified pattern productization, and approximately 30% year-over-year commercial revenue growth.<br>
+    Snowflake, Q3 FY2025 Earnings Call, November 2024. CEO Sridhar Ramaswamy on field-driven insights shaping Cortex AI "bring models to data" architecture direction.
+  </div>
+  <div class="footer-bottom">
+    <a href="https://iggym.github.io/fde-field-notes/">FDE Field Notes — Home</a>
+    <button id="scroll-top" aria-label="Scroll to top">Back to top</button>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ── Progress bar ── */
+  var progressBar = document.getElementById('progress-bar');
+  function updateProgress() {
+    var scrollTop = window.scrollY;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+    progressBar.setAttribute('aria-valuenow', Math.round(pct));
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  /* ── Mobile drawer ── */
+  var hamburger = document.getElementById('hamburger');
+  var drawer = document.getElementById('mobile-drawer');
+  var overlay = document.getElementById('drawer-overlay');
+  function openDrawer() {
+    drawer.classList.add('open');
+    overlay.style.display = 'block';
+    requestAnimationFrame(function() { overlay.classList.add('open'); });
+    drawer.setAttribute('aria-hidden', 'false');
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    setTimeout(function() { overlay.style.display = 'none'; }, 260);
+    drawer.setAttribute('aria-hidden', 'true');
+  }
+  hamburger.addEventListener('click', openDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  drawer.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', closeDrawer); });
+
+  /* ── Spectrum slider ── */
+  var spectrum = document.getElementById('spectrum');
+  var divider = document.getElementById('spectrumDivider');
+  var clip = document.getElementById('spectrumClip');
+  var dragging = false;
+  function setSpectrumPos(x) {
+    var rect = spectrum.getBoundingClientRect();
+    var pct = Math.max(0.1, Math.min(0.9, (x - rect.left) / rect.width));
+    clip.style.width = (pct * 100) + '%';
+    divider.style.left = (pct * 100) + '%';
+  }
+  divider.addEventListener('mousedown', function(e) { dragging = true; e.preventDefault(); });
+  divider.addEventListener('touchstart', function() { dragging = true; }, { passive: true });
+  document.addEventListener('mousemove', function(e) { if (dragging) setSpectrumPos(e.clientX); });
+  document.addEventListener('touchmove', function(e) { if (dragging) setSpectrumPos(e.touches[0].clientX); }, { passive: true });
+  document.addEventListener('mouseup', function() { dragging = false; });
+  document.addEventListener('touchend', function() { dragging = false; });
+  // Keyboard support for spectrum
+  divider.addEventListener('keydown', function(e) {
+    var rect = spectrum.getBoundingClientRect();
+    var current = parseFloat(clip.style.width) || 50;
+    var step = 3;
+    if (e.key === 'ArrowLeft') { current -= step; e.preventDefault(); }
+    else if (e.key === 'ArrowRight') { current += step; e.preventDefault(); }
+    else return;
+    current = Math.max(10, Math.min(90, current));
+    clip.style.width = current + '%';
+    divider.style.left = current + '%';
+  });
+
+  /* ── Social share ── */
+  var shareText = 'Your highest-output work isn\u2019t what you ship to the customer. It\u2019s what you ship back to your own product team.';
+  var shareUrl = window.location.href;
+  function setupShareBlock(prefix) {
+    var copyBtn = document.getElementById(prefix + 'copyBtn');
+    var shareX = document.getElementById(prefix + 'shareX');
+    var shareLI = document.getElementById(prefix + 'shareLI');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        var full = shareText + '\n' + shareUrl;
+        navigator.clipboard.writeText(full).then(function() {
+          copyBtn.textContent = 'Copied';
+          copyBtn.classList.add('copied');
+          setTimeout(function() {
+            copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Text & Link';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        });
+      });
+    }
+    if (shareX) {
+      shareX.href = 'https://x.com/intent/post?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(shareUrl);
+    }
+    if (shareLI) {
+      shareLI.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl);
+    }
+  }
+  setupShareBlock('');
+  setupShareBlock('copyBtn2' ? '' : '2');
+  // Second block
+  (function() {
+    var copyBtn2 = document.getElementById('copyBtn2');
+    var shareX2 = document.getElementById('shareX2');
+    var shareLI2 = document.getElementById('shareLI2');
+    if (copyBtn2) {
+      copyBtn2.addEventListener('click', function() {
+        var full = shareText + '\n' + shareUrl;
+        navigator.clipboard.writeText(full).then(function() {
+          copyBtn2.textContent = 'Copied';
+          copyBtn2.classList.add('copied');
+          setTimeout(function() {
+            copyBtn2.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Text & Link';
+            copyBtn2.classList.remove('copied');
+          }, 2000);
+        });
+      });
+    }
+    if (shareX2) shareX2.href = 'https://x.com/intent/post?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(shareUrl);
+    if (shareLI2) shareLI2.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl);
+  })();
+
+  /* ── Decision tree ── */
+  var dtButtons = document.querySelectorAll('#decisionTree .dt-btn');
+  dtButtons.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var path = btn.getAttribute('data-path');
+      var parent = btn.closest('.dt-node');
+      // Disable sibling buttons
+      parent.querySelectorAll('.dt-btn').forEach(function(b) { b.disabled = true; });
+      // Show child
+      var child = parent.querySelector('[data-child="' + path + '"]');
+      if (child) child.classList.add('visible');
+    });
+  });
+  document.getElementById('dtReset').addEventListener('click', function() {
+    document.querySelectorAll('#decisionTree .dt-child').forEach(function(c) { c.classList.remove('visible'); });
+    document.querySelectorAll('#decisionTree .dt-btn').forEach(function(b) { b.disabled = false; });
+  });
+
+  /* ── Counterargument expand (scroll-triggered) ── */
+  var counterarg = document.getElementById('counterarg');
+  var counterargObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        counterarg.classList.add('expanded');
+        counterargObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  counterargObserver.observe(counterarg);
+  // Also allow manual click
+  counterarg.querySelector('.counterarg-header').addEventListener('click', function() {
+    counterarg.classList.toggle('expanded');
+  });
+
+  /* ── Scroll reveal for evidence section ── */
+  var revealSections = document.querySelectorAll('.scroll-reveal-section');
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealSections.forEach(function(s) { revealObserver.observe(s); });
+
+  /* ── Three Things tracker ── */
+  // Insight 1: "pattern, not the request" — in the first checklist item
+  // Insight 2: "transmitter is broken by default" — in the paragraph with that phrase
+  // Insight 3: "signal has a half-life" — in the Snowflake paragraph
+  var insightElements = [];
+  // Find insight anchors by text content
+  var allP = document.querySelectorAll('.article-body p, .article-body li');
+  allP.forEach(function(el) {
+    var text = el.textContent.toLowerCase();
+    if (text.indexOf('pattern, not the request') !== -1 || text.indexOf('convergence is evidence') !== -1) {
+      if (!insightElements[0]) insightElements[0] = el;
+    }
+    if (text.indexOf('transmitter is broken by default') !== -1) {
+      insightElements[1] = el;
+    }
+    if (text.indexOf('half-life') !== -1) {
+      insightElements[2] = el;
+    }
+  });
+  var thingItems = document.querySelectorAll('.thing-item');
+  var thingsObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var idx = insightElements.indexOf(entry.target);
+        if (idx !== -1 && thingItems[idx]) {
+          thingItems[idx].classList.remove('locked');
+          thingItems[idx].classList.add('unlocked');
+        }
+        thingsObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  insightElements.forEach(function(el) {
+    if (el) thingsObserver.observe(el);
+  });
+
+  /* ── Interactive checklist ── */
+  document.querySelectorAll('#checklist li').forEach(function(li) {
+    li.addEventListener('click', function() {
+      li.classList.toggle('checked');
+    });
+  });
+
+  /* ── Retrieval cards ── */
+  document.querySelectorAll('.retrieval-card').forEach(function(card) {
+    function toggle() { card.classList.toggle('flipped'); }
+    card.addEventListener('click', toggle);
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  });
+
+  /* ── TOC active state ── */
+  var tocLinks = document.querySelectorAll('.toc-link');
+  var sections = [];
+  tocLinks.forEach(function(link) {
+    var id = link.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) sections.push({ link: link, el: el });
+  });
+  var tocObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(function(l) { l.classList.remove('active'); });
+        var match = sections.find(function(s) { return s.el === entry.target; });
+        if (match) match.link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '-60px 0px -60% 0px' });
+  sections.forEach(function(s) { tocObserver.observe(s.el); });
+
+  /* ── Scroll to top ── */
+  document.getElementById('scroll-top').addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+})();
+</script>
+</body>
+</html>
