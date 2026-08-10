@@ -75,6 +75,20 @@
   "research_window": "2025-01-06 to 2026-01-06"
 },
     {
+  "id": "00022",
+  "slug": "customer-context-judgment-dont-build-this-yet",
+  "title": "Customer-Context Judgment: Knowing When to Say 'Don't Build This Yet'",
+  "hook": "Why 95% of enterprise AI pilots fail from unready data and broken workflows—and why an FDE's greatest leverage is diagnostic refusal.",
+  "path": "articles/customer-context-judgment-dont-build-this-yet.html",
+  "date": "2026-01-06",
+  "status": "published",
+  "format": "field-note",
+  "tags": ["fde", "customer-context", "diagnostic-refusal", "career-craft"],
+  "reading_time_minutes": 6,
+  "pinned": false,
+  "research_window": "2025-01-06 to 2026-01-06"
+},
+    {
       "id": "0003",
       "slug": "when-the-building-stops",
       "title": "When the Building Stops",
