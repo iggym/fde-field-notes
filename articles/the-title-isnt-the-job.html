@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Title Isn't the Job — FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0B0B0B;
+  --surface: #151513;
+  --surface-raised: #1C1C19;
+  --accent: #D4693C;
+  --accent-gold: #E2B94C;
+  --accent-sage: #7EB89C;
+  --accent-sand: #C4956A;
+  --accent-teal: #6BA5A0;
+  --fg: #F0EBE3;
+  --fg-secondary: #A09A92;
+  --fg-muted: #6B665F;
+  --border: #2D2B28;
+  --radius: 8px;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Outfit', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.7;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+/* Progress Bar */
+#progress {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 1000;
+  background: var(--accent); width: 0; transition: width 0.1s linear;
+}
+/* Top Bar */
+#topbar {
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: rgba(11,11,11,0.78);
+  border-bottom: 1px solid var(--border);
+}
+#topbar nav {
+  max-width: 1120px; margin: 0 auto; padding: 0.75rem 1.5rem;
+  display: flex; align-items: center; gap: 1rem; font-size: 0.85rem;
+}
+#topbar .home-link {
+  color: var(--accent); text-decoration: none; font-weight: 600; white-space: nowrap;
+}
+#topbar .breadcrumb { color: var(--fg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#topbar .reading-time { color: var(--fg-muted); margin-left: auto; white-space: nowrap; }
+#hamburger {
+  display: none; background: none; border: 1px solid var(--border); color: var(--fg);
+  width: 36px; height: 36px; border-radius: var(--radius); cursor: pointer; font-size: 1.1rem;
+  align-items: center; justify-content: center;
+}
+@media(max-width:880px) {
+  #hamburger { display: flex; }
+  #topbar .breadcrumb { display: none; }
+}
+/* Drawer Overlay */
+#drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 199;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+#drawer-overlay.open { opacity: 1; pointer-events: auto; }
+/* Sidebar / Drawer */
+#sidebar {
+  width: 260px; flex-shrink: 0;
+}
+@media(max-width:880px) {
+  #sidebar {
+    position: fixed; top: 0; right: -300px; width: 280px; height: 100vh;
+    z-index: 200; background: var(--surface); border-left: 1px solid var(--border);
+    padding: 4.5rem 1.25rem 2rem; overflow-y: auto;
+    transition: right 0.3s ease;
+  }
+  #sidebar.open { right: 0; }
+}
+.sidebar-section { margin-bottom: 2rem; }
+.sidebar-label {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--fg-muted); margin-bottom: 0.75rem; font-weight: 500;
+}
+/* Three Things Tracker */
+.thing-item {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+  transition: opacity 0.4s ease;
+}
+.thing-item.locked { opacity: 0.35; }
+.thing-item.unlocked { opacity: 1; }
+.thing-icon {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--fg-muted); transition: all 0.4s ease;
+}
+.thing-item.unlocked .thing-icon {
+  border-color: var(--accent); background: rgba(212,105,60,0.15);
+}
+.thing-icon svg { width: 14px; height: 14px; }
+.thing-icon .lock-svg { stroke: var(--fg-muted); }
+.thing-icon .check-svg { stroke: var(--accent); display: none; }
+.thing-item.unlocked .lock-svg { display: none; }
+.thing-item.unlocked .check-svg { display: block; }
+.thing-num { font-size: 0.7rem; color: var(--fg-muted); font-weight: 500; }
+.thing-label { font-size: 0.8rem; color: var(--fg-secondary); line-height: 1.35; }
+.thing-item.unlocked .thing-label { color: var(--fg); }
+/* Layout */
+.layout {
+  max-width: 1120px; margin: 0 auto; padding: 2rem 1.5rem;
+  display: grid; grid-template-columns: 1fr 260px; gap: 2.5rem;
+}
+@media(max-width:880px) {
+  .layout { grid-template-columns: 1fr; padding: 1.25rem; gap: 1.5rem; }
+}
+/* Article */
+article { max-width: 720px; }
+.hero { margin-bottom: 2.5rem; }
+.hero time {
+  font-size: 0.78rem; color: var(--fg-muted); text-transform: uppercase;
+  letter-spacing: 0.1em; font-weight: 500;
+}
+.hero-title {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1;
+  margin: 0.6rem 0 1rem; color: var(--fg);
+}
+.hero-subtitle {
+  font-size: 1.1rem; color: var(--fg-secondary); line-height: 1.55; max-width: 560px;
+}
+/* Section styling */
+.article-section { margin-bottom: 2.5rem; }
+.article-section h2 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: 1.45rem; margin-bottom: 1rem; color: var(--fg); line-height: 1.25;
+}
+.article-section p { margin-bottom: 1rem; }
+.article-section p:last-child { margin-bottom: 0; }
+/* Pull Quote */
+.pull-quote {
+  border-left: 3px solid var(--accent); padding: 1rem 0 1rem 1.5rem;
+  margin: 2rem 0; font-family: var(--font-display); font-style: italic;
+  font-size: 1.15rem; color: var(--fg-secondary); line-height: 1.55;
+}
+/* Beat Markers */
+.beat-block {
+  background: var(--surface-raised); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem 1.25rem; margin: 1.5rem 0;
+  font-size: 0.88rem; line-height: 1.6;
+}
+.beat-label { font-weight: 600; color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+.beat-before { color: var(--fg-muted); text-decoration: line-through; }
+.beat-after { color: var(--fg); font-weight: 500; }
+.beat-turn { color: var(--accent-gold); font-family: var(--font-display); font-weight: 600; margin-top: 0.35rem; font-style: italic; }
+/* Spectrum Widget */
+.spectrum-widget {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.5rem; margin: 1.5rem 0; cursor: pointer; position: relative; overflow: hidden;
+}
+.spectrum-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--fg-muted); margin-bottom: 0.6rem; font-weight: 500; }
+.spectrum-track {
+  height: 8px; border-radius: 4px; position: relative;
+  background: linear-gradient(90deg, var(--fg-muted) 0%, var(--accent) 100%);
+  opacity: 0.3;
+}
+.spectrum-indicator {
+  position: absolute; top: 50%; left: 5%; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--fg); border: 3px solid var(--accent);
+  transform: translate(-50%, -50%); transition: left 0.6s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 0 12px rgba(212,105,60,0.4);
+}
+.spectrum-indicator.right { left: 95%; }
+.spectrum-reveal {
+  margin-top: 1rem; font-size: 0.85rem; color: var(--accent-gold); font-weight: 500;
+  opacity: 0; transition: opacity 0.5s ease 0.3s; text-align: center;
+}
+.spectrum-reveal.visible { opacity: 1; }
+.spectrum-hint { text-align: center; font-size: 0.7rem; color: var(--fg-muted); margin-top: 0.5rem; }
+/* Comp Chart Widget */
+.comp-widget {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.5rem; margin: 2rem 0;
+}
+.comp-widget figcaption { font-size: 0.75rem; color: var(--fg-muted); margin-top: 1rem; text-align: center; }
+.level-selector { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.level-btn {
+  flex: 1; padding: 0.5rem; background: var(--surface-raised); border: 1px solid var(--border);
+  color: var(--fg-secondary); border-radius: var(--radius); cursor: pointer;
+  font-family: var(--font-body); font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease;
+}
+.level-btn.active { background: var(--accent); color: var(--fg); border-color: var(--accent); }
+.level-btn:hover:not(.active) { border-color: var(--fg-muted); }
+.comp-axis {
+  position: relative; padding: 0 0 1.5rem 0; margin-left: 0; margin-right: 0;
+}
+.comp-axis-labels {
+  display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--fg-muted);
+  margin-bottom: 0.4rem; font-weight: 400;
+}
+.comp-bars { position: relative; height: 120px; }
+.comp-bar-row {
+  position: absolute; left: 0; right: 0; height: 22px; display: flex; align-items: center;
+}
+.comp-bar-track {
+  position: absolute; height: 14px; border-radius: 3px; transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+  opacity: 0.8;
+}
+.comp-bar-track:hover { opacity: 1; }
+.comp-bar-label {
+  position: absolute; right: calc(100% + 8px); font-size: 0.7rem; color: var(--fg-secondary);
+  white-space: nowrap; font-weight: 400; width: 90px; text-align: right;
+}
+.comp-bar-value {
+  position: absolute; left: calc(100% + 6px); font-size: 0.65rem; color: var(--fg-muted);
+  white-space: nowrap; opacity: 0; transition: opacity 0.2s ease;
+}
+.comp-bar-row:hover .comp-bar-value { opacity: 1; }
+.comp-overlap-display {
+  text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--fg-secondary);
+}
+.comp-overlap-display strong { color: var(--accent); font-weight: 600; }
+/* Scroll Reveal */
+.scroll-reveal-item {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.scroll-reveal-item.revealed { opacity: 1; transform: translateY(0); }
+.scroll-reveal-item:nth-child(2) { transition-delay: 0.15s; }
+.scroll-reveal-item:nth-child(3) { transition-delay: 0.3s; }
+/* Aside */
+.article-aside {
+  background: var(--surface-raised); border-left: 3px solid var(--accent-sand);
+  padding: 1rem 1.25rem; margin: 1.5rem 0; font-size: 0.88rem;
+  color: var(--fg-secondary); line-height: 1.6; border-radius: 0 var(--radius) var(--radius) 0;
+}
+.article-aside em { color: var(--accent-sand); font-style: normal; font-weight: 500; }
+/* Checklist */
+.checklist { list-style: none; }
+.checklist-item {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  padding: 0.85rem 0; border-bottom: 1px solid var(--border); cursor: pointer;
+  transition: background 0.2s ease; border-radius: var(--radius);
+}
+.checklist-item:hover { background: var(--surface-raised); margin: 0 -0.5rem; padding-left: 0.5rem; padding-right: 0.5rem; }
+.checklist-item input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; width: 20px; height: 20px; flex-shrink: 0;
+  border: 1.5px solid var(--fg-muted); border-radius: 4px; margin-top: 2px;
+  cursor: pointer; transition: all 0.2s ease; position: relative; background: transparent;
+}
+.checklist-item input[type="checkbox"]:checked {
+  background: var(--accent); border-color: var(--accent);
+}
+.checklist-item input[type="checkbox"]:checked::after {
+  content: ''; position: absolute; top: 2px; left: 6px; width: 5px; height: 10px;
+  border: solid var(--fg); border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.checklist-item input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.checklist-text { font-size: 0.92rem; line-height: 1.55; }
+.checklist-text strong { color: var(--fg); font-weight: 500; }
+.checklist-text span { color: var(--fg-secondary); }
+/* CTA Section */
+.cta-section {
+  background: var(--surface); border: 1px solid var(--accent);
+  border-radius: var(--radius); padding: 1.5rem; margin: 2rem 0;
+}
+.cta-section p { margin: 0; font-weight: 500; color: var(--fg); font-size: 1rem; line-height: 1.55; }
+/* Social Share Block */
+.share-block {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.25rem; margin: 2rem 0;
+}
+.share-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-muted); margin-bottom: 0.75rem; font-weight: 500; }
+.share-text {
+  font-size: 0.85rem; color: var(--fg-secondary); line-height: 1.5; margin-bottom: 1rem;
+  padding: 0.75rem; background: var(--surface-raised); border-radius: 4px; border: 1px solid var(--border);
+}
+.share-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.share-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1rem; border-radius: var(--radius); border: 1px solid var(--border);
+  background: var(--surface-raised); color: var(--fg-secondary); cursor: pointer;
+  font-family: var(--font-body); font-size: 0.8rem; font-weight: 500;
+  transition: all 0.2s ease; text-decoration: none;
+}
+.share-btn:hover { border-color: var(--fg-muted); color: var(--fg); }
+.share-btn.copied { border-color: var(--accent-sage); color: var(--accent-sage); }
+.share-btn svg { width: 16px; height: 16px; }
+/* Recall Cards */
+.recall-section { margin: 2.5rem 0; }
+.recall-section h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; margin-bottom: 1rem; }
+.recall-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.recall-card {
+  perspective: 600px; cursor: pointer; height: 140px;
+}
+.recall-card-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.5s ease; transform-style: preserve-3d;
+}
+.recall-card.flipped .recall-card-inner { transform: rotateY(180deg); }
+.recall-card-front, .recall-card-back {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1rem; display: flex; align-items: center; justify-content: center;
+  text-align: center; font-size: 0.82rem; line-height: 1.45;
+}
+.recall-card-front { background: var(--surface); color: var(--fg-secondary); }
+.recall-card-back { background: var(--surface-raised); color: var(--accent-gold); transform: rotateY(180deg); font-weight: 500; }
+.recall-hint { font-size: 0.7rem; color: var(--fg-muted); margin-top: 0.5rem; }
+/* Concept Map */
+.concept-map-section { margin: 2.5rem 0; }
+.concept-map-section svg { width: 100%; max-width: 480px; display: block; margin: 0 auto; }
+.concept-map-section figcaption { font-size: 0.75rem; color: var(--fg-muted); text-align: center; margin-top: 0.75rem; }
+/* Footer */
+footer {
+  max-width: 1120px; margin: 3rem auto 0; padding: 2rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.citations { font-size: 0.75rem; color: var(--fg-muted); line-height: 1.8; margin-bottom: 1.5rem; }
+.citations strong { color: var(--fg-secondary); font-weight: 500; }
+.footer-actions { display: flex; gap: 1rem; align-items: center; }
+.scroll-top-btn {
+  background: var(--surface-raised); border: 1px solid var(--border); color: var(--fg-secondary);
+  padding: 0.5rem 1rem; border-radius: var(--radius); cursor: pointer;
+  font-family: var(--font-body); font-size: 0.8rem; transition: all 0.2s ease;
+}
+.scroll-top-btn:hover { border-color: var(--fg-muted); color: var(--fg); }
+.footer-home { color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
+/* Reduced Motion */
+@media(prefers-reduced-motion:reduce) {
+  .scroll-reveal-item { opacity: 1; transform: none; transition: none; }
+  .spectrum-indicator { transition: none; }
+  .spectrum-reveal { transition: none; }
+  .comp-bar-track { transition: none; }
+  .recall-card-inner { transition: none; }
+  #sidebar { transition: none; }
+  #drawer-overlay { transition: none; }
+  #progress { transition: none; }
+  html { scroll-behavior: auto; }
+}
+/* Focus visible */
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- Top Bar -->
+<header id="topbar">
+  <nav aria-label="Site navigation">
+    <a href="https://iggym.github.io/fde-field-notes/" class="home-link">FDE Field Notes</a>
+    <span class="breadcrumb" aria-hidden="true">/ The Title Isn't the Job</span>
+    <span class="reading-time" aria-label="Reading time">6 min read</span>
+    <button id="hamburger" aria-label="Open sidebar" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="5" x2="15" y2="5"/><line x1="3" y1="9" x2="15" y2="9"/><line x1="3" y1="13" x2="15" y2="13"/></svg>
+    </button>
+  </nav>
+</header>
+
+<!-- Drawer Overlay -->
+<div id="drawer-overlay" aria-hidden="true"></div>
+
+<!-- Main Layout -->
+<div class="layout">
+  <!-- Article Column -->
+  <main>
+    <article>
+      <header class="hero">
+        <time datetime="2025-03-14">March 14, 2025</time>
+        <h1 class="hero-title">The Title Isn't the Job</h1>
+        <p class="hero-subtitle">An "FDE" title doesn't describe a role — it describes a company's bet about how software gets sold.</p>
+      </header>
+
+      <!-- Opening Scene -->
+      <section class="article-section" aria-label="Opening">
+        <p>A friend sent me two offer letters last month. One said "Forward Deployed Engineer" at a Series B infrastructure startup. The other: "Solutions Engineer" at a public data company. Base salary: $165K and $170K. Equity: unvested options at a 2x preference stack versus RSUs with a known strike price. Both led their descriptions with "customer-facing technical work." Each one used the word "bespoke." She asked which one to take.</p>
+        <p>I told her the title was the wrong variable to compare. Titles matter — but in a direction she wasn't looking.</p>
+      </section>
+
+      <!-- Bold Reframe + Spectrum -->
+      <section class="article-section" aria-label="Bold Reframe">
+        <h2>Title as Business Model</h2>
+        <div class="spectrum-widget" id="spectrumWidget" role="button" tabindex="0" aria-label="Click to reveal the reframe: title describes business model, not role">
+          <div class="spectrum-labels"><span>Title describes the role</span><span>Title describes the business model</span></div>
+          <div class="spectrum-track">
+            <div class="spectrum-indicator" id="spectrumDot"></div>
+          </div>
+          <div class="spectrum-reveal" id="spectrumReveal">The title isn't describing your work. It's describing their business model.</div>
+          <div class="spectrum-hint" id="spectrumHint">Click to shift perspective</div>
+        </div>
+        <p>An "FDE" title doesn't describe a role. It describes a company's bet about how software gets sold. When you see that label on a posting, you're not reading a job description. You're reading how the company has positioned technical labor inside its go-to-market motion — and whether that position makes what you build durable or disposable.</p>
+
+        <div class="beat-block" aria-label="Perspective beat 1">
+          <div class="beat-label">[BEAT 1]</div>
+          <div class="beat-before">The title tells me what the job is.</div>
+          <div class="beat-after">The title tells me what the company thinks the job is for.</div>
+          <div class="beat-turn">The title isn't describing your work. It's describing their business model.</div>
+        </div>
+      </section>
+
+      <!-- Perspective Snap -->
+      <blockquote class="pull-quote" aria-label="Key insight">
+        A company that calls you an FDE but structures you under sales leadership has made a fundamentally different decision than one that puts you under engineering — even if both post the same title and the same comp band.
+      </blockquote>
+
+      <!-- Credibility + Data -->
+      <section class="article-section" aria-label="Evidence and data" id="dataSection">
+        <h2>What the Data Shows</h2>
+
+        <div class="scroll-reveal-item" data-insight="insight-1">
+          <p>Levels.fyi's compensation data through early 2025 reveals something most candidates don't expect: "Forward Deployed Engineer," "Solutions Engineer," "Customer Engineer," and "Field Engineer" roles share roughly <strong>70% comp-band overlap</strong> at equivalent experience levels. A mid-level FDE at Palantir and a mid-level Solutions Engineer at Snowflake sit in the same $190K–$250K total-comp corridor. A Customer Engineer at Google overlaps both bands from below and above. The label, as a price signal, is nearly useless.</p>
+        </div>
+
+        <!-- Comp Chart Widget -->
+        <figure class="comp-widget" aria-label="Compensation overlap chart">
+          <div class="level-selector" role="radiogroup" aria-label="Experience level">
+            <button class="level-btn active" data-level="entry" role="radio" aria-checked="true">Entry (0–2 yr)</button>
+            <button class="level-btn" data-level="mid" role="radio" aria-checked="false">Mid (2–5 yr)</button>
+            <button class="level-btn" data-level="senior" role="radio" aria-checked="false">Senior (5+ yr)</button>
+          </div>
+          <div class="comp-axis">
+            <div class="comp-axis-labels">
+              <span>$100K</span><span>$175K</span><span>$250K</span><span>$325K</span><span>$400K</span>
+            </div>
+            <div class="comp-bars" id="compBars"></div>
+          </div>
+          <div class="comp-overlap-display" id="overlapDisplay">Average pairwise overlap: <strong>~68%</strong></div>
+          <figcaption>Compensation ranges by title at selected companies. Source: Levels.fyi public data through Q1 2025. Ranges represent total compensation (base + equity + bonus).</figcaption>
+        </figure>
+
+        <div class="scroll-reveal-item" data-insight="insight-2">
+          <p>The confusion makes more sense when you look at where the title came from. Palantir originated "Forward Deployed Engineer" and structured its FDEs under engineering, not sales. Their 2024 SEC filings and public job descriptions frame the role consistently: product engineers who deploy on customer sites, building forward rather than selling sideways. The comp structure matches — equity-heavy, with vesting tied to deployment milestones rather than revenue quota. The original FDE was, structurally, a product engineer with a customer-shaped context.</p>
+        </div>
+
+        <div class="scroll-reveal-item" data-insight="insight-3">
+          <p>By late 2024, the title had scattered across the industry with its structural meaning stripped out. Replicate posted "Field Engineer" roles at $160K–$210K total comp — more base salary, less equity, different incentive structure than Palantir's model. Vercel listed similar positions under "Developer Experience" rather than a dedicated field organization. Same rough title tier, four different organizational homes, four different definitions of what the person in the seat is actually accountable for.</p>
+          <p>Here's the pattern that emerged: the strongest signal in the title noise isn't compensation. It's whether the company has bothered to differentiate leveling for the role. Organizations posting a single undifferentiated "FDE" title — no I, II, Senior, Staff — often haven't built a career path for the role, regardless of what the hiring manager verbally promises during interviews. Databricks and Snowflake, which use "Solutions Engineer" with explicit level hierarchies and published ranges, have made an organizational commitment to the role as a long-term career track. A startup posting one flat "FDE" title has made a different bet, even if they don't know it.</p>
+        </div>
+
+        <div class="beat-block" aria-label="Perspective beat 2">
+          <div class="beat-label">[BEAT 2]</div>
+          <div class="beat-before">I should compare comp bands across titles to find the best offer.</div>
+          <div class="beat-after">Comp overlap is nearly total — the real differentiator is whether the role has a defined growth path.</div>
+          <div class="beat-turn">If the pay is roughly the same, what isn't the same is whether the company has built a structure for you to grow in.</div>
+        </div>
+
+        <p>The obvious pushback: comp does matter, and a $30K gap at the same title is a real signal about how the company values the work. That's fair — but that gap almost always maps to something structural underneath (equity versus cash split, reporting line, revenue attribution model) that the title alone won't show you. You need to see the structure behind the number, not just the number itself.</p>
+
+        <div class="article-aside">
+          <em>I've made this mistake.</em> I once compared two "FDE" offers by comp alone and took the higher one. The higher-paying role reported into sales, had no leveling, and I was doing solution-selling demos within six months. The lower-paying one — which a colleague took — had a Staff-level FDE ladder and real engineering influence. The $20K difference cost me two years of career trajectory.
+        </div>
+      </section>
+
+      <!-- Narrative Agency -->
+      <section class="article-section" aria-label="Actionable guidance">
+        <h2>What to Actually Do</h2>
+        <ul class="checklist" aria-label="Offer evaluation checklist">
+          <li class="checklist-item">
+            <input type="checkbox" id="check1" aria-label="Check when completed">
+            <label class="checklist-text" for="check1"><strong>Ask what organization the role reports into.</strong> <span>Engineering, sales, customer success, and professional services are four different answers that predict four different career arcs. Get the answer before the offer call — ideally in writing, from the recruiter.</span></label>
+          </li>
+          <li class="checklist-item">
+            <input type="checkbox" id="check2" aria-label="Check when completed">
+            <label class="checklist-text" for="check2"><strong>Check for level progression.</strong> <span>If "FDE" is a single node with no Senior or Staff variant, that's not a minor detail. The absence of leveling is itself data — it signals the role exists as a deployment mechanism, not a career track.</span></label>
+          </li>
+          <li class="checklist-item">
+            <input type="checkbox" id="check3" aria-label="Check when completed">
+            <label class="checklist-text" for="check3"><strong>Search LinkedIn for current title-holders at this company.</strong> <span>If everyone's tenure is under 18 months, you're looking at a rotational role whatever the description says. If people have been in the title two to four years and earned internal promotions, the role has actual stickiness.</span></label>
+          </li>
+          <li class="checklist-item">
+            <input type="checkbox" id="check4" aria-label="Check when completed">
+            <label class="checklist-text" for="check4"><strong>Ask directly about 12-month success criteria.</strong> <span>"What does success look like at 12 months, and does it involve a title or level change?" The specificity of the answer — or the evasion — tells you more than any comp band.</span></label>
+          </li>
+        </ul>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-section" aria-label="Call to action">
+        <p>Within 24 hours, find one person who currently holds the exact title at the company you're evaluating and ask them what organization they report into. That single data point will reframe your entire decision.</p>
+      </section>
+
+      <!-- Social Share Block -->
+      <div class="share-block" aria-label="Share this article">
+        <div class="share-label">Share this reframe</div>
+        <div class="share-text" id="shareText">An "FDE" title doesn't describe a role — it describes a company's bet about how software gets sold. The comp overlap across titles is proof the label is detached from the work. Evaluate the business model, not the paycheck.</div>
+        <div class="share-buttons">
+          <button class="share-btn" id="copyBtn" aria-label="Copy text and link to clipboard">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg>
+            <span>Copy Text and Link</span>
+          </button>
+          <a class="share-btn" id="shareX" target="_blank" rel="noopener noreferrer" aria-label="Share on X/Twitter">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.47 6.77L15.25 0h-1.42L8.91 5.52 5.08 0H0l6.07 8.8L0 16h1.42l5.14-5.94L10.92 16H16l-6.53-9.23zm-1.82 2.1l-.6-.85L2.06 1.04h2.04l4.12 5.88.6.85 5.35 7.64h-2.04L7.65 8.87z"/></svg>
+            <span>Post to X</span>
+          </a>
+          <a class="share-btn" id="shareLI" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1C2.67 1 2 1.67 2 2.5S2.67 4 3.5 4 5 3.33 5 2.5 4.33 1 3.5 1zM2 5.5h3V14H2V5.5zm5 0h2.88V7h.04c.4-.76 1.38-1.56 2.84-1.56C15.28 5.44 16 6.94 16 9.03V14h-3v-4.53c0-1.08-.02-2.47-1.5-2.47-1.5 0-1.73 1.17-1.73 2.39V14H7V5.5z"/></svg>
+            <span>Share on LinkedIn</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recall Cards -->
+      <div class="recall-section" aria-label="Retrieval practice">
+        <h3>Recall Check</h3>
+        <div class="recall-cards">
+          <div class="recall-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+            <div class="recall-card-inner">
+              <div class="recall-card-front">What percentage of comp-band overlap exists across FDE-adjacent titles at the same experience level?</div>
+              <div class="recall-card-back">Roughly 70%</div>
+            </div>
+          </div>
+          <div class="recall-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+            <div class="recall-card-inner">
+              <div class="recall-card-front">Where did Palantir originally structure its FDEs — under engineering or under sales?</div>
+              <div class="recall-card-back">Under engineering, as product engineers who deploy on customer sites</div>
+            </div>
+          </div>
+          <div class="recall-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+            <div class="recall-card-inner">
+              <div class="recall-card-front">What does a single undifferentiated "FDE" title with no level progression signal?</div>
+              <div class="recall-card-back">The role exists as a deployment mechanism, not a career track</div>
+            </div>
+          </div>
+        </div>
+        <p class="recall-hint">Click or tap a card to check your recall.</p>
+      </div>
+
+      <!-- Concept Map -->
+      <figure class="concept-map-section" aria-label="Concept map relating title analysis to FDE practice">
+        <svg viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Concept map: Title as Business Model connects to Reporting Line, Comp Shape, Role Durability, and Level Structure">
+          <!-- Connection lines -->
+          <line x1="240" y1="150" x2="240" y2="58" stroke="#2D2B28" stroke-width="2"/>
+          <line x1="240" y1="150" x2="392" y2="150" stroke="#2D2B28" stroke-width="2"/>
+          <line x1="240" y1="150" x2="240" y2="252" stroke="#2D2B28" stroke-width="2"/>
+          <line x1="240" y1="150" x2="88" y2="150" stroke="#2D2B28" stroke-width="2"/>
+          <!-- Sub-connection lines -->
+          <line x1="240" y1="58" x2="240" y2="22" stroke="#2D2B28" stroke-width="1.2"/>
+          <line x1="392" y1="150" x2="442" y2="150" stroke="#2D2B28" stroke-width="1.2"/>
+          <line x1="240" y1="252" x2="240" y2="295" stroke="#2D2B28" stroke-width="1.2"/>
+          <line x1="88" y1="150" x2="38" y2="150" stroke="#2D2B28" stroke-width="1.2"/>
+          <!-- Center node -->
+          <circle cx="240" cy="150" r="44" fill="rgba(212,105,60,0.1)" stroke="#D4693C" stroke-width="2"/>
+          <text x="240" y="144" text-anchor="middle" fill="#F0EBE3" font-size="10.5" font-family="Outfit, sans-serif" font-weight="600">Title as</text>
+          <text x="240" y="160" text-anchor="middle" fill="#F0EBE3" font-size="10.5" font-family="Outfit, sans-serif" font-weight="600">Business Model</text>
+          <!-- Primary: Reporting Line -->
+          <circle cx="240" cy="58" r="32" fill="#1C1C19" stroke="#E2B94C" stroke-width="1.5"/>
+          <text x="240" y="55" text-anchor="middle" fill="#E2B94C" font-size="9.5" font-family="Outfit, sans-serif" font-weight="500">Reporting</text>
+          <text x="240" y="67" text-anchor="middle" fill="#E2B94C" font-size="9.5" font-family="Outfit, sans-serif" font-weight="500">Line</text>
+          <!-- Primary: Comp Shape -->
+          <circle cx="392" cy="150" r="32" fill="#1C1C19" stroke="#7EB89C" stroke-width="1.5"/>
+          <text x="392" y="147" text-anchor="middle" fill="#7EB89C" font-size="9.5" font-family="Outfit, sans-serif" font-weight="500">Comp</text>
+          <text x="392" y="159" text-anchor="middle" fill="#7EB89C" font-size="9.5" font-family="Outfit, sans-serif" font-weight="500">Shape</text>
+          <!-- Primary: Role Durability -->
+          <circle cx="240" cy="252" r="32" fill="#1C1C19" stroke="#C4956A" stroke-width="1.5"/>
+          <text x="240" y="249" text-anchor="middle" fill="#C4956A" font-size="9.5" font-family="Outfit, sans-serif" font-weight="500">Role</text>
+          <text x="240" y="261" text-anchor="middle" fill="#C4956A" font-size="9.5" font-family="Outfit, sans-serif" font-weight="500">Durability</text>
+          <!-- Primary: Level Structure -->
+          <circle cx="88" cy="150" r="32" fill="#1C1C19" stroke="#6BA5A0" stroke-width="1.5"/>
+          <text x="88" y="147" text-anchor="middle" fill="#6BA5A0" font-size="9.5" font-family="Outfit, sans-serif" font-weight="500">Level</text>
+          <text x="88" y="159" text-anchor="middle" fill="#6BA5A0" font-size="9.5" font-family="Outfit, sans-serif" font-weight="500">Structure</text>
+          <!-- Secondary nodes -->
+          <rect x="190" y="6" width="100" height="28" rx="6" fill="#151513" stroke="#E2B94C" stroke-width="1" opacity="0.7"/>
+          <text x="240" y="24" text-anchor="middle" fill="#A09A92" font-size="8" font-family="Outfit, sans-serif">Eng / Sales / CS</text>
+          <rect x="416" y="136" width="56" height="28" rx="6" fill="#151513" stroke="#7EB89C" stroke-width="1" opacity="0.7"/>
+          <text x="444" y="147" text-anchor="middle" fill="#A09A92" font-size="7.5" font-family="Outfit, sans-serif">Equity</text>
+          <text x="444" y="158" text-anchor="middle" fill="#A09A92" font-size="7.5" font-family="Outfit, sans-serif">vs Cash</text>
+          <rect x="179" y="288" width="122" height="28" rx="6" fill="#151513" stroke="#C4956A" stroke-width="1" opacity="0.7"/>
+          <text x="240" y="300" text-anchor="middle" fill="#A09A92" font-size="7.5" font-family="Outfit, sans-serif">Rotational vs</text>
+          <text x="240" y="311" text-anchor="middle" fill="#A09A92" font-size="7.5" font-family="Outfit, sans-serif">Career Track</text>
+          <rect x="8" y="136" width="56" height="28" rx="6" fill="#151513" stroke="#6BA5A0" stroke-width="1" opacity="0.7"/>
+          <text x="36" y="147" text-anchor="middle" fill="#A09A92" font-size="7.5" font-family="Outfit, sans-serif">Flat vs</text>
+          <text x="36" y="158" text-anchor="middle" fill="#A09A92" font-size="7.5" font-family="Outfit, sans-serif">Leveled</text>
+        </svg>
+        <figcaption>How "title as business model signal" connects to four observable structural variables — each one checkable before you accept an offer.</figcaption>
+      </figure>
+
+    </article>
+  </main>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-label="Reading sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Insights Unlocked</div>
+      <div class="thing-item locked" data-tracker="insight-1">
+        <div class="thing-icon">
+          <svg class="lock-svg" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+          <svg class="check-svg" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3.5 8.5 6.5 11.5 12.5 5.5"/></svg>
+        </div>
+        <div class="thing-text">
+          <span class="thing-num">01</span>
+          <span class="thing-label">Title overlap is nearly total</span>
+        </div>
+      </div>
+      <div class="thing-item locked" data-tracker="insight-2">
+        <div class="thing-icon">
+          <svg class="lock-svg" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+          <svg class="check-svg" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3.5 8.5 6.5 11.5 12.5 5.5"/></svg>
+        </div>
+        <div class="thing-text">
+          <span class="thing-num">02</span>
+          <span class="thing-label">Original FDE was product-adjacent</span>
+        </div>
+      </div>
+      <div class="thing-item locked" data-tracker="insight-3">
+        <div class="thing-icon">
+          <svg class="lock-svg" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+          <svg class="check-svg" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3.5 8.5 6.5 11.5 12.5 5.5"/></svg>
+        </div>
+        <div class="thing-text">
+          <span class="thing-num">03</span>
+          <span class="thing-label">Leveling signals career-track commitment</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="citations">
+    <strong>Sources:</strong><br>
+    Levels.fyi public compensation data for Forward Deployed Engineer, Solutions Engineer, Customer Engineer, and Field Engineer roles, accessed and updated through Q1 2025.<br>
+    Palantir Technologies 2024 SEC filings (10-K, 10-Q) and public career postings at palantir.com/careers, accessed through March 2025.<br>
+    Databricks and Snowflake public job postings and careers pages showing Solutions Engineer level hierarchies (SSE I/II/Senior/Staff), accessed through March 2025.<br>
+    Replicate and Vercel public job postings for Field Engineer roles, late 2024 through Q1 2025.
+  </div>
+  <div class="footer-actions">
+    <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Scroll to top">Back to Top</button>
+    <a href="https://iggym.github.io/fde-field-notes/" class="footer-home">Home</a>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Progress Bar ---
+  var progressBar = document.getElementById('progress');
+  function updateProgress() {
+    var scrolled = window.scrollY;
+    var total = document.body.scrollHeight - window.innerHeight;
+    var pct = total > 0 ? (scrolled / total) * 100 : 0;
+    progressBar.style.width = pct + '%';
+    progressBar.setAttribute('aria-valuenow', Math.round(pct));
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // --- Hamburger / Drawer ---
+  var hamburger = document.getElementById('hamburger');
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('drawer-overlay');
+  function toggleDrawer() {
+    var isOpen = sidebar.classList.toggle('open');
+    overlay.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen);
+  }
+  hamburger.addEventListener('click', toggleDrawer);
+  overlay.addEventListener('click', toggleDrawer);
+
+  // --- Spectrum Widget ---
+  var spectrumWidget = document.getElementById('spectrumWidget');
+  var spectrumDot = document.getElementById('spectrumDot');
+  var spectrumReveal = document.getElementById('spectrumReveal');
+  var spectrumHint = document.getElementById('spectrumHint');
+  var spectrumClicked = false;
+  function activateSpectrum() {
+    if (spectrumClicked) return;
+    spectrumClicked = true;
+    spectrumDot.classList.add('right');
+    spectrumReveal.classList.add('visible');
+    spectrumHint.style.display = 'none';
+  }
+  spectrumWidget.addEventListener('click', activateSpectrum);
+  spectrumWidget.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activateSpectrum(); }
+  });
+  if (prefersReducedMotion) {
+    spectrumDot.classList.add('right');
+    spectrumReveal.classList.add('visible');
+    spectrumHint.style.display = 'none';
+    spectrumClicked = true;
+  }
+
+  // --- Comp Chart Widget ---
+  var compData = {
+    entry: {
+      'Palantir FDE':    { min: 140, max: 180, color: '#D4693C' },
+      'Snowflake SE':    { min: 150, max: 190, color: '#E2B94C' },
+      'Google CE':       { min: 155, max: 200, color: '#7EB89C' },
+      'Replicate FE':    { min: 130, max: 165, color: '#C4956A' }
+    },
+    mid: {
+      'Palantir FDE':    { min: 185, max: 260, color: '#D4693C' },
+      'Snowflake SE':    { min: 190, max: 255, color: '#E2B94C' },
+      'Google CE':       { min: 195, max: 275, color: '#7EB89C' },
+      'Replicate FE':    { min: 160, max: 215, color: '#C4956A' }
+    },
+    senior: {
+      'Palantir FDE':    { min: 250, max: 330, color: '#D4693C' },
+      'Snowflake SE':    { min: 240, max: 310, color: '#E2B94C' },
+      'Google CE':       { min: 260, max: 350, color: '#7EB89C' },
+      'Replicate FE':    { min: 200, max: 260, color: '#C4956A' }
+    }
+  };
+  var axisMin = 100, axisMax = 400, axisRange = axisMax - axisMin;
+  var compBarsEl = document.getElementById('compBars');
+  var overlapDisplay = document.getElementById('overlapDisplay');
+  var levelBtns = document.querySelectorAll('.level-btn');
+  var currentLevel = 'entry';
+
+  function calcOverlap(data) {
+    var keys = Object.keys(data);
+    var totalOverlap = 0, count = 0;
+    for (var i = 0; i < keys.length; i++) {
+      for (var j = i + 1; j < keys.length; j++) {
+        var a = data[keys[i]], b = data[keys[j]];
+        var overlapStart = Math.max(a.min, b.min);
+        var overlapEnd = Math.min(a.max, b.max);
+        var overlap = Math.max(0, overlapEnd - overlapStart);
+        var smallerRange = Math.min(a.max - a.min, b.max - b.min);
+        totalOverlap += smallerRange > 0 ? (overlap / smallerRange) * 100 : 0;
+        count++;
+      }
+    }
+    return count > 0 ? Math.round(totalOverlap / count) : 0;
+  }
+
+  function renderChart(level) {
+    currentLevel = level;
+    var data = compData[level];
+    compBarsEl.innerHTML = '';
+    var entries = Object.entries(data);
+    entries.forEach(function(entry, idx) {
+      var name = entry[0], range = entry[1];
+      var leftPct = ((range.min - axisMin) / axisRange) * 100;
+      var widthPct = ((range.max - range.min) / axisRange) * 100;
+      var row = document.createElement('div');
+      row.className = 'comp-bar-row';
+      row.style.top = (idx * 28) + 'px';
+      row.innerHTML =
+        '<span class="comp-bar-label">' + name + '</span>' +
+        '<div class="comp-bar-track" style="left:' + leftPct + '%;width:' + widthPct + '%;background:' + range.color + ';" title="$' + range.min + 'K–$' + range.max + 'K"></div>' +
+        '<span class="comp-bar-value">$' + range.min + 'K–$' + range.max + 'K</span>';
+      compBarsEl.appendChild(row);
+    });
+    var overlap = calcOverlap(data);
+    overlapDisplay.innerHTML = 'Average pairwise overlap: <strong>~' + overlap + '%</strong>';
+  }
+
+  levelBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      levelBtns.forEach(function(b) { b.classList.remove('active'); b.setAttribute('aria-checked', 'false'); });
+      btn.classList.add('active');
+      btn.setAttribute('aria-checked', 'true');
+      renderChart(btn.dataset.level);
+    });
+  });
+  renderChart('entry');
+
+  // --- Scroll-Driven Reveals ---
+  if (!prefersReducedMotion) {
+    var revealObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.scroll-reveal-item').forEach(function(el) {
+      revealObserver.observe(el);
+    });
+  }
+
+  // --- Three Things Tracker ---
+  var insightObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.dataset.insight;
+        if (id) {
+          var tracker = document.querySelector('[data-tracker="' + id + '"]');
+          if (tracker) {
+            tracker.classList.remove('locked');
+            tracker.classList.add('unlocked');
+          }
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('[data-insight]').forEach(function(el) {
+    insightObserver.observe(el);
+  });
+
+  // --- Recall Cards ---
+  document.querySelectorAll('.recall-card').forEach(function(card) {
+    function flipCard() { card.classList.toggle('flipped'); }
+    card.addEventListener('click', flipCard);
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipCard(); }
+    });
+  });
+
+  // --- Social Share ---
+  var shareText = document.getElementById('shareText').textContent.trim();
+  var pageUrl = window.location.href;
+  var encodedText = encodeURIComponent(shareText);
+  var encodedUrl = encodeURIComponent(pageUrl);
+
+  document.getElementById('shareX').href = 'https://x.com/intent/post?text=' + encodedText + '&url=' + encodedUrl;
+  document.getElementById('shareLI').href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodedUrl;
+
+  document.getElementById('copyBtn').addEventListener('click', function() {
+    var btn = this;
+    var fullText = shareText + ' ' + pageUrl;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(fullText).then(function() {
+        btn.classList.add('copied');
+        btn.querySelector('span').textContent = 'Copied';
+        setTimeout(function() {
+          btn.classList.remove('copied');
+          btn.querySelector('span').textContent = 'Copy Text and Link';
+        }, 2000);
+      });
+    } else {
+      // Fallback
+      var ta = document.createElement('textarea');
+      ta.value = fullText; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); btn.classList.add('copied'); btn.querySelector('span').textContent = 'Copied'; }
+      catch(e) { btn.querySelector('span').textContent = 'Failed'; }
+      document.body.removeChild(ta);
+      setTimeout(function() { btn.classList.remove('copied'); btn.querySelector('span').textContent = 'Copy Text and Link'; }, 2000);
+    }
+  });
+
+  // --- Scroll to Top ---
+  document.getElementById('scrollTopBtn').addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  });
+
+})();
+</script>
+</body>
+</html>
