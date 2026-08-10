@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Code You Don't Write — FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D0D0B;
+    --surface: #161614;
+    --surface-2: #1E1E1C;
+    --accent: #C8553D;
+    --accent-2: #5B8A72;
+    --text: #E5E0D8;
+    --text-muted: #7A756E;
+    --border: #2A2A26;
+    --danger: #C8553D;
+    --radius: 6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  /* Progress bar */
+  #progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: var(--accent); z-index: 1000;
+    width: 0%; transition: width 0.1s linear;
+  }
+
+  /* Topbar */
+  #topbar {
+    position: sticky; top: 3px; z-index: 900;
+    background: rgba(13,13,11,0.75);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+  }
+  #topbar nav {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; gap: 1rem;
+    height: 48px; font-size: 0.85rem;
+  }
+  #topbar a { color: var(--accent-2); text-decoration: none; white-space: nowrap; }
+  #topbar a:hover { text-decoration: underline; }
+  .breadcrumb { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .reading-time { color: var(--text-muted); margin-left: auto; white-space: nowrap; }
+  .hamburger {
+    display: none; background: none; border: 1px solid var(--border);
+    color: var(--text); font-size: 1.2rem; cursor: pointer;
+    padding: 0.2rem 0.5rem; border-radius: var(--radius);
+  }
+
+  /* Drawer */
+  #drawer {
+    position: fixed; top: 51px; left: 0; right: 0; bottom: 0;
+    background: rgba(13,13,11,0.95);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    z-index: 899; padding: 2rem 1.5rem;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  #drawer.open { transform: translateX(0); }
+  #drawer a { display: block; color: var(--accent-2); text-decoration: none; font-size: 1.1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+
+  /* Hero */
+  .hero {
+    max-width: 1200px; margin: 0 auto;
+    padding: 4rem 1.5rem 2rem;
+  }
+  .hero-title {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  .hero-meta { color: var(--text-muted); font-size: 0.9rem; }
+
+  /* Layout */
+  .layout {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  /* Main content */
+  main { min-width: 0; }
+  main p { margin-bottom: 1.25rem; }
+  main h2 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700; font-size: 1.5rem;
+    margin: 2.5rem 0 1rem; color: var(--text);
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    border-left: 3px solid var(--accent);
+    padding: 1rem 0 1rem 1.25rem;
+    margin: 2rem 0;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic; font-size: 1.15rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Beat blocks */
+  .beat-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+  }
+  .beat-block .beat-label {
+    display: inline-block;
+    font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 0.15rem 0.5rem; border-radius: 3px;
+    margin-bottom: 0.5rem;
+  }
+  .beat-label.before { background: var(--surface-2); color: var(--text-muted); }
+  .beat-label.after { background: rgba(200,85,61,0.15); color: var(--accent); }
+  .beat-label.turn { background: rgba(91,138,114,0.15); color: var(--accent-2); }
+  .beat-block p { margin-bottom: 0.5rem; font-size: 0.95rem; }
+  .beat-block p:last-child { margin-bottom: 0; }
+
+  /* Scroll-reveal beat: content shape change */
+  .beat-scroll-reveal { display: flex; flex-direction: column; gap: 0.75rem; }
+  .beat-scroll-reveal.revealed { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+  .beat-scroll-reveal .beat-cell {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1rem; font-size: 0.85rem;
+    opacity: 0.4; transition: opacity 0.5s ease, border-color 0.5s ease;
+  }
+  .beat-scroll-reveal.revealed .beat-cell { opacity: 1; }
+  .beat-scroll-reveal.revealed .beat-cell:nth-child(2) { border-color: var(--accent); }
+  .beat-scroll-reveal.revealed .beat-cell:nth-child(3) { border-color: var(--accent-2); }
+
+  /* Aside (honest aside) */
+  .honest-aside {
+    background: var(--surface-2);
+    border-left: 2px solid var(--text-muted);
+    padding: 1rem 1.25rem; margin: 1.5rem 0;
+    font-size: 0.92rem; color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Spectrum widget */
+  .spectrum-widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem; margin: 2rem 0;
+  }
+  .spectrum-bar {
+    height: 6px; border-radius: 3px; margin: 1rem 0;
+    background: linear-gradient(to right, var(--surface-2) 0%, var(--surface-2) 45%, var(--accent) 55%, var(--accent) 100%);
+  }
+  .spectrum-labels { display: flex; justify-content: space-between; font-size: 0.8rem; }
+  .spectrum-labels .conventional { color: var(--text-muted); }
+  .spectrum-labels .reframe { color: var(--accent); font-weight: 600; }
+
+  /* Centerpiece: Engagement Arc Widget */
+  .arc-widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem; margin: 2.5rem 0;
+  }
+  .arc-widget h3 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700; font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+  }
+  .arc-stages {
+    display: flex; align-items: flex-start;
+    justify-content: space-between;
+    position: relative; padding: 0 0.5rem;
+  }
+  .arc-stages::before {
+    content: ''; position: absolute;
+    top: 18px; left: 30px; right: 30px;
+    height: 2px; background: var(--border);
+  }
+  .arc-node {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer; flex: 0 0 auto;
+  }
+  .arc-node-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+  .arc-node.active .arc-node-circle {
+    border-color: var(--accent); background: rgba(200,85,61,0.15);
+    color: var(--accent);
+  }
+  .arc-node-label {
+    font-size: 0.72rem; color: var(--text-muted);
+    margin-top: 0.5rem; text-align: center;
+    max-width: 70px; line-height: 1.3;
+  }
+  .arc-node.active .arc-node-label { color: var(--text); font-weight: 500; }
+
+  .arc-detail {
+    margin-top: 1.25rem;
+    padding: 1rem; background: var(--surface-2);
+    border-radius: var(--radius);
+    font-size: 0.9rem; line-height: 1.6;
+    display: none;
+  }
+  .arc-detail.visible { display: block; }
+  .arc-detail-title { font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+
+  /* Hidden "don't build" branch inside prototype detail */
+  .dont-build-branch {
+    margin-top: 0.75rem; padding: 0.75rem;
+    border: 1px dashed var(--danger);
+    border-radius: var(--radius);
+    background: rgba(200,85,61,0.05);
+    display: none;
+  }
+  .dont-build-branch.visible { display: block; }
+  .dont-build-trigger {
+    display: inline-block; margin-top: 0.75rem;
+    font-size: 0.8rem; color: var(--text-muted);
+    cursor: pointer; text-decoration: underline;
+    text-underline-offset: 2px;
+    border: none; background: none; font-family: inherit;
+  }
+  .dont-build-trigger:hover { color: var(--danger); }
+  .dont-build-branch p { margin-bottom: 0.5rem; font-size: 0.88rem; }
+  .dont-build-branch p:last-child { margin-bottom: 0; }
+
+  /* Interactive checklist */
+  .checklist { list-style: none; margin: 1rem 0; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist-box {
+    flex-shrink: 0; width: 20px; height: 20px;
+    border: 2px solid var(--border); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px; transition: background 0.15s, border-color 0.15s;
+  }
+  .checklist li.checked .checklist-box {
+    background: var(--accent-2); border-color: var(--accent-2);
+  }
+  .checklist-box::after {
+    content: '✓'; color: var(--bg); font-size: 0.75rem; font-weight: 700;
+    opacity: 0; transition: opacity 0.15s;
+  }
+  .checklist li.checked .checklist-box::after { opacity: 1; }
+  .checklist-text { font-size: 0.95rem; line-height: 1.6; }
+  .checklist-text strong { color: var(--text); font-weight: 600; }
+
+  /* Recall cards */
+  .recall-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 2rem 0; }
+  .recall-card {
+    perspective: 600px; height: 140px; cursor: pointer;
+  }
+  .recall-card-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.5s ease;
+    transform-style: preserve-3d;
+  }
+  .recall-card.flipped .recall-card-inner { transform: rotateY(180deg); }
+  .recall-card-front, .recall-card-back {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem; display: flex;
+    align-items: center; justify-content: center;
+    text-align: center; font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .recall-card-front { background: var(--surface); color: var(--text); }
+  .recall-card-back { background: var(--surface-2); color: var(--accent-2); transform: rotateY(180deg); }
+  .recall-card-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center; }
+
+  /* Concept map */
+  .concept-map { margin: 2rem 0; }
+  .concept-map svg { width: 100%; height: auto; }
+  .concept-map figcaption { margin-top: 0.5rem; }
+
+  /* Sidebar */
+  aside { position: sticky; top: 70px; }
+  .sidebar-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem; margin-bottom: 1.25rem;
+  }
+  .sidebar-section h3 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.95rem; font-weight: 700;
+    margin-bottom: 1rem; color: var(--text);
+  }
+
+  /* Three things tracker */
+  .tracker-item {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.82rem; line-height: 1.5;
+    color: var(--text-muted);
+    transition: color 0.4s ease;
+  }
+  .tracker-item:last-child { border-bottom: none; }
+  .tracker-item.unlocked { color: var(--text); }
+  .tracker-icon {
+    flex-shrink: 0; width: 18px; height: 18px;
+    border-radius: 50%; border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; transition: background 0.4s, border-color 0.4s;
+  }
+  .tracker-item.unlocked .tracker-icon {
+    background: var(--accent-2); border-color: var(--accent-2);
+    color: var(--bg);
+  }
+
+  /* Share block */
+  .share-block { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .share-btn {
+    padding: 0.4rem 0.75rem; font-size: 0.78rem;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text-muted);
+    cursor: pointer; font-family: inherit;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .share-btn:hover { border-color: var(--accent-2); color: var(--text); }
+  .share-btn.copied { border-color: var(--accent-2); color: var(--accent-2); }
+
+  /* Figcaptions */
+  figcaption {
+    font-size: 0.78rem; color: var(--text-muted);
+    margin-top: 0.5rem; line-height: 1.5;
+  }
+
+  /* Footer */
+  footer {
+    max-width: 1200px; margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .citations { font-size: 0.82rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 1.5rem; }
+  .citations strong { color: var(--text); font-weight: 500; }
+  .footer-links { display: flex; gap: 1.5rem; font-size: 0.85rem; }
+  .footer-links a { color: var(--accent-2); text-decoration: none; }
+  .footer-links a:hover { text-decoration: underline; }
+
+  /* Scroll-reveal generic */
+  .scroll-reveal-content {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .scroll-reveal-content.revealed { opacity: 1; transform: translateY(0); }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+    .scroll-reveal-content { opacity: 1; transform: none; }
+    .beat-scroll-reveal { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+    .beat-scroll-reveal .beat-cell { opacity: 1; }
+    .recall-card-inner { transition: none; }
+    #drawer { transition: none; }
+    #progress { transition: none; }
+  }
+
+  /* Responsive */
+  @media (max-width: 880px) {
+    .hamburger { display: block; }
+    .breadcrumb, .reading-time { display: none; }
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    aside { position: static; }
+    .recall-cards { grid-template-columns: 1fr; }
+    .arc-stages { gap: 0.25rem; }
+    .arc-node-label { font-size: 0.65rem; max-width: 55px; }
+    .beat-scroll-reveal, .beat-scroll-reveal.revealed {
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+  }
+  @media (max-width: 480px) {
+    .hero { padding: 2.5rem 1rem 1.5rem; }
+    .layout { padding: 0 1rem 3rem; }
+    .arc-stages::before { left: 18px; right: 18px; }
+    .arc-node-circle { width: 28px; height: 28px; font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- Topbar -->
+<header id="topbar">
+  <nav>
+    <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+    <span class="breadcrumb">› Field Notes › The Code You Don't Write</span>
+    <span class="reading-time">5 min read</span>
+    <button class="hamburger" aria-label="Open menu" onclick="toggleDrawer()">☰</button>
+  </nav>
+</header>
+
+<!-- Mobile drawer -->
+<div id="drawer" role="navigation" aria-label="Mobile navigation">
+  <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+  <span style="color:var(--text-muted);padding:0.75rem 0;border-bottom:1px solid var(--border);font-size:0.9rem;">Field Notes › The Code You Don't Write</span>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <h1 class="hero-title">The Code You Don't Write</h1>
+  <p class="hero-meta">March 3, 2025 · 5 min read</p>
+</section>
+
+<!-- Two-column layout -->
+<div class="layout">
+
+  <!-- Main column -->
+  <main>
+
+    <p>On February 6th, Palantir reported full-year 2024 commercial revenue surpassing $1 billion. The number itself got attention. The mechanism behind it should get more.</p>
+
+    <p>That revenue was driven primarily by 2–5 day on-site sessions the company calls "bootcamps." A small team arrives with their AIP platform, connects it to the customer's actual data — not a sandbox, not sample records, the real production datasets — and by day three or four has working prototypes running against the customer's actual operational problems. The customer sees their own data moving through a working system. They sign the larger engagement.</p>
+
+    <p>The easy reading is "rapid prototyping wins deals." The harder reading, and the one that matters if you're trying to understand what FDE work actually is, is what the bootcamp produces. It isn't the engagement. It's the scoping phase, packaged and sold as its own thing. The prototypes are evidence supporting a judgment call, not deliverables. The actual output is a decision about what deserves to be built next, and what doesn't.</p>
+
+    <!-- BEAT 1 -->
+    <div class="beat-block" data-insight="1">
+      <span class="beat-label before">Before</span>
+      <p>You probably think the value you bring to a customer engagement is the code you write.</p>
+      <span class="beat-label after">After</span>
+      <p>The value you bring is the code you prevent from being written.</p>
+      <span class="beat-label turn">Turn</span>
+      <p>Palantir's commercial growth engine — over a billion dollars in annual revenue — runs on sessions where the primary output is a judgment about what to build, not the build itself.</p>
+    </div>
+
+    <h2>What you actually ship</h2>
+
+    <!-- Spectrum widget -->
+    <div class="spectrum-widget">
+      <div class="spectrum-labels">
+        <span class="conventional">Conventional: Ship working code</span>
+        <span class="reframe">Reframe: Ship a don't-build list</span>
+      </div>
+      <div class="spectrum-bar"></div>
+    </div>
+    <figcaption>The shift from shipping code to shipping judgment — and why it changes how you scope an engagement.</figcaption>
+
+    <p>The real product an FDE ships is a "don't build" list. Everything else — prototypes, eval harnesses, integration spikes — is evidence for why each item belongs on it.</p>
+
+    <div class="pull-quote">An FDE who ships twelve features but never once says "don't build this" has done less for that customer than one who ships three and kills nine.</div>
+
+    <h2>Why prototypes lie to you</h2>
+
+    <p>There's a named practice pattern in professional software delivery that makes this problem explicit. It's called a discovery spike: you time-box one to two weeks with a hard constraint that no production code ships. The only artifact you produce is a document answering two questions. What would we need to believe to build this? Do we actually believe it?</p>
+
+    <p data-insight="2">Practitioners using this pattern report that 40 to 60 percent of proposed features die in the spike. These are features that, without the spike, would have consumed engineering sprints, accumulated political commitment from stakeholders who saw them marked "in progress," and become exponentially harder to kill the further they progressed. Killing a feature after two sprints of development costs you technical debt and customer trust. Killing it after two days of structured thinking costs you a document.</p>
+
+    <div class="honest-aside">
+      I've watched this happen directly. A customer asked for an automated classification pipeline. We built a working version in two weeks. They loved the demo. Six weeks later they realized their manual process was faster and more accurate for their actual volume. We spent two months building something that made their operation worse. A two-day discovery spike would have caught it before a single line shipped.
+    </div>
+
+    <p>The dynamic at work has a name from behavioral economics: escalating commitment. Once a customer sees a working prototype, they stop evaluating whether the underlying problem justifies a build. They start negotiating scope. The prototype has changed the conversation from "should we?" to "how much?" Palantir's bootcamp model works precisely because it front-loads the should-we-build-this-at-all question into the prototype phase itself, making the don't-build judgment part of the demo rather than a separate, uncomfortable conversation that happens after the customer has already started imagining the finished product.</p>
+
+    <p>The strongest counterargument is honest: some customers will perceive a "don't build" list as the vendor failing to deliver, regardless of how much value the avoidance creates. You recommended three things not to build — that's three things they wanted and aren't getting. The FDEs who handle this well don't present the list as "we're not building this." They present it as "here's what we learned doesn't fit your situation, and here's what we're building instead." The substance is identical. The reception is different.</p>
+
+    <!-- BEAT 2 — scroll-reveal with content shape change -->
+    <div class="beat-scroll-reveal scroll-reveal-content" data-insight="3" data-scroll-reveal>
+      <div class="beat-cell">
+        <span class="beat-label before">Before</span>
+        <p style="margin-top:0.5rem;font-size:0.85rem;">Discovery is the unstructured part before the real work starts.</p>
+      </div>
+      <div class="beat-cell">
+        <span class="beat-label after">After</span>
+        <p style="margin-top:0.5rem;font-size:0.85rem;">Discovery IS the real work, and it has its own structure.</p>
+      </div>
+      <div class="beat-cell">
+        <span class="beat-label turn">Turn</span>
+        <p style="margin-top:0.5rem;font-size:0.85rem;">The "no production code" constraint exists because writing code commits to a direction that discovery existed to keep open.</p>
+      </div>
+    </div>
+    <figcaption style="margin-bottom:2rem;">The moment of rearrangement — stacked assumptions become a visible before-and-after.</figcaption>
+
+    <!-- Centerpiece widget: Engagement Arc -->
+    <div class="arc-widget">
+      <h3>Where judgment hides in the arc</h3>
+      <div class="arc-stages">
+        <div class="arc-node active" data-stage="discovery" onclick="showStage('discovery')" tabindex="0" role="button" aria-label="Discovery stage">
+          <div class="arc-node-circle">1</div>
+          <div class="arc-node-label">Discovery</div>
+        </div>
+        <div class="arc-node" data-stage="prototype" onclick="showStage('prototype')" tabindex="0" role="button" aria-label="Prototype stage">
+          <div class="arc-node-circle">2</div>
+          <div class="arc-node-label">Prototype</div>
+        </div>
+        <div class="arc-node" data-stage="eval" onclick="showStage('eval')" tabindex="0" role="button" aria-label="Eval harness stage">
+          <div class="arc-node-circle">3</div>
+          <div class="arc-node-label">Eval Harness</div>
+        </div>
+        <div class="arc-node" data-stage="productize" onclick="showStage('productize')" tabindex="0" role="button" aria-label="Productize stage">
+          <div class="arc-node-circle">4</div>
+          <div class="arc-node-label">Productize</div>
+        </div>
+      </div>
+
+      <div class="arc-detail visible" id="stage-discovery">
+        <div class="arc-detail-title">Discovery</div>
+        <p>You're on-site. The customer has listed twelve things they want. Your job isn't to start building — it's to figure out which of those twelve should never be built. The output of this stage is a belief statement for each proposed feature: what would need to be true for this to be worth building?</p>
+      </div>
+      <div class="arc-detail" id="stage-prototype">
+        <div class="arc-detail-title">Prototype</div>
+        <p>You've selected features to prototype based on the belief statements. The prototype is evidence, not a deliverable. It exists to test whether the beliefs hold up against real data.</p>
+        <button class="dont-build-trigger" onclick="toggleDontBuild(event)">Wait — what if the beliefs don't hold?</button>
+        <div class="dont-build-branch" id="dont-build-branch">
+          <p><strong>Don't build this yet.</strong> The prototype just proved the underlying assumption is wrong. The customer's volume is too low. The latency budget doesn't support it. The data quality isn't there. This is the highest-value outcome of the entire engagement: you killed a feature before it cost engineering sprints.</p>
+          <p>The don't-build list grows here. That's the product you're actually shipping.</p>
+        </div>
+      </div>
+      <div class="arc-detail" id="stage-eval">
+        <div class="arc-detail-title">Eval Harness</div>
+        <p>For the features that survived discovery and prototype, you build an evaluation harness tuned to this customer's actual failure modes — not a generic benchmark. This is where technical craft and customer judgment fuse into something specific.</p>
+      </div>
+      <div class="arc-detail" id="stage-productize">
+        <div class="arc-detail-title">Productize</div>
+        <p>The surviving patterns become repeatable. The don't-build list from this engagement becomes input for the next one. Your scoping gets faster because you've accumulated real data about what doesn't work in this customer's domain.</p>
+      </div>
+    </div>
+    <figcaption>Where the don't-build judgment surfaces in a typical engagement arc — if you know to look.</figcaption>
+
+    <h2>How to actually do this</h2>
+
+    <ul class="checklist">
+      <li onclick="toggleCheck(this)">
+        <div class="checklist-box"></div>
+        <div class="checklist-text"><strong>Present the don't-build list first.</strong> In your first scoping meeting, write down every feature request. Before leaving the room, identify which ones should not be built and why. Get the customer to react to it before they see anything working.</div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="checklist-box"></div>
+        <div class="checklist-text"><strong>Insert a 48-hour belief-statement phase.</strong> For each proposed feature, write what you'd need to believe for it to be worth building, and whether you actually believe it. No code. Just claims on paper.</div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="checklist-box"></div>
+        <div class="checklist-text"><strong>Treat "just build a quick version" as a scoping question.</strong> The response: "I can, but let me tell you what I'd need to believe about your situation for that to be the right thing to build."</div>
+      </li>
+      <li onclick="toggleCheck(this)">
+        <div class="checklist-box"></div>
+        <div class="checklist-text"><strong>Watch the customer's reaction to the don't-build list.</strong> If they push back hard, you haven't earned the trust yet. If they're curious about your reasoning, you have.</div>
+      </li>
+    </ul>
+    <figcaption>A running checklist — tap each item as you try it on your next engagement.</figcaption>
+
+    <h2>What to check tomorrow</h2>
+
+    <p>Within 24 hours: find the last customer scoping document or kickoff summary you wrote. Count how many things it lists as "to build." Now write a second list: "things we considered and decided not to build." If that second list doesn't exist, or it's empty, that's your answer about where the leverage is.</p>
+
+    <!-- Recall cards -->
+    <div style="margin-top:2.5rem;">
+      <h2 style="margin-top:0;">Did it stick?</h2>
+      <div class="recall-cards">
+        <div class="recall-card" onclick="flipCard(this)" tabindex="0" role="button" aria-label="Recall card 1">
+          <div class="recall-card-inner">
+            <div class="recall-card-front">What's the primary output of a Palantir bootcamp?</div>
+            <div class="recall-card-back">A judgment about what to build next — not the prototype itself.</div>
+          </div>
+        </div>
+        <div class="recall-card" onclick="flipCard(this)" tabindex="0" role="button" aria-label="Recall card 2">
+          <div class="recall-card-inner">
+            <div class="recall-card-front">What constraint does a discovery spike enforce?</div>
+            <div class="recall-card-back">No production code ships during the spike.</div>
+          </div>
+        </div>
+        <div class="recall-card" onclick="flipCard(this)" tabindex="0" role="button" aria-label="Recall card 3">
+          <div class="recall-card-inner">
+            <div class="recall-card-front">What should every scoping doc include alongside the build list?</div>
+            <div class="recall-card-back">A "things we decided not to build" list.</div>
+          </div>
+        </div>
+      </div>
+      <p class="recall-card-hint">Click each card to reveal the answer.</p>
+      <figcaption>Test what stuck from this note — click to reveal each answer.</figcaption>
+    </div>
+
+    <!-- Concept map -->
+    <figure class="concept-map">
+      <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Concept map showing how discovery and scoping connects to the broader FDE practice arc">
+        <!-- Lines -->
+        <line x1="200" y1="140" x2="100" y2="80" stroke="#2A2A26" stroke-width="1.5"/>
+        <line x1="200" y1="140" x2="320" y2="70" stroke="#2A2A26" stroke-width="1.5"/>
+        <line x1="200" y1="140" x2="100" y2="220" stroke="#2A2A26" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <line x1="200" y1="140" x2="320" y2="220" stroke="#2A2A26" stroke-width="1.5"/>
+        <line x1="320" y1="70" x2="480" y2="70" stroke="#2A2A26" stroke-width="1.5"/>
+        <line x1="480" y1="70" x2="560" y2="150" stroke="#2A2A26" stroke-width="1.5"/>
+        <line x1="560" y1="150" x2="560" y2="250" stroke="#2A2A26" stroke-width="1.5"/>
+        <!-- Center node -->
+        <circle cx="200" cy="140" r="38" fill="#161614" stroke="#C8553D" stroke-width="2"/>
+        <text x="200" y="136" text-anchor="middle" fill="#E5E0D8" font-family="Source Serif 4, serif" font-size="11" font-weight="700">Discovery</text>
+        <text x="200" y="152" text-anchor="middle" fill="#E5E0D8" font-family="Source Serif 4, serif" font-size="11" font-weight="700">&amp; Scoping</text>
+        <!-- Don't-build list -->
+        <circle cx="100" cy="80" r="30" fill="#161614" stroke="#C8553D" stroke-width="1.5"/>
+        <text x="100" y="76" text-anchor="middle" fill="#C8553D" font-family="DM Sans, sans-serif" font-size="9" font-weight="600">Don't-Build</text>
+        <text x="100" y="90" text-anchor="middle" fill="#C8553D" font-family="DM Sans, sans-serif" font-size="9" font-weight="600">List</text>
+        <!-- Belief statements -->
+        <circle cx="320" cy="70" r="30" fill="#161614" stroke="#5B8A72" stroke-width="1.5"/>
+        <text x="320" y="66" text-anchor="middle" fill="#5B8A72" font-family="DM Sans, sans-serif" font-size="9" font-weight="600">Belief</text>
+        <text x="320" y="80" text-anchor="middle" fill="#5B8A72" font-family="DM Sans, sans-serif" font-size="9" font-weight="600">Statements</text>
+        <!-- Escalating commitment (danger) -->
+        <circle cx="100" cy="220" r="30" fill="#161614" stroke="#7A756E" stroke-width="1" stroke-dasharray="3 2"/>
+        <text x="100" y="216" text-anchor="middle" fill="#7A756E" font-family="DM Sans, sans-serif" font-size="8" font-weight="500">Escalating</text>
+        <text x="100" y="228" text-anchor="middle" fill="#7A756E" font-family="DM Sans, sans-serif" font-size="8" font-weight="500">Commitment</text>
+        <!-- Customer trust -->
+        <circle cx="320" cy="220" r="30" fill="#161614" stroke="#5B8A72" stroke-width="1.5"/>
+        <text x="320" y="216" text-anchor="middle" fill="#5B8A72" font-family="DM Sans, sans-serif" font-size="9" font-weight="600">Customer</text>
+        <text x="320" y="230" text-anchor="middle" fill="#5B8A72" font-family="DM Sans, sans-serif" font-size="9" font-weight="600">Trust</text>
+        <!-- Prototype -->
+        <circle cx="480" cy="70" r="26" fill="#161614" stroke="#2A2A26" stroke-width="1.5"/>
+        <text x="480" y="74" text-anchor="middle" fill="#E5E0D8" font-family="DM Sans, sans-serif" font-size="9">Prototype</text>
+        <!-- Eval harness -->
+        <circle cx="560" cy="150" r="26" fill="#161614" stroke="#2A2A26" stroke-width="1.5"/>
+        <text x="560" y="147" text-anchor="middle" fill="#E5E0D8" font-family="DM Sans, sans-serif" font-size="8">Eval</text>
+        <text x="560" y="159" text-anchor="middle" fill="#E5E0D8" font-family="DM Sans, sans-serif" font-size="8">Harness</text>
+        <!-- Productized -->
+        <circle cx="560" cy="250" r="26" fill="#161614" stroke="#2A2A26" stroke-width="1.5"/>
+        <text x="560" y="254" text-anchor="middle" fill="#E5E0D8" font-family="DM Sans, sans-serif" font-size="8">Productized</text>
+      </svg>
+      <figcaption>How discovery and scoping connects to the downstream FDE practice arc — the dashed line marks the danger zone.</figcaption>
+    </figure>
+
+  </main>
+
+  <!-- Sidebar -->
+  <aside>
+
+    <!-- Three things tracker -->
+    <div class="sidebar-section">
+      <h3>Three things to notice</h3>
+      <div class="tracker-item" id="tracker-1">
+        <div class="tracker-icon">1</div>
+        <span>Discovery can be sold as a billable deliverable, not treated as pre-sales overhead.</span>
+      </div>
+      <div class="tracker-item" id="tracker-2">
+        <div class="tracker-icon">2</div>
+        <span>A structured discovery spike kills 40–60% of proposed features before any engineer starts building.</span>
+      </div>
+      <div class="tracker-item" id="tracker-3">
+        <div class="tracker-icon">3</div>
+        <span>The primary output artifact from scoping is a don't-build list, not a build plan.</span>
+      </div>
+    </div>
+
+    <!-- Share block -->
+    <div class="sidebar-section">
+      <h3>Share the reframe</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem;line-height:1.5;font-style:italic;">"The real product an FDE ships is a 'don't build' list. Everything else is evidence for why each item belongs on it."</p>
+      <div class="share-block">
+        <button class="share-btn" onclick="copyReframe(this)" aria-label="Copy reframe text">Copy text</button>
+        <button class="share-btn" onclick="shareTwitter()" aria-label="Share on Twitter">Post</button>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="citations">
+    <strong>Sources</strong><br>
+    Palantir Inc., Q4 2024 Earnings Call, February 6, 2025. FY2024 commercial revenue surpassing $1 billion; bootcamp go-to-market mechanism described by management on the call.<br>
+    Discovery-spike practice pattern: named technique in professional software delivery, referenced extensively in practitioner literature through early 2025. Reported feature-kill rate of 40–60% during structured spikes.
+  </div>
+  <div class="footer-links">
+    <a href="https://iggym.github.io/fde-field-notes/">Home</a>
+    <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Back to top</a>
+  </div>
+</footer>
+
+<script>
+  // Progress bar
+  function updateProgress() {
+    var scrollTop = window.scrollY;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    var bar = document.getElementById('progress');
+    bar.style.width = pct + '%';
+    bar.setAttribute('aria-valuenow', Math.round(pct));
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+
+  // Mobile drawer
+  function toggleDrawer() {
+    document.getElementById('drawer').classList.toggle('open');
+  }
+  // Close drawer on outside click
+  document.addEventListener('click', function(e) {
+    var drawer = document.getElementById('drawer');
+    var hamburger = document.querySelector('.hamburger');
+    if (drawer.classList.contains('open') && !drawer.contains(e.target) && !hamburger.contains(e.target)) {
+      drawer.classList.remove('open');
+    }
+  });
+
+  // Engagement arc widget
+  function showStage(stage) {
+    // Update active node
+    document.querySelectorAll('.arc-node').forEach(function(n) { n.classList.remove('active'); });
+    document.querySelector('.arc-node[data-stage="' + stage + '"]').classList.add('active');
+    // Show detail
+    document.querySelectorAll('.arc-detail').forEach(function(d) { d.classList.remove('visible'); });
+    document.getElementById('stage-' + stage).classList.add('visible');
+    // Hide don't-build branch when switching stages
+    document.getElementById('dont-build-branch').classList.remove('visible');
+  }
+  function toggleDontBuild(e) {
+    e.stopPropagation();
+    document.getElementById('dont-build-branch').classList.toggle('visible');
+  }
+
+  // Interactive checklist
+  function toggleCheck(li) {
+    li.classList.toggle('checked');
+  }
+
+  // Recall cards
+  function flipCard(card) {
+    card.classList.toggle('flipped');
+  }
+  // Keyboard support for recall cards
+  document.querySelectorAll('.recall-card').forEach(function(card) {
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipCard(card); }
+    });
+  });
+
+  // Share
+  function copyReframe(btn) {
+    var text = 'The real product an FDE ships is a "don\'t build" list. Everything else is evidence for why each item belongs on it.';
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Copy text'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+  function shareTwitter() {
+    var text = encodeURIComponent('The real product an FDE ships is a "don\'t build" list. Everything else is evidence for why each item belongs on it.');
+    window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
+  }
+
+  // Three things tracker — unlock as reader scrolls past each insight
+  var trackerUnlocked = { 1: false, 2: false, 3: false };
+  function checkTrackerInsights() {
+    var insightEls = [
+      { id: 1, el: document.querySelector('[data-insight="1"]') },
+      { id: 2, el: document.querySelector('[data-insight="2"]') },
+      { id: 3, el: document.querySelector('[data-insight="3"]') }
+    ];
+    var scrollY = window.scrollY + window.innerHeight * 0.6;
+    insightEls.forEach(function(item) {
+      if (!trackerUnlocked[item.id] && item.el) {
+        var top = item.el.getBoundingClientRect().top + window.scrollY;
+        if (scrollY > top) {
+          trackerUnlocked[item.id] = true;
+          document.getElementById('tracker-' + item.id).classList.add('unlocked');
+        }
+      }
+    });
+  }
+  window.addEventListener('scroll', checkTrackerInsights, { passive: true });
+
+  // Scroll-driven perspective reveal (content shape change)
+  var scrollRevealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('[data-scroll-reveal]').forEach(function(el) {
+    scrollRevealObserver.observe(el);
+  });
+
+  // Generic scroll-reveal for other elements
+  var genericRevealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.scroll-reveal-content:not([data-scroll-reveal])').forEach(function(el) {
+    genericRevealObserver.observe(el);
+  });
+
+  // Keyboard support for arc nodes
+  document.querySelectorAll('.arc-node').forEach(function(node) {
+    node.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        showStage(node.getAttribute('data-stage'));
+      }
+    });
+  });
+
+  // Initial calls
+  updateProgress();
+  checkTrackerInsights();
+</script>
+
+</body>
+</html>
