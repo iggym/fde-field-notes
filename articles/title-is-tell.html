@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Title Is The Tell — FDE Field Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCFBF8;--ink:#12110F;--muted:#6B665F;--line:#E8E2D9;--accent:#FF4D00;--card:#FFFFFF;--pill:#F2EDE6}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Newsreader",serif;line-height:1.7}
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:9999;width:0}
+#topbar{position:sticky;top:0;z-index:100;background:rgba(252,251,248,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+#topbar a{color:var(--ink);text-decoration:none;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase}
+.breadcrumb{display:flex;gap:8px;align-items:center;color:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:11px}
+.hamburger{display:none;cursor:pointer}
+@media(max-width:880px){.hamburger{display:block}.navlinks{display:none}.navlinks.open{display:flex;flex-direction:column;position:absolute;top:48px;left:0;right:0;background:var(--bg);padding:16px;border-bottom:1px solid var(--line)}}
+.grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns: 1fr 320px;gap:40px;padding:32px 24px}
+@media(max-width:880px){.grid{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(32px,6vw,64px);line-height:0.95;letter-spacing:-0.03em;margin:0 0 12px;font-weight:600}
+.meta{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:0.06em}
+.spectrum{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--card);margin:20px 0;display:flex;flex-direction:column;gap:12px}
+.spectrum-bar{height:8px;border-radius:999px;background:linear-gradient(90deg,#ccc 0%, var(--accent) 100%);position:relative}
+.spectrum-labels{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;font-size:10px;text-transform:uppercase;color:var(--muted)}
+.pullquote{border-left:3px solid var(--accent);padding:12px 18px;margin:28px 0;font-size:22px;line-height:1.3;font-style:italic;background:var(--pill);border-radius:0 12px 12px 0}
+.share{border:1px dashed var(--line);padding:16px;border-radius:12px;background:var(--card);display:flex;flex-direction:column;gap:10px}
+.share.row{display:flex;gap:8px;flex-wrap:wrap}
+.share button,a.btn{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);cursor:pointer;text-decoration:none;color:var(--ink)}
+.share button.primary{background:var(--ink);color:white}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+figcaption{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:8px}
+#things{position:sticky;top:72px;display:flex;flex-direction:column;gap:8px}
+.thing{opacity:0.35;transition:.3s;display:flex;gap:8px;font-size:13px}
+.thing.on{opacity:1}
+.reveal{opacity:0;transform:translateY(18px);transition:.6s}
+.reveal.in{opacity:1;transform:none}
+.comp{display:flex;flex-direction:column;gap:12px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar{height:18px;background:var(--line);border-radius:999px;flex:1;position:relative;overflow:hidden}
+.bar>div{height:100%;background:var(--ink);border-radius:999px;transition:width.5s}
+input[type=range]{width:100%}
+.checklist label{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
+.recall{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+@media(max-width:600px){.recall{grid-template-columns:1fr}}
+.recall-card{border:1px solid var(--line);padding:12px;border-radius:12px;background:var(--pill);cursor:pointer}
+.recall-card.ans{display:none;margin-top:8px;font-size:13px}
+.recall-card.open.ans{display:block}
+footer{border-top:1px solid var(--line);padding:24px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.bar>div{transition:none}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header id="topbar">
+<div style="display:flex;gap:16px;align-items:center">
+<a href="https://iggym.github.io/fde-field-notes/">← FDE FIELD NOTES</a>
+<div class="breadcrumb"><span>/</span><span>2026-03-14</span><span>/</span><span>title-is-tell</span></div>
+</div>
+<div style="display:flex;gap:16px;align-items:center">
+<span class="meta" id="rt">6 MIN</span>
+<div class="hamburger" onclick="document.querySelector('.navlinks').classList.toggle('open')">☰</div>
+<div class="navlinks" style="display:flex;gap:12px"><a href="https://iggym.github.io/fde-field-notes/">HOME</a></div>
+</div>
+</header>
+<div class="grid">
+<main>
+<div class="hero">
+<h1>The Title Is The Tell</h1>
+<p class="meta">MARCH 14, 2026 · MARKET OBSERVATIONS · 6 MIN READ</p>
+<p style="font-size:18px;color:var(--muted);max-width:60ch">You are comparing three offers with three different names for the same work. The market did that on purpose.</p>
+</div>
+<div class="spectrum" id="reframeWidget">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em">BOLD REFRAME</div>
+<div style="font-size:20px;line-height:1.3;font-weight:600">The fragmented title market is not confusion. It is price discovery for who owns deployment risk.</div>
+<div class="spectrum-bar"><div id="spectrumDot" style="position:absolute;width:10px;height:10px;background:var(--accent);border-radius:50%;top:-1px;left:70%;transition:left.4s"></div></div>
+<div class="spectrum-labels"><span>Generic SWE</span><span>Owns Outcome</span></div>
+<input type="range" min="0" max="100" value="70" id="spectrumRange" aria-label="Reframe contrast slider">
+<figcaption>Slide to see how companies shift language when they want you to own the last mile, not just ship code.</figcaption>
+</div>
+<article style="max-width:65ch">
+<p><strong>Last May, OpenAI spent $4 billion to buy a company built around a job title.</strong> Not a model. A function. The entity was called The Deployment Company, a shell for roughly 150 forward deployed engineers who knew how to land inside a bank or retailer and make models stay live. Same week, Anthropic launched an enterprise services arm staffed the same way, in partnership with Blackstone and Goldman Sachs. Salesforce then committed to hiring around a thousand FDEs for Agentforce.</p>
+<p>In parallel, postings labeled Forward Deployed Engineer grew about 800% between January and September 2025. Reuters, citing LinkedIn, pegged broader demand growth at 42-fold from 2023 to 2025. That is not a rebrand. That is a labor market learning where its bottleneck lives.</p>
+<p id="insight1-anchor">[BEAT 1] <strong>BEFORE:</strong> you read title fragmentation as sloppy hiring. <strong>AFTER:</strong> you read it as firms signaling risk allocation.</p>
+<p>The market now lists at least six names for adjacent work: Forward Deployed Engineer at Palantir, Forward Deployed AI Engineer, Applied AI Engineer at Anthropic, Agent Software Engineer, AI Forward Deployed Engineer at Salesforce, Deployment Engineer at OpenAI. Each name carries a different compensation band and a different implicit contract. OpenAI's New York FDE posting listed $220K to $280K plus equity. Levels.fyi data aggregated in the same window puts traditional FDEs at $238K average total comp, range $205K to $486K, mid-level AI FDEs at $300K to $450K, senior at $500K+ at frontier labs, staff traditional at $630K+.</p>
+<div class="pullquote" id="snap">The title tells you who gets paged when the demo stops working.</div>
+<p id="insight2-anchor">This is the mechanism: when a company writes Forward Deployed Engineer, it is buying insurance against the gap between access and adoption. PwC's analysis of close to a billion postings found a 56% wage premium for AI skills, up from 25% a year earlier — a steepening price for the same underlying model access. You are not being paid for knowing the model. You are being paid for carrying deployment risk inside a customer with messy data, legacy auth, and a sales ops workflow no one documented. Paraform's May note put it bluntly: the companies winning enterprise deals in 2026 are not the ones with the best models, but the ones that can actually deploy them.</p>
+<p id="insight3-anchor">[BEAT 2] <strong>TURN:</strong> The same skill — sitting with the user until the new habit sticks — explains both the comp variance and the failure mode when teams try to centralize the role.</p>
+<p>Here is the nuance that matters for you. An FDE is described internally as part consultant, part engineer, part translator who owns the loop from what should we build to it is live and the customer can run it without us. Shopify's CEO memo that circulated widely in 2025 captured the second half: using AI well is a skill that needs to be learned by using it a lot. That human adoption cost is why FDE postings stay open for months and why firms pay $30K to $60K extra in base for AI fluency on top of deployment chops.</p>
+<p>The strongest counterargument says titles will collapse back to Software Engineer once models get easier to deploy. Evidence against that in this window: even as models improved, firms added deployment headcount, not less. The 800% growth happened after GPT-4o and Claude 3.5 made prototyping trivial. Easier models increased, not decreased, the demand for people who own production behavior, because now every team can build a demo that fails in production.</p>
+<div class="card reveal" id="scrollReveal">
+<h3 style="margin:0 0 8px">What you can do</h3>
+<ol>
+<li>Ask: who gets paged first when output quality drops for one customer? If answer is not you, the title is inflated and comp should reflect that.</li>
+<li>Ask for the last time they killed a pilot before code. Listen for a story with a name and a date.</li>
+<li>Map your offer to risk, not label: on-call for customer prod, travel, ownership of evals, and whether success is measured by deployment retention at 90 days.</li>
+<li>Choose the team that tracks adoption habit metrics, not just model latency.</li>
+</ol>
+<figcaption>Scroll-reveal: layout shifts when this enters view to force a second read.</figcaption>
+</div>
+<div class="card" id="checklistCard">
+<h3 style="margin-top:0">Run this before you sign</h3>
+<div class="checklist" id="checklist">
+<label><input type="checkbox"> Title includes customer prod ownership in writing</label>
+<label><input type="checkbox"> Comp bands broken out: base vs equity vs risk premium</label>
+<label><input type="checkbox"> Eval ownership defined — you own a customer-tuned harness, not a benchmark</label>
+<label><input type="checkbox"> Handoff metric: team can run without you at 90 days</label>
+</div>
+<figcaption>Interactive checklist for narrative guidance — check what you have confirmed.</figcaption>
+</div>
+<div class="recall" id="recall">
+<div class="recall-card" onclick="this.classList.toggle('open')"><strong>Q: What grew 800%?</strong><div class="ans">FDE-labeled postings Jan-Sep 2025, per hiring data tracked across boards.</div></div>
+<div class="recall-card" onclick="this.classList.toggle('open')"><strong>Q: What is the PwC premium?</strong><div class="ans">56% wage premium for AI skills in 2025, up from 25% — analysis of ~1B postings.</div></div>
+<div class="recall-card" onclick="this.classList.toggle('open')"><strong>Q: OpenAI's deployment bet?</strong><div class="ans">$4B entity around FDE function, ~150 engineers in, $220-280K base NY posting.</div></div>
+<div class="recall-card" onclick="this.classList.toggle('open')"><strong>Q: Levels.fyi delta?</strong><div class="ans">Traditional FDE avg $238K ($205-486K); mid AI FDE $300-450K; senior $500K+; staff $630K+.</div></div>
+</div>
+<div class="card" id="cta">
+<p><strong>24-hour action:</strong> Open your last three FDE offers or saved roles. Rewrite each title as a one-sentence risk contract: what breaks, who owns it, how you are measured at day 90. If you cannot write it, email the hiring manager and ask.</p>
+</div>
+<svg viewBox="0 0 600 200" style="width:100%;margin:24px 0" role="img" aria-label="Concept map relating market signals to practice">
+<rect x="10" y="80" width="110" height="40" rx="8" fill="#E8E2D9" stroke="#12110F"/><text x="65" y="104" text-anchor="middle" font-family="IBM Plex Mono" font-size="10">TITLE VARIANCE</text>
+<rect x="170" y="20" width="110" height="40" rx="8" fill="#FFFFFF" stroke="#12110F"/><text x="225" y="44" text-anchor="middle" font-family="IBM Plex Mono" font-size="10">RISK PREMIUM</text>
+<rect x="170" y="140" width="110" height="40" rx="8" fill="#FFFFFF" stroke="#12110F"/><text x="225" y="164" text-anchor="middle" font-family="IBM Plex Mono" font-size="10">ADOPTION WORK</text>
+<rect x="340" y="80" width="110" height="40" rx="8" fill="#12110F"/><text x="395" y="104" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="white">FDE VALUE</text>
+<rect x="490" y="80" width="100" height="40" rx="8" fill="#FF4D00"/><text x="540" y="104" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="white">RETENTION</text>
+<line x1="120" y1="100" x2="170" y2="40" stroke="#12110F" stroke-dasharray="4 4"/><line x1="120" y1="100" x2="170" y2="160" stroke="#12110F" stroke-dasharray="4 4"/><line x1="280" y1="40" x2="340" y2="100" stroke="#12110F"/><line x1="280" y1="160" x2="340" y2="100" stroke="#12110F"/><line x1="450" y1="100" x2="490" y2="100" stroke="#FF4D00" stroke-width="2"/>
+</svg>
+<figcaption>Concept map: title variance signals risk and adoption work; both resolve to measurable retention.</figcaption>
+</article>
+<div class="share" style="margin:24px 0">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px">SHARE THIS REFRAME</div>
+<div id="shareText" style="font-size:14px">The fragmented FDE title market is not confusion. It is price discovery for who owns deployment risk.</div>
+<div class="row">
+<button class="primary" onclick="navigator.clipboard.writeText(document.getElementById('shareText').innerText+' '+window.location.href)">Copy Text & Link</button>
+<a class="btn" id="xShare" target="_blank">Share to X</a>
+<a class="btn" id="liShare" target="_blank">Share to LinkedIn</a>
+</div>
+</div>
+</main>
+<aside>
+<div id="things">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">THREE THINGS TRACKER</div>
+<div class="thing" id="t1">○ Title variance encodes risk contract, not vanity</div>
+<div class="thing" id="t2">○ PwC 56% premium measures adoption cost, not model IQ</div>
+<div class="thing" id="t3">○ $4B bet proves deployment is the product</div>
+</div>
+<div class="card comp" id="centerpiece" style="margin-top:20px">
+<h3 style="margin:0">Comp Explorer</h3>
+<p style="font-size:13px;color:var(--muted)">Interactive bar chart — drag to filter by ownership level.</p>
+<div class="bar-row"><span style="width:90px;font-family:'IBM Plex Mono';font-size:11px">Trad FDE</span><div class="bar"><div id="b1" style="width:55%"></div></div><span style="font-family:'IBM Plex Mono';font-size:11px">$238K avg</span></div>
+<div class="bar-row"><span style="width:90px;font-family:'IBM Plex Mono';font-size:11px">Mid AI FDE</span><div class="bar"><div id="b2" style="width:75%"></div></div><span style="font-family:'IBM Plex Mono';font-size:11px">$300-450K</span></div>
+<div class="bar-row"><span style="width:90px;font-family:'IBM Plex Mono';font-size:11px">Senior</span><div class="bar"><div id="b3" style="width:92%"></div></div><span style="font-family:'IBM Plex Mono';font-size:11px">$500K+</span></div>
+<div class="bar-row"><span style="width:90px;font-family:'IBM Plex Mono';font-size:11px">Staff</span><div class="bar"><div id="b4" style="width:100%"></div></div><span style="font-family:'IBM Plex Mono';font-size:11px">$630K+</span></div>
+<input type="range" id="compRange" min="0" max="100" value="50">
+<div id="compDetail" style="font-size:12px;background:var(--pill);padding:8px;border-radius:8px">Move slider: left = low risk, right = high risk. Bands shift with responsibility, not just seniority.</div>
+<figcaption>Bar chart: comp ranges from Levels.fyi and Paraform May 2026 synthesis. Move slider to simulate risk premium.</figcaption>
+</div>
+<div class="card" style="margin-top:16px">
+<h4 style="margin:0 0 8px">Sources</h4>
+<ul style="margin:0;padding-left:16px;font-size:12px;line-height:1.5">
+<li>800% posting growth Jan-Sep 2025 — Paraform</li>
+<li>$4B deployment co, $220-280K base — Substack</li>
+<li>Levels.fyi $238K, $205-486K, $300-450K, $500K+, $630K+ — Paraform</li>
+<li>42-fold demand — Medium citing Reuters</li>
+<li>56% premium — PwC via Paraform</li>
+</ul>
+</div>
+</aside>
+</div>
+<footer>
+<div>© FDE Field Notes — <a href="https://iggym.github.io/fde-field-notes/">Home</a> — <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">Top ↑</a></div>
+<div style="margin-top:8px">Citations: Paraform, Substack, Medium analyses from research window 2025-03-14 to 2026-03-14.</div>
+</footer>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;const scrolled=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;document.getElementById('progress').style.width=scrolled+'%';});
+function initShare(){const txt=encodeURIComponent(document.getElementById('shareText').innerText);const url=encodeURIComponent(window.location.href);document.getElementById('xShare').href=`https://x.com/intent/post?text=${txt}&url=${url}`;document.getElementById('liShare').href=`https://www.linkedin.com/sharing/share-offsite/?url=${url}`;}
+initShare();
+const sr=document.getElementById('spectrumRange');const dot=document.getElementById('spectrumDot');if(sr){sr.addEventListener('input',e=>{dot.style.left=e.target.value+'%';});}
+const cr=document.getElementById('compRange');const cd=document.getElementById('compDetail');const b1=document.getElementById('b1'),b2=document.getElementById('b2'),b3=document.getElementById('b3'),b4=document.getElementById('b4');
+if(cr){cr.addEventListener('input',e=>{const v=parseInt(e.target.value);b1.style.width=(30+v*0.4)+'%';b2.style.width=(40+v*0.5)+'%';b3.style.width=(50+v*0.45)+'%';b4.style.width=(60+v*0.4)+'%';if(v<33)cd.innerText='Low risk: internal enablement. Titles say AI Engineer. Comp lower, no prod pager.';else if(v<66)cd.innerText='Mid risk: customer embedding, eval ownership. Titles say Forward Deployed / Applied AI. $300-450K.';else cd.innerText='High risk: you own adoption and 90-day retention. Titles say Staff FDE / Agent Eng. $500K+ to $630K+.';});}
+const io=new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');}});},{threshold:0.2});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){const id=en.target.id;if(id==='insight1-anchor')document.getElementById('t1').classList.add('on');if(id==='insight2-anchor')document.getElementById('t2').classList.add('on');if(id==='insight3-anchor')document.getElementById('t3').classList.add('on');}});},{threshold:0.5});
+['insight1-anchor','insight2-anchor','insight3-anchor'].forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+</script>
+</body>
+</html>
