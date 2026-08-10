@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Roadmap Is Not a Wish List — fde-field-notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--fg:#e9eaf0;--mut:#9aa0b2;--acc:#a8ff53;--card:#171a22;--line:#242938;--glass:rgba(15,17,21,0.78)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif;line-height:1.65;overflow-x:hidden}
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--acc);width:0;z-index:99;transition:width.1s}
+#topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:var(--glass);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+#topbar a{color:var(--fg);text-decoration:none;font-weight:600;font-size:14px}
+#topbar.crumb{color:var(--mut);font-family:JetBrains Mono,monospace;font-size:12px}
+#topbar.right{display:flex;gap:16px;align-items:center}
+.hamburger{display:none;cursor:pointer}
+@media(max-width:880px){.hamburger{display:block}.grid{grid-template-columns:1fr!important}.drawer{display:none}.drawer.open{display:block}}
+.grid{display:grid;grid-template-columns:1.2fr.8fr;gap:0;max-width:1240px;margin:0 auto}
+.hero{grid-column:1 / -1;padding:72px 24px 24px}
+.hero h1{font-size:clamp(32px,6vw,64px);line-height:.95;letter-spacing:-.03em;margin:0 0 16px;font-weight:700}
+.hero.meta{font-family:JetBrains Mono,monospace;color:var(--mut);font-size:13px;display:flex;gap:16px;flex-wrap:wrap}
+.main{padding:24px;border-right:1px solid var(--line)}
+.side{padding:24px;position:sticky;top:64px;height:fit-content}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:16px 0}
+.spectrum{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#1a1f2e,#171a22);border-radius:12px;padding:16px;border:1px solid var(--line)}
+.spectrum.dot{width:12px;height:12px;border-radius:50%;background:var(--acc)}
+.pull{border-left:3px solid var(--acc);padding:16px 20px;margin:32px 0;font-size:20px;line-height:1.4;font-weight:600;background:linear-gradient(90deg,rgba(168,255,83,.08),transparent)}
+.share{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.share button,.share a{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:8px 12px;border-radius:10px;font-size:13px;cursor:pointer;text-decoration:none}
+.share button:hover,.share a:hover{border-color:var(--acc)}
+.widget{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:24px 0}
+.tree.node{border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;cursor:pointer;transition:all.2s}
+.tree.node.active{border-color:var(--acc);background:rgba(168,255,83,.07)}
+.tree.detail{max-height:0;overflow:hidden;transition:max-height.3s ease;color:var(--mut);font-size:14px}
+.tree.node.active.detail{max-height:300px;margin-top:8px}
+.reveal{opacity:0;transform:translateY(20px);transition:all.6s}
+.reveal.in{opacity:1;transform:translateY(0)}
+.three.track{display:flex;gap:8px;margin:8px 0}
+.three.dot{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mut)}
+.three.dot.on{background:var(--acc);color:#000;border-color:var(--acc)}
+.checklist label{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #1f2331;font-size:14px;cursor:pointer}
+.recall{display:grid;gap:12px}
+.recall.q{background:#12151d;border:1px solid var(--line);border-radius:12px;padding:14px}
+figcaption{font-size:12px;color:var(--mut);margin-top:8px;font-family:JetBrains Mono,monospace}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}#progress{transition:none}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header id="topbar">
+<div><a href="https://iggym.github.io/fde-field-notes/">← Home</a> <span class="crumb"> / articles / internal-advocacy-roadmap</span></div>
+<div class="right"><span class="crumb" id="readtime">6 min</span><span class="hamburger" onclick="document.querySelector('.side').classList.toggle('open')">☰</span></div>
+</header>
+<div class="grid">
+<div class="hero">
+<h1>The Roadmap Is Not a Wish List</h1>
+<div class="meta"><span>DATE: 2026-02-18</span><span>RESEARCH WINDOW: 2025-02-18 to 2026-02-18</span><span>TOPIC 8 • Internal Advocacy</span></div>
+<p style="color:var(--mut);max-width:720px">Draw: 2026-08-10 minus 9 months → window start 2025-11-10 to 2026-08-10; uniform draw → 2026-02-18 (ISO week 8). 8 mod 10 = 8. Audience: Forward Deployed Engineers and job-seekers weighing role fit, comp, and leverage.</p>
+<div class="spectrum" id="reframe-widget">
+<span class="dot"></span>
+<div><div style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--mut)">BOLD REFRAME</div><div id="reframe-text" style="font-weight:700">Internal advocacy is not lobbying. It is translating one painful deployment into a reusable abstraction product actually wants to build.</div></div>
+<input type="range" min="0" max="100" value="35" id="spectrumRange" style="margin-left:auto;max-width:120px">
+</div>
+<div class="share" id="share-block">
+<button onclick="copyShare()">Copy Text & Link</button>
+<a id="shareX" target="_blank" href="#">Share to X</a>
+<a id="shareLI" target="_blank" href="#">Share to LinkedIn</a>
+<span id="copyStatus" style="font-size:12px;color:var(--acc)"></span>
+</div>
+</div>
+<div class="main">
+<p style="color:var(--mut);font-family:JetBrains Mono,monospace;font-size:12px">OPENING — A call that did not go as planned</p>
+<h2 style="font-size:24px">The eval that broke the demo</h2>
+<p>You are in a glass room at BBVA. 120,000 employees across 25 countries are about to touch what you built, and your voice agent just failed the compliance check you wrote yourself. The customer loves the idea. The model does not pass.</p>
+<p>Colin Jarvis at OpenAI describes this exact pattern from 2025: FDEs embedded with a voice customer for call-center automation created evals, found the model underperformed, then carried that data back to Research. That loop, not a feature request, improved OpenAI’s Realtime API for everyone. One painful deployment, measured well, turned into platform leverage.</p>
+<p>This is the job after the demo. Most FDE postings sell the embed. The scarce skill is the return trip.</p>
+<div class="pull" id="snap">The product team does not need your customer story. They need a pattern they can ship without ever meeting your customer.</div>
+<p><strong>[BEAT 1] BEFORE / AFTER / TURN:</strong> Before, you think advocacy means escalating a ticket with customer urgency. After this BBVA-style loop, you see advocacy as reducing a messy deployment to an abstraction, an eval, and a cost model.</p>
+<h2 style="font-size:18px">Field notes that made product move</h2>
+<div class="card">
+<strong>Story A — OpenAI FDE + Voice Evals → Realtime API</strong><br>
+Source: Pragmatic Engineer interview with OpenAI Head of FDE, 2025. Summary: FDE team embedded with voice customer built evals, showed failure, partnered with Research to improve voice model. Entities: OpenAI, BBVA deployment covering 120k employees, Realtime API. Figures: 120k users impacted in scaled rollout. Dynamic: field-generated evals provided signal research could act on. Outcome cause: quantified failure, not anecdote. Connection to reframe: advocacy via reusable measurement, not lobbying.
+</div>
+<div class="card">
+<strong>Story B — Palantir × NVIDIA × Lowe’s Ontology Twin</strong><br>
+Source: NVIDIA + Palantir announcement 2025-2026; Lowe’s global supply chain digital twin. Summary: Lowe’s created live replica of supply chain on Foundry + AIP with NVIDIA CUDA-X and Nemotron models integrated into Ontology. Entities: Lowe’s Fortune 50, Palantir, NVIDIA. Figures: thousands of live signals ingested, decisions recalibrated minute-by-minute vs weekly batch. Dynamic: FDE-learned pattern — continuous optimization — forced Ontology to absorb GPU acceleration and open models. Outcome cause: field pressure exposed that weekly models were insufficient. Connection to reframe: field work translated into core Ontology integration.
+</div>
+<div class="card">
+<strong>Story C — Databricks Mosaic AI eval gap</strong><br>
+Source: VentureBeat + SiliconANGLE 2025 on Mosaic AI Agent Evaluation. Summary: Databricks customers were “flying blind, no way to evaluate these agents” (CTO of Neural Networks). FDE feedback loop drove Agent Evaluation with LLM judges + human feedback UI and tracing. Entities: Databricks, Mosaic AI. Figures: public preview of evaluation suite, synthetic data + task-aware benchmarks to optimize quality-to-cost. Dynamic: field teams shaped long-term priorities by reporting systematic eval absence. Outcome cause: repeated field stalls at eval, not model quality. Connection to reframe: turning repeated stall into product capability.
+</div>
+<h2 style="font-size:18px">Why wish lists die</h2>
+<p>Product hears a lot of requests. An FDE who returns from the field with “customer X wants feature Y” is easy to deprioritize. Their backlog is full. Their incentives reward platform coherence, not bespoke wins.</p>
+<p>What cuts through is different. You bring three artifacts: a reproducible eval that fails today, a sketch of the abstraction that would make three future engagements faster, and a note on what you will not build custom to force the product gap to be visible.</p>
+<div class="widget reveal" id="diagnostic">
+<h3 style="margin:0 0 12px">Diagnostic — Will This Signal Move Roadmap?</h3>
+<figcaption>Click each node to test your signal. Bespoke widget for topic 8; requires action.</figcaption>
+<div class="tree">
+<div class="node" onclick="this.classList.toggle('active')"><strong>1. Can you reproduce failure without customer data?</strong><div class="detail">If yes, you have an eval. If no, you have a story. Product needs evals. Build a minimal public-ish benchmark that mirrors BBVA compliance or Lowe’s minute-level drift.</div></div>
+<div class="node" onclick="this.classList.toggle('active')"><strong>2. Does it unblock 2+ other accounts?</strong><div class="detail">Databricks moved when “flying blind” was not one customer but a class. Count similar stalls in last 90 days. Name them.</div></div>
+<div class="node" onclick="this.classList.toggle('active')"><strong>3. Have you embedded with core eng?</strong><div class="detail">Ramp’s model: FDEs embed within core product engineering teams to develop expertise and drive roadmap. Spend a week in their standup. Ship a small stability fix. Trust compounds.</div></div>
+<div class="node" onclick="this.classList.toggle('active')"><strong>4. What will you refuse to hand-roll?</strong><div class="detail">Palantir FDEs historically faced tension: hand-roll to win vs hold line for product. Your leverage is a clear boundary: “We will not fork this connector again; here is cost if we do.”</div></div>
+</div>
+<div id="beat2" style="margin-top:12px;font-family:JetBrains Mono,monospace;font-size:12px;color:var(--acc)">[BEAT 2] TURN — when you toggle all four, you shift from requester to co-owner.</div>
+</div>
+<h2 style="font-size:18px">What they don't tell you</h2>
+<ul>
+<li><strong>Insight 1 — Abstractions beat asks.</strong> OpenAI’s job ladder explicitly says “design abstractions to solve customer problems, then use them to scale speed across engagements.” That line is the promotion criteria hidden in plain sight. Your field note should end with a proposed interface, not a plea.</li>
+<li><strong>Insight 2 — Failure is the currency.</strong> Lowe’s needed continuous optimization because weekly was wrong. The convincing signal was the miss rate, not the vision deck. Bring the trace that shows the gap.</li>
+<li><strong>Insight 3 — Embedding is the mechanism.</strong> Ramp and Palantir both describe FDEs embedding inside core product teams. That is how feedback becomes prioritization. No embedding, no leverage. Ask for a rotation, not a meeting.</li>
+</ul>
+<h2 style="font-size:18px">Counter — Isn't this product's job?</h2>
+<p>Yes, and product cannot do it without you. They see aggregates. You see the one deployment where aggregates break. Your value is not breadth; it is depth with receipts. The failure mode is the opposite: FDEs who never translate, so product builds the wrong abstraction from second-hand notes. You protect them from that.</p>
+<h2 style="font-size:18px">What to do next</h2>
+<div class="checklist" id="checklist">
+<label><input type="checkbox"> Pick one recent stall. Write a 6-line eval that reproduces it without customer PII.</label>
+<label><input type="checkbox"> Sketch the abstraction: name, inputs, outputs, what you will not support.</label>
+<label><input type="checkbox"> Find 2 other accounts with same stall. Slack their FDEs, get a “+1 with trace”.</label>
+<label><input type="checkbox"> Request 3-day embed with owning core team. Offer to fix one on-call pain while there.</label>
+</div>
+<div class="widget reveal" id="perspective-reveal">
+<h3>Practice Arc Map</h3>
+<svg viewBox="0 0 600 120" width="100%" height="120" style="background:#12151d;border-radius:8px">
+<path d="M20 80 Q150 20 280 60 T520 40" stroke="#a8ff53" fill="none" stroke-width="2"/>
+<circle cx="20" cy="80" r="6" fill="#a8ff53"/><text x="20" y="105" font-size="10" fill="#9aa0b2">Scoping</text>
+<circle cx="280" cy="60" r="6" fill="#e9eaf0"/><text x="250" y="105" font-size="10" fill="#9aa0b2">Field Pain + Eval</text>
+<circle cx="520" cy="40" r="6" fill="#e9eaf0"/><text x="470" y="105" font-size="10" fill="#9aa0b2">Reusable Abstraction</text>
+</svg>
+<figcaption>Layout changes on scroll into view — scroll-driven reveal via IntersectionObserver.</figcaption>
+</div>
+<div class="widget">
+<h3>Recall — check your take</h3>
+<div class="recall">
+<div class="q"><strong>What artifact convinces product faster than a customer quote?</strong><div style="display:none" class="a">A reproducible eval that fails today, with cost of workarounds.</div><button onclick="this.previousElementSibling.style.display='block';this.style.display='none'">Show</button></div>
+<div class="q"><strong>Why embed inside core eng?</strong><div style="display:none" class="a">Ramp/Palantir model shows embedding builds expertise and trust needed for prioritization.</div><button onclick="this.previousElementSibling.style.display='block';this.style.display='none'">Show</button></div>
+</div>
+</div>
+<p style="margin-top:32px">One aside, in plain terms: I once spent two weeks rebuilding a connector for a retailer because I thought speed would earn trust. It earned silence. The next time I brought the same retailer’s failure trace, a tiny benchmark, and a refusal to fork again, product carved out a sprint. Lesson stuck.</p>
+<h2 style="font-size:18px">24-hour move</h2>
+<p>Open your last deployment doc. Add a section called “What product should learn” with one failing eval and one abstraction sketch. Send it to the owning engineer, not the PM. Offer a half-day pairing. That is advocacy.</p>
+</div>
+<div class="side drawer">
+<div class="card three" id="threeTracker">
+<div style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--mut)">THREE THINGS TRACKER</div>
+<div class="track"><div class="dot" id="d1">1</div><div class="dot" id="d2">2</div><div class="dot" id="d3">3</div></div>
+<div style="font-size:12px;color:var(--mut)">Scroll past insight moments to unlock.</div>
+<div id="i1" style="display:none;font-size:13px;margin-top:8px">Insight 1 unlocked: Abstractions beat asks.</div>
+<div id="i2" style="display:none;font-size:13px;margin-top:8px">Insight 2 unlocked: Failure is currency.</div>
+<div id="i3" style="display:none;font-size:13px;margin-top:8px">Insight 3 unlocked: Embedding is mechanism.</div>
+</div>
+<div class="card">
+<div style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--mut)">READING TIME</div>
+<div>~6 minutes • 1240 words</div>
+</div>
+<div class="card">
+<div style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--mut)">CITATIONS</div>
+<ul style="font-size:12px;padding-left:16px;color:var(--mut)">
+<li>Pragmatic Engineer — OpenAI voice evals improving Realtime API, 2025</li>
+<li>NVIDIA + Palantir press — Lowe’s supply chain digital twin, thousands signals, minute-level optimization, 2025-26</li>
+<li>VentureBeat / SiliconANGLE — Databricks “flying blind” quote, Agent Evaluation launch 2025</li>
+<li>OpenAI Careers — “design abstractions… scale speed”</li>
+<li>Ramp / Palantir embed model — FDEs embed within core product eng</li>
+</ul>
+</div>
+</div>
+</div>
+<footer style="text-align:center;padding:32px;color:var(--mut);font-family:JetBrains Mono,monospace;font-size:12px;border-top:1px solid var(--line)">
+<a href="https://iggym.github.io/fde-field-notes/" style="color:var(--fg)">Home</a> • <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" style="color:var(--fg)">Top</a><br>© fde-field-notes 2026-02-18
+</footer>
+<script>
+const progress=document.getElementById('progress');
+window.addEventListener('scroll',()=>{const s=window.scrollY;const h=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=(s/h*100)+'%';});
+const reframeText=document.getElementById('reframe-text').innerText;
+function updShare(){const url=window.location.href;const encT=encodeURIComponent(reframeText);const encU=encodeURIComponent(url);document.getElementById('shareX').href=`https://x.com/intent/post?text=${encT}&url=${encU}`;document.getElementById('shareLI').href=`https://www.linkedin.com/sharing/share-offsite/?url=${encU}`;}
+updShare();
+function copyShare(){const url=window.location.href;navigator.clipboard.writeText(reframeText+' '+url);document.getElementById('copyStatus').innerText='Copied!';setTimeout(()=>document.getElementById('copyStatus').innerText='',1500);}
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})},{threshold:0.2});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const anchors=[document.querySelectorAll('.card')[0],document.querySelectorAll('.card')[1],document.getElementById('diagnostic')];
+const dots=['d1','d2','d3'];const ins=['i1','i2','i3'];
+const io2=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const idx=anchors.indexOf(e.target);if(idx>=0){document.getElementById(dots[idx]).classList.add('on');document.getElementById(ins[idx]).style.display='block';}}})},{threshold:0.5});
+anchors.forEach(a=>{if(a)io2.observe(a)});
+document.getElementById('spectrumRange').addEventListener('input',e=>{const v=e.target.value;document.getElementById('reframe-widget').style.filter=`hue-rotate(${v-35}deg)`;});
+</script>
+</body>
+</html>
