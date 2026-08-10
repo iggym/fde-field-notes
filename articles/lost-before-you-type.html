@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost Before You Type — FDE Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F0E8;--bg-alt:#EDE7DB;--fg:#2A2520;--fg-sec:#5C534A;--muted:#9A8E82;
+  --accent:#C45D2C;--accent-light:#E8A87C;--card:#FFFDF8;--border:#D9D0C4;
+  --success:#4A7C59;--warning:#B8860B;--danger:#A0522D;
+  --serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
+  --radius:8px;--topbar-h:56px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--sans);background:var(--bg);color:var(--fg);line-height:1.7;-webkit-font-smoothing:antialiased}
+/* Progress bar */
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:1001;width:0;transition:width .1s linear}
+/* Topbar */
+#topbar{position:fixed;top:3px;left:0;right:0;height:var(--topbar-h);z-index:1000;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:rgba(245,240,232,.87);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px}
+#topbar .home-link{font-family:var(--serif);font-size:1rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+#topbar .home-link:hover{color:var(--accent)}
+#topbar .breadcrumb{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+#topbar .breadcrumb span{color:var(--fg-sec)}
+#topbar .reading-time{margin-left:auto;font-size:.78rem;color:var(--muted);white-space:nowrap}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0}
+.hamburger svg{width:24px;height:24px;stroke:var(--fg);fill:none;stroke-width:2;stroke-linecap:round}
+/* Drawer */
+#drawer-overlay{position:fixed;inset:0;background:rgba(42,37,32,.35);z-index:999;opacity:0;pointer-events:none;transition:opacity .25s}
+#drawer-overlay.open{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;right:-300px;width:280px;height:100%;z-index:1000;
+  background:var(--card);border-left:1px solid var(--border);padding:72px 20px 24px;
+  transition:right .3s ease;overflow-y:auto}
+#drawer.open{right:0}
+#drawer h3{font-family:var(--serif);font-size:1rem;margin-bottom:12px;color:var(--fg)}
+#drawer .close-drawer{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;padding:4px}
+#drawer .close-drawer svg{width:20px;height:20px;stroke:var(--fg);fill:none;stroke-width:2;stroke-linecap:round}
+/* Layout */
+.layout{display:grid;grid-template-columns:1fr 260px;gap:40px;max-width:1080px;margin:0 auto;padding:calc(var(--topbar-h) + 24px) 24px 60px}
+main{min-width:0}
+aside{position:sticky;top:calc(var(--topbar-h) + 24px);align-self:start}
+/* Hero */
+.hero{margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.hero .date-tag{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;color:var(--fg);margin-bottom:12px}
+.hero .subtitle{font-size:1.05rem;color:var(--fg-sec);line-height:1.6;max-width:560px}
+/* Article */
+.article-body p{margin-bottom:1.1em;font-size:1rem;color:var(--fg);line-height:1.75}
+.article-body p:last-child{margin-bottom:0}
+/* Pull quote */
+.pull-quote{margin:32px 0;padding:20px 24px;border-left:3px solid var(--accent);
+  background:var(--bg-alt);font-family:var(--serif);font-size:1.2rem;line-height:1.5;color:var(--fg)}
+/* Beat markers */
+.beat-marker{margin:28px 0 20px;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.beat-marker .beat-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:600;margin-bottom:8px}
+.beat-marker .beat-before{font-size:.88rem;color:var(--muted);text-decoration:line-through;margin-bottom:4px}
+.beat-marker .beat-after{font-size:.95rem;color:var(--fg);font-weight:600}
+.beat-marker .beat-turn{font-size:.85rem;color:var(--fg-sec);margin-top:6px;font-style:italic}
+/* Spectrum widget */
+.spectrum{margin:32px 0;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.spectrum-bar{height:8px;border-radius:4px;background:linear-gradient(to right,var(--muted),var(--accent));margin-bottom:16px}
+.spectrum-views{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.spectrum-view{padding:14px;border-radius:var(--radius)}
+.spectrum-view.conventional{background:var(--bg-alt);color:var(--muted)}
+.spectrum-view.reframed{background:rgba(196,93,44,.08);color:var(--accent);font-weight:600}
+.spectrum-view .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+/* Scroll reveal words */
+.scatter-words{display:inline-flex;gap:6px;transition:gap .6s ease}
+.scatter-words .word{display:inline-block;transition:transform .6s ease,opacity .6s ease}
+.scatter-words:not(.aligned) .word:nth-child(1){transform:translateX(-4px) rotate(-1.5deg);opacity:.55}
+.scatter-words:not(.aligned) .word:nth-child(2){transform:translateX(5px) rotate(2deg);opacity:.5}
+.scatter-words.aligned .word{transform:translateX(0) rotate(0);opacity:1}
+/* Engagement arc widget */
+.arc-widget{margin:36px 0;padding:28px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.arc-main-path{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:0;transition:margin-bottom .4s ease}
+.arc-main-path.has-branches{margin-bottom:8px}
+.arc-node{padding:8px 14px;font-size:.82rem;font-weight:500;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);white-space:nowrap}
+.arc-connector{width:28px;height:2px;background:var(--border);flex-shrink:0}
+.arc-decision{border-color:var(--accent);color:var(--accent);cursor:pointer;font-weight:700;position:relative;transition:background .2s,transform .15s}
+.arc-decision:hover{background:rgba(196,93,44,.1);transform:scale(1.04)}
+.arc-decision:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.arc-decision::after{content:'';position:absolute;inset:-4px;border-radius:calc(var(--radius) + 4px);border:2px solid var(--accent);opacity:0;animation:pulse-ring 2s ease-out infinite}
+@keyframes pulse-ring{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(1.12)}}
+.arc-branches{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-height:0;opacity:0;overflow:hidden;transition:max-height .5s ease,opacity .4s ease,margin .4s ease;margin-top:0}
+.arc-branches.revealed{max-height:600px;opacity:1;margin-top:20px}
+.arc-branch{padding:14px;border-radius:var(--radius);border:1px solid var(--border)}
+.arc-branch-danger{border-color:var(--danger);background:rgba(160,82,45,.05)}
+.arc-branch-success{border-color:var(--success);background:rgba(74,124,89,.05)}
+.arc-branch-warning{border-color:var(--warning);background:rgba(184,134,11,.05)}
+.arc-branch-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.arc-branch-danger .arc-branch-label{color:var(--danger)}
+.arc-branch-success .arc-branch-label{color:var(--success)}
+.arc-branch-warning .arc-branch-label{color:var(--warning)}
+.arc-branch-steps{display:flex;flex-direction:column;gap:6px}
+.arc-step{font-size:.78rem;color:var(--fg-sec);padding:4px 8px;background:rgba(255,255,255,.5);border-radius:4px}
+.arc-outcome{font-weight:700;font-size:.8rem}
+.arc-outcome-bad{color:var(--danger);background:rgba(160,82,45,.12)!important}
+.arc-outcome-good{color:var(--success);background:rgba(74,124,89,.12)!important}
+.arc-outcome-mixed{color:var(--warning);background:rgba(184,134,11,.12)!important}
+/* Aside box */
+.aside-box{margin:28px 0;padding:18px 22px;background:var(--bg-alt);border-left:3px solid var(--muted);font-size:.92rem;color:var(--fg-sec);font-style:italic;border-radius:0 var(--radius) var(--radius) 0}
+/* Guidance section */
+.guidance-section{margin-top:36px;padding-top:24px;border-top:1px solid var(--border)}
+.guidance-section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:16px}
+.guidance-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
+.guidance-item input[type=checkbox]{margin-top:5px;width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;cursor:pointer}
+.guidance-item p{font-size:.95rem;line-height:1.65;margin:0}
+.guidance-counter{font-size:.82rem;color:var(--muted);margin-top:8px}
+/* CTA */
+.cta-block{margin-top:32px;padding:20px 24px;background:rgba(196,93,44,.06);border:1px solid var(--accent);border-radius:var(--radius);font-size:.95rem;font-weight:500}
+/* Sidebar widgets */
+.sidebar-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px}
+.sidebar-card h3{font-family:var(--serif);font-size:.92rem;margin-bottom:12px;color:var(--fg)}
+.thing-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.82rem;color:var(--muted);transition:color .3s}
+.thing-item.unlocked{color:var(--fg)}
+.thing-icon{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;transition:border-color .3s,background .3s,color .3s}
+.thing-item.unlocked .thing-icon{border-color:var(--accent);background:var(--accent);color:#fff}
+/* Recall cards */
+.recall-section{margin-top:48px}
+.recall-section h2{font-family:var(--serif);font-size:1.2rem;margin-bottom:16px}
+.recall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.recall-card{perspective:600px;height:140px;cursor:pointer}
+.recall-card-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.recall-card.flipped .recall-card-inner{transform:rotateY(180deg)}
+.recall-card-front,.recall-card-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;justify-content:center;border:1px solid var(--border)}
+.recall-card-front{background:var(--card)}
+.recall-card-back{background:var(--bg-alt);transform:rotateY(180deg);font-size:.9rem;color:var(--fg-sec)}
+.recall-card-front .q-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px;font-weight:600}
+.recall-card-front p{font-size:.88rem;color:var(--fg);line-height:1.5}
+/* Concept map */
+.concept-map-section{margin-top:48px}
+.concept-map-section h2{font-family:var(--serif);font-size:1.2rem;margin-bottom:16px}
+.concept-map-svg{width:100%;max-width:600px;display:block;margin:0 auto}
+.concept-map-svg text{font-family:var(--sans);font-size:11px;fill:var(--fg-sec)}
+.concept-map-svg text.highlight{fill:var(--accent);font-weight:700;font-size:12px}
+.concept-map-svg line{stroke:var(--border);stroke-width:1.5}
+.concept-map-svg line.fail-path{stroke:var(--danger);stroke-dasharray:5 4;stroke-width:1.2}
+.concept-map-svg rect{fill:var(--card);stroke:var(--border);stroke-width:1.5;rx:6}
+.concept-map-svg rect.highlight{fill:rgba(196,93,44,.1);stroke:var(--accent);stroke-width:2}
+/* Share block */
+.share-block{margin-top:48px;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.share-block h2{font-family:var(--serif);font-size:1.1rem;margin-bottom:12px}
+.share-text{font-size:.88rem;color:var(--fg-sec);padding:12px;background:var(--bg);border-radius:6px;margin-bottom:14px;line-height:1.5;border:1px solid var(--border)}
+.share-buttons{display:flex;gap:10px;flex-wrap:wrap}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:.82rem;font-weight:500;cursor:pointer;text-decoration:none;color:var(--fg);transition:background .15s,border-color .15s}
+.share-btn:hover{background:var(--bg-alt);border-color:var(--muted)}
+.share-btn.copied{border-color:var(--success);color:var(--success)}
+.share-btn svg{width:16px;height:16px;flex-shrink:0}
+/* Footer */
+footer{border-top:1px solid var(--border);padding:32px 24px;max-width:1080px;margin:0 auto}
+footer h3{font-family:var(--serif);font-size:.95rem;margin-bottom:12px}
+footer ul{list-style:none;padding:0}
+footer li{font-size:.82rem;color:var(--fg-sec);margin-bottom:6px;padding-left:1em;position:relative}
+footer li::before{content:'';position:absolute;left:0;top:.6em;width:6px;height:1.5px;background:var(--muted)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:16px;border-top:1px solid var(--border)}
+.footer-bottom a{font-size:.82rem;color:var(--accent);text-decoration:none}
+.footer-bottom a:hover{text-decoration:underline}
+.scroll-top-btn{background:none;border:1px solid var(--border);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;color:var(--fg-sec);font-family:var(--sans);transition:background .15s}
+.scroll-top-btn:hover{background:var(--bg-alt)}
+/* Figcaptions */
+figcaption{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.5}
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+  .scatter-words:not(.aligned) .word{transform:none;opacity:1}
+  .arc-decision::after{animation:none}
+  .arc-branches{max-height:none;opacity:1}
+  .recall-card-inner{transition:none}
+}
+/* Responsive */
+@media(max-width:880px){
+  .hamburger{display:block}
+  #topbar .breadcrumb,#topbar .reading-time{display:none}
+  .layout{grid-template-columns:1fr;gap:24px;padding-top:calc(var(--topbar-h) + 16px)}
+  aside{position:static;display:none}
+  .spectrum-views{grid-template-columns:1fr}
+  .arc-branches{grid-template-columns:1fr}
+  .recall-grid{grid-template-columns:1fr}
+  .share-buttons{flex-direction:column}
+  .share-btn{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress" role="progressbar" aria-label="Reading progress"></div>
+
+<!-- Topbar -->
+<header id="topbar">
+  <a href="https://iggym.github.io/fde-field-notes/" class="home-link">FDE Field Notes</a>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="https://iggym.github.io/fde-field-notes/" style="color:var(--muted);text-decoration:none">Home</a>
+    <span aria-hidden="true">/</span>
+    <span>Lost Before You Type</span>
+  </nav>
+  <span class="reading-time" aria-label="Reading time">6 min read</span>
+  <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+
+<!-- Drawer -->
+<div id="drawer-overlay" aria-hidden="true"></div>
+<aside id="drawer" aria-label="Sidebar menu">
+  <button class="close-drawer" id="close-drawer-btn" aria-label="Close menu">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div id="drawer-things"></div>
+</aside>
+
+<!-- Main layout -->
+<div class="layout">
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="date-tag">March 3, 2025</div>
+      <h1>Lost Before You Type</h1>
+      <p class="subtitle">The invisible phase that decides every FDE engagement before an IDE opens.</p>
+    </section>
+
+    <!-- Article body -->
+    <article class="article-body">
+
+      <!-- Insight 1 sentinel -->
+      <span id="sentinel-1" aria-hidden="true" style="display:none"></span>
+
+      <p>In February 2025, Palantir reported $636 million in commercial revenue for fiscal year 2024 — 64 percent higher than the year before. Their primary mechanism for winning those customers isn't a product demo or an ROI slide deck. It's a multi-week process they call a "bootcamp": forward-deployed engineers show up at a prospective customer's site, sit down with their actual data and their actual people, and start working. The FDEs sit with the customer's analysts, run their actual queries against their actual databases, and watch where the process breaks. No deployment contract exists yet. Nobody has committed to buying anything. The FDEs are there to figure out what's worth building — and what the customer initially asked for frequently turns out to be a symptom, not the problem. A logistics company asks for route optimization; two weeks of working alongside their dispatchers reveals the real bottleneck is a data pipeline feeding bad inputs into every downstream system. Only after the bootcamp ends does a commercial agreement get signed. On their Q4 earnings call, executives described this not as a sales technique but as engineering work: the scoping, the trust-building, and the assumption-killing that determines whether anything useful ever ships. The people doing discovery build the solution. No handoff. No translation layer between what sales promised and what engineering can deliver.</p>
+
+      <!-- BEAT 1 -->
+      <div class="beat-marker" aria-label="Perspective shift beat 1">
+        <div class="beat-label">BEAT 1</div>
+        <div class="beat-before">Discovery is a preliminary step before the real engineering work begins.</div>
+        <div class="beat-after">Discovery IS the engineering work. Everything after is execution of decisions already made.</div>
+        <div class="beat-turn">The moment you realize every engagement failure you've seen was actually a discovery failure that just hadn't manifested as code yet.</div>
+      </div>
+
+      <p class="pull-quote">Every failed engagement was lost in the first two weeks. The code just hadn't been written yet.</p>
+
+      <!-- Spectrum widget -->
+      <div class="spectrum" role="img" aria-label="Spectrum contrasting conventional and reframed views of discovery">
+        <div class="spectrum-bar"></div>
+        <div class="spectrum-views">
+          <div class="spectrum-view conventional">
+            <div class="label">Conventional</div>
+            <div>Discovery is a pre-phase. A warm-up before the real work.</div>
+          </div>
+          <div class="spectrum-view reframed">
+            <div class="label">Reframed</div>
+            <div>Discovery is the work. Code is just execution.</div>
+          </div>
+        </div>
+        <figcaption>The conventional view treats discovery as a pre-phase. The reframe treats it as the work itself.</figcaption>
+      </div>
+
+      <p>The reason discovery feels like "not real work" is that its product is invisible: it's the assumptions that got killed before they could become bugs.</p>
+
+      <!-- Centerpiece widget: Engagement Arc -->
+      <div class="arc-widget" id="arc-widget">
+        <div class="arc-main-path" id="arc-main-path">
+          <div class="arc-node">Customer Contact</div>
+          <div class="arc-connector"></div>
+          <div class="arc-node">Week One On-Site</div>
+          <div class="arc-connector"></div>
+          <div class="arc-node">Assumptions Surface</div>
+          <div class="arc-connector"></div>
+          <div class="arc-node arc-decision" id="decision-point" role="button" tabindex="0" aria-label="Click to reveal the three engagement paths">
+            Decision Point
+          </div>
+        </div>
+        <div class="arc-branches" id="arc-branches" aria-hidden="true">
+          <div class="arc-branch arc-branch-danger">
+            <div class="arc-branch-label">Skip Discovery</div>
+            <div class="arc-branch-steps">
+              <div class="arc-step">Build Starts Immediately</div>
+              <div class="arc-step">Wrong Thing Built</div>
+              <div class="arc-step arc-outcome arc-outcome-bad">Rework and Erosion</div>
+            </div>
+          </div>
+          <div class="arc-branch arc-branch-success">
+            <div class="arc-branch-label">Structured Discovery</div>
+            <div class="arc-branch-steps">
+              <div class="arc-step">Shared Models Form</div>
+              <div class="arc-step">Accurate Build Starts</div>
+              <div class="arc-step arc-outcome arc-outcome-good">Ships and Sticks</div>
+            </div>
+          </div>
+          <div class="arc-branch arc-branch-warning">
+            <div class="arc-branch-label">Discovery, No Artifacts</div>
+            <div class="arc-branch-steps">
+              <div class="arc-step">Notes Taken, No Alignment</div>
+              <div class="arc-step">Ambiguous Scope</div>
+              <div class="arc-step arc-outcome arc-outcome-mixed">Partial, Fragile Success</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>Three paths from the same decision point. The quality of discovery determines which branch the engagement follows.</figcaption>
+      </div>
+
+      <!-- Insight 2 sentinel -->
+      <span id="sentinel-2" aria-hidden="true" style="display:none"></span>
+
+      <!-- Scroll-reveal section -->
+      <p id="scroll-reveal-para">AWS Professional Services has run a parallel pattern for years through their Well-Architected Review — a structured assessment across six architectural pillars that typically surfaces 20 to 40 improvement opportunities per engagement. AWS has published extensive case studies positioning these reviews as the standard entry point for professional services engagements. The formal deliverable is a prioritized remediation list. The actual deliverable is harder to name but more important: both the AWS team and the customer team walk out of the review using the same words for the same problems. When a customer engineer says "we have a reliability gap" and the AWS engineer knows precisely what they mean — because they both just spent two weeks mapping concrete failure scenarios against the same six-pillar framework — that alignment is the product. That <span class="scatter-words" id="scatter-target"><span class="word">shared</span><span class="word">vocabulary</span></span> is what prevents the build phase from becoming a slow-motion collapse. Without it, you get the pattern every FDE has lived through: "performance issues" means five different things to five people on the same call, and nobody notices until sprint four, when you've already built the wrong optimization and the political cost of changing direction has tripled.</p>
+
+      <!-- BEAT 2 -->
+      <div class="beat-marker" aria-label="Perspective shift beat 2">
+        <div class="beat-label">BEAT 2</div>
+        <div class="beat-before">The deliverable of discovery is a scoping document or technical brief.</div>
+        <div class="beat-after">The deliverable of discovery is shared mental models between your team and the customer's team.</div>
+        <div class="beat-turn">The document is just the receipt proving the models aligned — it's evidence of the work, not the work itself.</div>
+      </div>
+
+      <!-- Insight 3 sentinel -->
+      <span id="sentinel-3" aria-hidden="true" style="display:none"></span>
+
+      <p>The CNCF's 2024 State of Platform Engineering report, published in November, surfaced a related failure mode from the inside. Surveying hundreds of platform engineering practitioners about how they approached internal platform build-outs, the report found that teams which skipped formal discovery phases reported consistently higher rates of rework and abandoned features. The most common reason given for skipping wasn't time pressure or budget constraints. It was confidence: "we already know what our teams need." That stated confidence turned out to be a stronger predictor of failure than the technical complexity of the platform itself. Senior teams were just as vulnerable as junior ones. The harder the problem, the more dangerous the assumption that you understand it before you've looked.</p>
+
+      <p>Three different contexts — a vendor selling to enterprises, a cloud provider running assessments, internal platform teams building for their own organizations — and the same dynamic keeps appearing: the quality of the discovery phase determines the quality of everything that follows, and the organizations most confident they don't need discovery are the ones where its absence causes the most damage. The pattern is consistent enough to be useful: if someone on the engagement says "we don't need a discovery phase," that statement itself is the strongest signal that they do.</p>
+
+      <div class="aside-box">I've walked into customer sites with a clear mental model of what I was there to scope and walked out two weeks later with something completely different. That's not a miss — that's the job. If your discovery doesn't surprise you, you probably weren't paying attention.</div>
+
+      <p>The strongest counterargument is the one you'll hear in every procurement meeting: discovery costs real time and money upfront, and customers — especially those managing internal stakeholders who want deliverables — want to see momentum fast. The customer sees two weeks of "nothing to show for it." The alternative is two months of something that doesn't work. Palantir's numbers address this head-on. Their bootcamp-first model doesn't extend the overall engagement timeline — it compresses it. Build phases start with accurate scope instead of optimistic assumptions that unravel in month three. The two-week discovery investment prevents the two-month rework penalty. You pay now or you pay later, and later is always more expensive, because by then you're also paying for the political cost of having been wrong in front of the customer.</p>
+
+      <!-- Guidance -->
+      <section class="guidance-section">
+        <h2>What This Means For You</h2>
+        <div class="guidance-item">
+          <input type="checkbox" id="g1" aria-label="Mark guidance item as done">
+          <p><label for="g1">Write down your three strongest assumptions about what a new customer needs — before you talk to anyone on their team. Track which ones die during discovery. If all three survive intact, you didn't push hard enough.</label></p>
+        </div>
+        <div class="guidance-item">
+          <input type="checkbox" id="g2" aria-label="Mark guidance item as done">
+          <p><label for="g2">In your first stakeholder meeting, ask "what have you already tried, and why did it fail?" before you ask "what do you want built?" The first question surfaces constraints, organizational history, and the politics that determine whether your work gets adopted. The second just invites a wishlist that ignores all three.</label></p>
+        </div>
+        <div class="guidance-item">
+          <input type="checkbox" id="g3" aria-label="Mark guidance item as done">
+          <p><label for="g3">Produce at least one artifact from discovery that the customer's own team could use without you in the room. A decision tree. A failure-mode map. A prioritized backlog written in their language, not yours. If you can't point to something like that, you haven't built shared mental models. You've taken notes.</label></p>
+        </div>
+        <div class="guidance-counter" id="guidance-counter" aria-live="polite">0 of 3 completed</div>
+      </section>
+
+      <!-- CTA -->
+      <div class="cta-block">Within 24 hours, find the initial scoping document from your last engagement. Count how many problems that emerged during build were actually visible in week one but went unnamed. That number is the cost of weak discovery. Write it down.</div>
+
+    </article>
+
+    <!-- Recall cards -->
+    <section class="recall-section" aria-label="Retrieval practice">
+      <h2>Test Your Recall</h2>
+      <div class="recall-grid">
+        <div class="recall-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+          <div class="recall-card-inner">
+            <div class="recall-card-front">
+              <div class="q-label">Question</div>
+              <p>What is the actual product of a Well-Architected Review?</p>
+            </div>
+            <div class="recall-card-back">
+              Shared vocabulary — both teams using the same words for the same problems. The remediation list is just the receipt.
+            </div>
+          </div>
+        </div>
+        <div class="recall-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+          <div class="recall-card-inner">
+            <div class="recall-card-front">
+              <div class="q-label">Question</div>
+              <p>What did the CNCF report find was the strongest predictor of platform build failure?</p>
+            </div>
+            <div class="recall-card-back">
+              Team confidence that discovery was unnecessary — stronger predictor than technical complexity or team seniority.
+            </div>
+          </div>
+        </div>
+        <div class="recall-card" tabindex="0" role="button" aria-label="Flip card to see answer">
+          <div class="recall-card-inner">
+            <div class="recall-card-front">
+              <div class="q-label">Question</div>
+              <p>Why does Palantir's bootcamp compress overall engagement time?</p>
+            </div>
+            <div class="recall-card-back">
+              Build starts with accurate scope instead of optimistic guesses. The two-week discovery investment prevents the two-month rework penalty.
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption>Cover the answer, then click to check. If you hesitated, reread the corresponding section.</figcaption>
+    </section>
+
+    <!-- Concept map -->
+    <section class="concept-map-section" aria-label="Practice concept map">
+      <h2>Practice Map</h2>
+      <svg class="concept-map-svg" viewBox="0 0 600 220" role="img" aria-label="Concept map showing where discovery sits in the FDE engagement lifecycle">
+        <!-- Nodes -->
+        <rect x="10" y="10" width="130" height="36" class="highlight" rx="6"/>
+        <text x="75" y="33" text-anchor="middle" class="highlight">Scoping</text>
+        <rect x="200" y="10" width="140" height="36" rx="6"/>
+        <text x="270" y="33" text-anchor="middle">Shared Models</text>
+        <rect x="400" y="10" width="120" height="36" rx="6"/>
+        <text x="460" y="33" text-anchor="middle">Build Phase</text>
+        <rect x="400" y="80" width="120" height="36" rx="6"/>
+        <text x="460" y="103" text-anchor="middle">Ship</text>
+        <rect x="400" y="150" width="120" height="36" rx="6"/>
+        <text x="460" y="173" text-anchor="middle">Handoff</text>
+        <rect x="10" y="150" width="150" height="36" rx="6" style="fill:rgba(160,82,45,.06);stroke:var(--danger);stroke-width:1.2"/>
+        <text x="85" y="173" text-anchor="middle" style="fill:var(--danger);font-size:10px">Weak Discovery</text>
+        <!-- Forward paths -->
+        <line x1="140" y1="28" x2="200" y2="28"/>
+        <line x1="340" y1="28" x2="400" y2="28"/>
+        <line x1="460" y1="46" x2="460" y2="80"/>
+        <line x1="460" y1="116" x2="460" y2="150"/>
+        <!-- Failure path -->
+        <line x1="85" y1="150" x2="85" y2="90" class="fail-path"/>
+        <line x1="85" y1="90" x2="400" y2="50" class="fail-path"/>
+        <!-- Label for this note -->
+        <text x="75" y="60" text-anchor="middle" style="fill:var(--accent);font-size:9px;font-weight:600">THIS NOTE</text>
+        <line x1="75" y1="46" x2="75" y2="62" style="stroke:var(--accent);stroke-width:1"/>
+      </svg>
+      <figcaption>Where this note sits in the FDE engagement lifecycle. Weak discovery creates failure paths that ripple through every subsequent phase.</figcaption>
+    </section>
+
+    <!-- Social share -->
+    <section class="share-block" aria-label="Share this article">
+      <h2>Share This Reframe</h2>
+      <div class="share-text" id="share-text">Every failed FDE engagement was lost in the first two weeks — the code just hadn't been written yet. Discovery isn't a pre-phase. It IS the work.</div>
+      <div class="share-buttons">
+        <button class="share-btn" id="copy-btn" aria-label="Copy text and link to clipboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span>Copy Text &amp; Link</span>
+        </button>
+        <a class="share-btn" id="share-x" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share to X / Twitter">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span>Post to X</span>
+        </a>
+        <a class="share-btn" id="share-li" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share to LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          <span>Share on LinkedIn</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sidebar -->
+  <aside aria-label="Sidebar">
+    <div class="sidebar-card" id="things-tracker">
+      <h3>Things You'll Learn</h3>
+      <div class="thing-item" id="thing-1">
+        <div class="thing-icon" aria-hidden="true">&#10003;</div>
+        <span>Translation layers kill scope accuracy</span>
+      </div>
+      <div class="thing-item" id="thing-2">
+        <div class="thing-icon" aria-hidden="true">&#10003;</div>
+        <span>Shared vocabulary is the real deliverable</span>
+      </div>
+      <div class="thing-item" id="thing-3">
+        <div class="thing-icon" aria-hidden="true">&#10003;</div>
+        <span>Confidence predicts failure, not success</span>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <h3>Research Window</h3>
+      <p style="font-size:.82rem;color:var(--fg-sec);line-height:1.5">March 3, 2024 — March 3, 2025</p>
+    </div>
+  </aside>
+</div>
+
+<!-- Footer -->
+<footer>
+  <h3>Sources</h3>
+  <ul>
+    <li>Palantir Technologies, Q4 FY2024 earnings call transcript, February 3, 2025. FY2024 commercial revenue: $636M, +64% YoY.</li>
+    <li>AWS Well-Architected Framework documentation and Professional Services case studies, 2024. Six pillars; 20–40 improvement opportunities per review.</li>
+    <li>CNCF, "State of Platform Engineering 2024," published November 2024. Survey of platform engineering practitioners on discovery-phase practices and rework rates.</li>
+  </ul>
+  <div class="footer-bottom">
+    <a href="https://iggym.github.io/fde-field-notes/">FDE Field Notes</a>
+    <button class="scroll-top-btn" id="scroll-top-btn" aria-label="Scroll to top">Back to top</button>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* ── Progress bar ── */
+  var progressBar = document.getElementById('progress');
+  function updateProgress(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+  }
+  window.addEventListener('scroll', updateProgress, {passive:true});
+  updateProgress();
+
+  /* ── Hamburger / Drawer ── */
+  var hamburger = document.getElementById('hamburger-btn');
+  var drawer = document.getElementById('drawer');
+  var overlay = document.getElementById('drawer-overlay');
+  var closeBtn = document.getElementById('close-drawer-btn');
+  var drawerThings = document.getElementById('drawer-things');
+  function openDrawer(){
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    hamburger.setAttribute('aria-expanded','true');
+    drawerThings.innerHTML = document.getElementById('things-tracker').innerHTML;
+    syncDrawerThings();
+  }
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    hamburger.setAttribute('aria-expanded','false');
+  }
+  hamburger.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  function syncDrawerThings(){
+    for(var i=1;i<=3;i++){
+      var el = drawerThings.querySelector('#thing-'+i);
+      if(el && document.getElementById('thing-'+i).classList.contains('unlocked')){
+        el.classList.add('unlocked');
+      }
+    }
+  }
+
+  /* ── THREE THINGS tracker ── */
+  var thingsUnlocked = [false,false,false];
+  function unlockThing(n){
+    if(thingsUnlocked[n-1]) return;
+    thingsUnlocked[n-1] = true;
+    var el = document.getElementById('thing-'+n);
+    if(el) el.classList.add('unlocked');
+    syncDrawerThings();
+  }
+  var sentinels = [
+    {id:'sentinel-1', idx:1},
+    {id:'sentinel-2', idx:2},
+    {id:'sentinel-3', idx:3}
+  ];
+  var sentinelObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var s = sentinels.find(function(s){return s.id===e.target.id});
+        if(s) unlockThing(s.idx);
+      }
+    });
+  },{threshold:0.5});
+  sentinels.forEach(function(s){
+    var el = document.getElementById(s.id);
+    if(el) sentinelObs.observe(el);
+  });
+
+  /* ── Scroll-driven word alignment ── */
+  var scatterTarget = document.getElementById('scatter-target');
+  if(scatterTarget){
+    var scatterObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting) scatterTarget.classList.add('aligned');
+      });
+    },{threshold:0.6});
+    scatterObs.observe(scatterTarget);
+  }
+
+  /* ── Engagement arc widget ── */
+  var decisionPoint = document.getElementById('decision-point');
+  var arcBranches = document.getElementById('arc-branches');
+  var arcMainPath = document.getElementById('arc-main-path');
+  var arcRevealed = false;
+  function revealArc(){
+    if(arcRevealed) return;
+    arcRevealed = true;
+    arcBranches.classList.add('revealed');
+    arcBranches.setAttribute('aria-hidden','false');
+    arcMainPath.classList.add('has-branches');
+    decisionPoint.style.pointerEvents='none';
+    decisionPoint.style.opacity='0.7';
+  }
+  decisionPoint.addEventListener('click', revealArc);
+  decisionPoint.addEventListener('keydown', function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();revealArc();}
+  });
+  /* For reduced-motion: show branches by default */
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    revealArc();
+  }
+
+  /* ── Guidance checklist ── */
+  var checkboxes = document.querySelectorAll('.guidance-item input[type=checkbox]');
+  var counter = document.getElementById('guidance-counter');
+  function updateCounter(){
+    var c = 0;
+    checkboxes.forEach(function(cb){if(cb.checked) c++;});
+    counter.textContent = c + ' of 3 completed';
+  }
+  checkboxes.forEach(function(cb){cb.addEventListener('change', updateCounter);});
+
+  /* ── Recall cards ── */
+  document.querySelectorAll('.recall-card').forEach(function(card){
+    function flip(){card.classList.toggle('flipped');}
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}
+    });
+  });
+
+  /* ── Social share ── */
+  var shareText = document.getElementById('share-text').textContent.trim();
+  var pageUrl = window.location.href;
+  var encodedText = encodeURIComponent(shareText);
+  var encodedUrl = encodeURIComponent(pageUrl);
+
+  document.getElementById('share-x').href = 'https://x.com/intent/post?text=' + encodedText + '&url=' + encodedUrl;
+  document.getElementById('share-li').href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodedUrl;
+
+  var copyBtn = document.getElementById('copy-btn');
+  copyBtn.addEventListener('click', function(){
+    var full = shareText + '\n' + pageUrl;
+    navigator.clipboard.writeText(full).then(function(){
+      copyBtn.classList.add('copied');
+      copyBtn.querySelector('span').textContent = 'Copied';
+      setTimeout(function(){
+        copyBtn.classList.remove('copied');
+        copyBtn.querySelector('span').textContent = 'Copy Text & Link';
+      }, 2000);
+    });
+  });
+
+  /* ── Scroll to top ── */
+  document.getElementById('scroll-top-btn').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>
