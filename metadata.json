@@ -165,10 +165,10 @@
       "format": "field-note",
       "pillar": "customer-judgment",
       "tags": [
+        "fde",
         "customer-judgment",
         "discovery",
-        "scoping",
-        "forward-deployed-engineer"
+        "scoping"
       ],
       "reading_time_minutes": 6,
       "pinned": false,
@@ -373,6 +373,7 @@
       "format": "field-note",
       "pillar": "discovery-scoping",
       "tags": [
+        "fde",
         "discovery",
         "scoping",
         "customer-judgment",
@@ -455,6 +456,7 @@
       "format": "field-note",
       "pillar": "role-craft",
       "tags": [
+        "fde",
         "career-craft",
         "selection-pressure",
         "craft-reflection",
