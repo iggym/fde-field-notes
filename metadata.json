@@ -9,21 +9,153 @@
   },
   "articles": [
     {
-  "id": "000101",
-  "slug": "same-work-different-price",
-  "title": "Same Work, Different Price",
-  "hook": "The title fragmentation in FDE-adjacent roles isn't a taxonomy — it's a pricing mechanism. Same responsibilities, 30% comp gap, anchored to five words.",
-  "path": "articles/same-work-different-price.html",
-  "date": "2025-03-14",
-  "status": "published",
-  "format": "field-note",
-  "tags": ["fde", "comp", "title-fragmentation", "negotiation", "market-signals"],
-  "reading_time_minutes": 6,
-  "pinned": false,
-  "research_window": "2024-03-14 to 2025-03-14"
-},
+      "id": "20261006-context-is-the-integration",
+      "slug": "context-is-the-integration",
+      "title": "Context Is the Integration",
+      "hook": "MCP turned FDE glue code into a durable asset the customer owns. The work that's left — and that now matters most — is curating what each connector puts in front of the model.",
+      "path": "articles/context-is-the-integration.html",
+      "date": "2026-10-06",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "deployment-practice",
+      "tags": [
+        "fde",
+        "mcp",
+        "integration",
+        "context-engineering",
+        "agents"
+      ],
+      "reading_time_minutes": 4,
+      "pinned": false,
+      "research_window": "2024-11-25 to 2026-10-06"
+    },
     {
-      "id": "0001",
+      "id": "20261001-the-harness-moves-the-number",
+      "slug": "the-harness-moves-the-number",
+      "title": "The Harness Moves the Number",
+      "hook": "Same 4B model, same task, a 60-to-82% accuracy swing from harness design alone. The eval harness is the FDE's real deliverable — and the acceptance contract with the customer.",
+      "path": "articles/the-harness-moves-the-number.html",
+      "date": "2026-10-01",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "deployment-practice",
+      "tags": [
+        "fde",
+        "evals",
+        "eval-harness",
+        "reliability",
+        "model-selection"
+      ],
+      "reading_time_minutes": 4,
+      "pinned": false,
+      "research_window": "2025-05-01 to 2026-10-01"
+    },
+    {
+      "id": "20260929-the-handoff-is-the-product",
+      "slug": "the-handoff-is-the-product",
+      "title": "The Handoff Is the Product",
+      "hook": "Air Canada, Klarna and Cursor learned the same lesson in public: the path from the bot to a human isn't the failure mode of an AI deployment. It's the feature that makes it safe to ship.",
+      "path": "articles/the-handoff-is-the-product.html",
+      "date": "2026-09-29",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "deployment-practice",
+      "tags": [
+        "fde",
+        "customer-support",
+        "human-in-the-loop",
+        "escalation",
+        "production-incidents"
+      ],
+      "reading_time_minutes": 5,
+      "pinned": false,
+      "research_window": "2024-02-01 to 2026-09-29"
+    },
+    {
+      "id": "20260922-prompt-injection-is-a-permissions-bug",
+      "slug": "prompt-injection-is-a-permissions-bug",
+      "title": "Prompt Injection Is a Permissions Bug",
+      "hook": "Assume the model will be tricked. The FDE's job is to decide, during scoping, what a tricked agent can reach — and to make sure it can't reach all three legs of the lethal trifecta at once.",
+      "path": "articles/prompt-injection-is-a-permissions-bug.html",
+      "date": "2026-09-22",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "deployment-practice",
+      "tags": [
+        "fde",
+        "security",
+        "prompt-injection",
+        "agents",
+        "scoping"
+      ],
+      "reading_time_minutes": 5,
+      "pinned": false,
+      "research_window": "2025-06-01 to 2026-09-22"
+    },
+    {
+      "id": "20260915-dry-run-before-autonomy",
+      "slug": "dry-run-before-autonomy",
+      "title": "Dry Run Before Autonomy",
+      "hook": "\"Don't touch production\" in a prompt is a request. A read-only credential is a control. Agent tool loops need dry runs, idempotency and scoped access before they need autonomy.",
+      "path": "articles/dry-run-before-autonomy.html",
+      "date": "2026-09-15",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "deployment-practice",
+      "tags": [
+        "fde",
+        "agents",
+        "tool-use",
+        "guardrails",
+        "production-incidents"
+      ],
+      "reading_time_minutes": 5,
+      "pinned": false,
+      "research_window": "2025-07-01 to 2026-09-15"
+    },
+    {
+      "id": "20260908-rollback-is-the-feature",
+      "slug": "rollback-is-the-feature",
+      "title": "Rollback Is the Feature",
+      "hook": "The most instructive AI incidents of 2025 weren't fixed by better models. They were fixed by how fast someone could get back to the last known good state.",
+      "path": "articles/rollback-is-the-feature.html",
+      "date": "2026-09-08",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "deployment-practice",
+      "tags": [
+        "fde",
+        "rollback",
+        "production-incidents",
+        "evals",
+        "release-management"
+      ],
+      "reading_time_minutes": 5,
+      "pinned": false,
+      "research_window": "2025-04-01 to 2026-09-08"
+    },
+    {
+      "id": "20260810-title-is-tell",
+      "slug": "title-is-tell",
+      "title": "The Title Is The Tell",
+      "hook": "Fragmented FDE titles are not confusion — they are price discovery for deployment risk.",
+      "path": "articles/title-is-tell.html",
+      "date": "2026-08-10",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "market-comp",
+      "tags": [
+        "fde",
+        "comp",
+        "market-signals",
+        "career-craft"
+      ],
+      "reading_time_minutes": 6,
+      "pinned": false,
+      "research_window": "2025-08-10 to 2026-08-10"
+    },
+    {
+      "id": "20260317-not-yet-is-the-deliverable",
       "slug": "not-yet-is-the-deliverable",
       "title": "Not Yet Is the Deliverable",
       "hook": "The best FDEs aren't measured by what they ship — they're measured by what they refuse to build until the data proves it's ready.",
@@ -31,6 +163,7 @@
       "date": "2026-03-17",
       "status": "published",
       "format": "field-note",
+      "pillar": "customer-judgment",
       "tags": [
         "customer-judgment",
         "discovery",
@@ -42,7 +175,7 @@
       "research_window": "2026-02-10 to 2026-03-17"
     },
     {
-      "id": "0002",
+      "id": "20260218-roadmap-is-not-wish-list",
       "slug": "roadmap-is-not-wish-list",
       "title": "The Roadmap Is Not a Wish List",
       "hook": "Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.",
@@ -50,6 +183,7 @@
       "date": "2026-02-18",
       "status": "published",
       "format": "field-note",
+      "pillar": "internal-advocacy",
       "tags": [
         "fde",
         "internal-advocacy",
@@ -61,35 +195,48 @@
       "research_window": "2025-02-18 to 2026-02-18"
     },
     {
-  "id": "00021",
-  "slug": "the-courage-to-not-build",
-  "title": "The Courage to Not Build",
-  "hook": "The FDE's highest-leverage act is often refusing to build. 95% of AI pilots fail not because models break, but because organizations build before they're ready.",
-  "path": "articles/the-courage-to-not-build.html",
-  "date": "2026-01-06",
-  "status": "published",
-  "format": "field-note",
-  "tags": ["fde", "judgment", "customer-context", "ai-pilots", "career-craft"],
-  "reading_time_minutes": 6,
-  "pinned": false,
-  "research_window": "2025-01-06 to 2026-01-06"
-},
+      "id": "20260106-the-courage-to-not-build",
+      "slug": "the-courage-to-not-build",
+      "title": "The Courage to Not Build",
+      "hook": "The FDE's highest-leverage act is often refusing to build. 95% of AI pilots fail not because models break, but because organizations build before they're ready.",
+      "path": "articles/the-courage-to-not-build.html",
+      "date": "2026-01-06",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "customer-judgment",
+      "tags": [
+        "fde",
+        "judgment",
+        "customer-context",
+        "ai-pilots",
+        "career-craft"
+      ],
+      "reading_time_minutes": 6,
+      "pinned": false,
+      "research_window": "2025-01-06 to 2026-01-06"
+    },
     {
-  "id": "00022",
-  "slug": "customer-context-judgment-dont-build-this-yet",
-  "title": "Customer-Context Judgment: Knowing When to Say 'Don't Build This Yet'",
-  "hook": "Why 95% of enterprise AI pilots fail from unready data and broken workflows—and why an FDE's greatest leverage is diagnostic refusal.",
-  "path": "articles/customer-context-judgment-dont-build-this-yet.html",
-  "date": "2026-01-06",
-  "status": "published",
-  "format": "field-note",
-  "tags": ["fde", "customer-context", "diagnostic-refusal", "career-craft"],
-  "reading_time_minutes": 6,
-  "pinned": false,
-  "research_window": "2025-01-06 to 2026-01-06"
-},
+      "id": "20260106-customer-context-judgment-dont-build-this-yet",
+      "slug": "customer-context-judgment-dont-build-this-yet",
+      "title": "Customer-Context Judgment: Knowing When to Say 'Don't Build This Yet'",
+      "hook": "Why 95% of enterprise AI pilots fail from unready data and broken workflows—and why an FDE's greatest leverage is diagnostic refusal.",
+      "path": "articles/customer-context-judgment-dont-build-this-yet.html",
+      "date": "2026-01-06",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "customer-judgment",
+      "tags": [
+        "fde",
+        "customer-context",
+        "diagnostic-refusal",
+        "career-craft"
+      ],
+      "reading_time_minutes": 6,
+      "pinned": false,
+      "research_window": "2025-01-06 to 2026-01-06"
+    },
     {
-      "id": "0003",
+      "id": "20250318-when-the-building-stops",
       "slug": "when-the-building-stops",
       "title": "When the Building Stops",
       "hook": "\"Don't build this yet\" isn't a technical judgment — it's an information-architecture check.",
@@ -97,6 +244,7 @@
       "date": "2025-03-18",
       "status": "published",
       "format": "field-note",
+      "pillar": "customer-judgment",
       "tags": [
         "fde",
         "customer-judgment",
@@ -108,7 +256,7 @@
       "research_window": "2024-03-18 to 2025-03-18"
     },
     {
-      "id": "0004",
+      "id": "20250314-what-the-title-actually-prices",
       "slug": "what-the-title-actually-prices",
       "title": "What the Title Actually Prices",
       "hook": "The title on your offer letter isn't describing the work — it's describing the pricing bracket.",
@@ -116,18 +264,39 @@
       "date": "2025-03-14",
       "status": "published",
       "format": "field-note",
+      "pillar": "market-comp",
       "tags": [
         "comp",
         "titles",
-        "FDE",
+        "fde",
         "negotiation",
-        "market-data"
+        "market-signals"
       ],
       "reading_time_minutes": 5,
       "pinned": false
     },
     {
-      "id": "0005",
+      "id": "20250314-the-title-isnt-the-job",
+      "slug": "the-title-isnt-the-job",
+      "title": "The Title Isn't the Job",
+      "hook": "An 'FDE' title doesn't describe a role — it describes a company's bet about how software gets sold.",
+      "path": "articles/the-title-isnt-the-job.html",
+      "date": "2025-03-14",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "market-comp",
+      "tags": [
+        "fde",
+        "comp",
+        "title-fragmentation",
+        "career-decisions"
+      ],
+      "reading_time_minutes": 6,
+      "pinned": false,
+      "research_window": "2024-03-14 to 2025-03-14"
+    },
+    {
+      "id": "20250314-the-title-is-the-price",
       "slug": "the-title-is-the-price",
       "title": "The Title Is the Price",
       "hook": "Your title isn't describing your work. It's naming who absorbs the cost when an engagement goes sideways.",
@@ -135,12 +304,13 @@
       "date": "2025-03-14",
       "status": "published",
       "format": "field-note",
+      "pillar": "market-comp",
       "tags": [
         "comp",
         "titles",
-        "FDE",
+        "fde",
         "solutions-engineer",
-        "career",
+        "career-craft",
         "negotiation",
         "risk-pricing"
       ],
@@ -149,7 +319,28 @@
       "research_window": "2025-02-07 to 2025-03-14"
     },
     {
-      "id": "0006",
+      "id": "20250314-same-work-different-price",
+      "slug": "same-work-different-price",
+      "title": "Same Work, Different Price",
+      "hook": "The title fragmentation in FDE-adjacent roles isn't a taxonomy — it's a pricing mechanism. Same responsibilities, 30% comp gap, anchored to five words.",
+      "path": "articles/same-work-different-price.html",
+      "date": "2025-03-14",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "market-comp",
+      "tags": [
+        "fde",
+        "comp",
+        "title-fragmentation",
+        "negotiation",
+        "market-signals"
+      ],
+      "reading_time_minutes": 6,
+      "pinned": false,
+      "research_window": "2024-03-14 to 2025-03-14"
+    },
+    {
+      "id": "20250308-code-is-just-a-receipt",
       "slug": "code-is-just-a-receipt",
       "title": "Code Is Just a Receipt",
       "hook": "In forward-deployed engineering, discovery isn't a prelude to the engagement. It IS the engagement. The code that follows is just the receipt.",
@@ -157,6 +348,7 @@
       "date": "2025-03-08",
       "status": "published",
       "format": "field-note",
+      "pillar": "discovery-scoping",
       "tags": [
         "discovery",
         "scoping",
@@ -171,7 +363,7 @@
       "research_window": "2025-02-02 to 2025-03-08"
     },
     {
-      "id": "0007",
+      "id": "20250303-the-code-you-dont-write",
       "slug": "the-code-you-dont-write",
       "title": "The Code You Don't Write",
       "hook": "The real product an FDE ships is a \"don't build\" list. Everything else is evidence for why each item belongs on it.",
@@ -179,6 +371,7 @@
       "date": "2025-03-03",
       "status": "published",
       "format": "field-note",
+      "pillar": "discovery-scoping",
       "tags": [
         "discovery",
         "scoping",
@@ -192,26 +385,27 @@
       "research_window": "2025-01-27 to 2025-03-03"
     },
     {
-      "id": "0008",
-      "slug": "your-real-job-is-roadmap",
-      "title": "Your Real Job Is Roadmap",
-      "hook": "The FDE's highest-leverage output isn't code deployed — it's field signal that changes the roadmap.",
-      "path": "articles/your-real-job-is-roadmap.html",
-      "date": "2025-02-18",
+      "id": "20250303-lost-before-you-type",
+      "slug": "lost-before-you-type",
+      "title": "Lost Before You Type",
+      "hook": "Every failed engagement was lost in the first two weeks. The code just hadn't been written yet.",
+      "path": "articles/lost-before-you-type.html",
+      "date": "2025-03-03",
       "status": "published",
       "format": "field-note",
+      "pillar": "discovery-scoping",
       "tags": [
         "fde",
-        "internal-advocacy",
-        "product-roadmap",
-        "career-craft"
+        "discovery",
+        "scoping",
+        "engagement-lifecycle"
       ],
       "reading_time_minutes": 6,
       "pinned": false,
-      "research_window": "2024-02-18 to 2025-02-18"
+      "research_window": "2024-03-03 to 2025-03-03"
     },
     {
-      "id": "0009",
+      "id": "20250218-youre-not-deploying-youre-correcting",
       "slug": "youre-not-deploying-youre-correcting",
       "title": "You're Not Deploying, You're Correcting",
       "hook": "Your highest-output work isn't what you ship to the customer. It's what you ship back to your own product team.",
@@ -219,10 +413,11 @@
       "date": "2025-02-18",
       "status": "published",
       "format": "field-note",
+      "pillar": "internal-advocacy",
       "tags": [
         "fde",
         "internal-advocacy",
-        "product-roadmap",
+        "roadmap",
         "field-signals"
       ],
       "reading_time_minutes": 5,
@@ -230,7 +425,27 @@
       "research_window": "2024-02-18 to 2025-02-18"
     },
     {
-      "id": "0010",
+      "id": "20250218-your-real-job-is-roadmap",
+      "slug": "your-real-job-is-roadmap",
+      "title": "Your Real Job Is Roadmap",
+      "hook": "The FDE's highest-leverage output isn't code deployed — it's field signal that changes the roadmap.",
+      "path": "articles/your-real-job-is-roadmap.html",
+      "date": "2025-02-18",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "internal-advocacy",
+      "tags": [
+        "fde",
+        "internal-advocacy",
+        "roadmap",
+        "career-craft"
+      ],
+      "reading_time_minutes": 6,
+      "pinned": false,
+      "research_window": "2024-02-18 to 2025-02-18"
+    },
+    {
+      "id": "20250122-what-the-job-selects-for",
       "slug": "what-the-job-selects-for",
       "title": "What the Job Selects For",
       "hook": "The FDE role doesn't select for people skills. It selects for the ability to know the customer is wrong and say nothing — for three weeks.",
@@ -238,8 +453,9 @@
       "date": "2025-01-22",
       "status": "published",
       "format": "field-note",
+      "pillar": "role-craft",
       "tags": [
-        "fde-career",
+        "career-craft",
         "selection-pressure",
         "craft-reflection",
         "role-clarity"
@@ -247,46 +463,6 @@
       "reading_time_minutes": 6,
       "pinned": false,
       "research_window": "2024-12-18 to 2025-01-22"
-    },
-    {
-  "id": "0011",
-  "slug": "the-title-isnt-the-job",
-  "title": "The Title Isn't the Job",
-  "hook": "An 'FDE' title doesn't describe a role — it describes a company's bet about how software gets sold.",
-  "path": "articles/the-title-isnt-the-job.html",
-  "date": "2025-03-14",
-  "status": "published",
-  "format": "field-note",
-  "tags": ["fde", "comp", "title-fragmentation", "career-decisions"],
-  "reading_time_minutes": 6,
-  "pinned": false,
-  "research_window": "2024-03-14 to 2025-03-14"
-},{
-  "id": "20260314-title-is-tell",
-  "slug": "title-is-tell",
-  "title": "The Title Is The Tell",
-  "hook": "Fragmented FDE titles are not confusion — they are price discovery for deployment risk.",
-  "path": "articles/title-is-tell.html",
-  "date": "2026-03-14",
-  "status": "published",
-  "format": "field-note",
-  "tags": ["fde", "comp", "market", "career-craft"],
-  "reading_time_minutes": 6,
-  "pinned": false,
-  "research_window": "2025-03-14 to 2026-03-14"
-},{
-  "id": "00101",
-  "slug": "lost-before-you-type",
-  "title": "Lost Before You Type",
-  "hook": "Every failed engagement was lost in the first two weeks. The code just hadn't been written yet.",
-  "path": "articles/lost-before-you-type.html",
-  "date": "2025-03-03",
-  "status": "published",
-  "format": "field-note",
-  "tags": ["fde", "discovery", "scoping", "engagement-lifecycle"],
-  "reading_time_minutes": 6,
-  "pinned": false,
-  "research_window": "2024-03-03 to 2025-03-03"
-}
+    }
   ]
 }

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Injection Is a Permissions Bug — FDE Field Notes</title>
+<meta name="description" content="Assume the model will be tricked. The FDE&#x27;s job is to decide, during scoping, what a tricked agent can reach — and to make sure it can&#x27;t reach all three legs of the lethal trifecta at once.">
+<link rel="canonical" href="https://iggym.github.io/fde-field-notes/articles/prompt-injection-is-a-permissions-bug.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FDE Field Notes">
+<meta property="og:title" content="Prompt Injection Is a Permissions Bug">
+<meta property="og:description" content="Assume the model will be tricked. The FDE&#x27;s job is to decide, during scoping, what a tricked agent can reach — and to make sure it can&#x27;t reach all three legs of the lethal trifecta at once.">
+<meta property="og:url" content="https://iggym.github.io/fde-field-notes/articles/prompt-injection-is-a-permissions-bug.html">
+<meta property="article:published_time" content="2026-09-22">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Prompt Injection Is a Permissions Bug">
+<meta name="twitter:description" content="Assume the model will be tricked. The FDE&#x27;s job is to decide, during scoping, what a tricked agent can reach — and to make sure it can&#x27;t reach all three legs of the lethal trifecta at once.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Prompt Injection Is a Permissions Bug", "description": "Assume the model will be tricked. The FDE's job is to decide, during scoping, what a tricked agent can reach — and to make sure it can't reach all three legs of the lethal trifecta at once.", "datePublished": "2026-09-22", "url": "https://iggym.github.io/fde-field-notes/articles/prompt-injection-is-a-permissions-bug.html", "author": {"@type": "Organization", "name": "FDE Field Notes"}, "publisher": {"@type": "Organization", "name": "FDE Field Notes"}, "keywords": "fde, security, prompt-injection, agents, scoping"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;1,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/article.css">
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to article</a>
+<div id="progress" aria-hidden="true"></div>
+<nav class="topbar" aria-label="Site">
+  <a class="mark" href="../index.html">FDE Field Notes</a>
+  <span class="crumb">Deployment Practice · 5 min read</span>
+</nav>
+<main id="main" class="wrap">
+<article>
+<header class="hero">
+  <div class="eyebrow">Deployment Practice · Field Note</div>
+  <h1>Prompt Injection Is a Permissions Bug</h1>
+  <p class="dek">You can't sanitize natural language. You can remove a capability.</p>
+  <div class="dateline"><time datetime="2026-09-22">September 22, 2026</time> · 5 min read · research window 2025-06-01 to 2026-09-22</div>
+</header>
+
+<p>In June 2025, Microsoft patched a vulnerability in Microsoft 365 Copilot that researchers at Aim Security had named EchoLeak. Tracked as CVE-2025-32711 and rated 9.3 on the CVSS scale, it needed no click from the victim. An attacker sent a carefully written email to someone in the organization. When Copilot later pulled that email into its context while answering an ordinary question, the hidden instructions in it could get Copilot to leak data it had access to, from Outlook, OneDrive, SharePoint and Teams. Microsoft fixed it server-side and said there was no evidence of exploitation.</p>
+<p>Nothing in EchoLeak was a bug in the usual sense. No buffer overflowed and no token leaked. The model did what language models do: it followed instructions it found in its context. The vulnerability was the combination of things the assistant was allowed to touch.</p>
+
+<div class="reframe"><p>Prompt injection isn't a model-quality problem you wait out. It's a permissions problem you design out, at scoping time, one connector at a time.</p></div>
+
+<div class="shift" role="group" aria-label="Belief shift 1">
+  <div class="before"><div class="label">Before</div><p>Prompt injection is a model weakness. Better models and input filters will fix it.</p></div>
+  <div class="after"><div class="label">After</div><p>Assume the model will sometimes be fooled. Design so a fooled agent can't do much harm.</p></div>
+  <div class="turn"><div class="label">Turn</div><p>You can't sanitize natural language. You can remove a capability.</p></div>
+</div>
+
+<p>The same month, Simon Willison gave the pattern a name that has stuck: the <strong>lethal trifecta</strong>. An agent is exploitable when it has three things at once: access to private data, exposure to untrusted content, and some way to communicate externally. Any text an attacker can get in front of the model becomes a potential instruction, and if the agent can both read your secrets and send something out, those instructions can carry the secrets with them. Willison noted that researchers were reporting this exact exploit against production systems all the time, including Microsoft 365 Copilot, GitHub's official MCP server and GitLab's Duo chatbot.</p>
+<p>His point about guardrail products was blunt. A filter that catches 95 percent of injection attempts sounds good, but in security it's a failing grade, because attackers don't stop at one try. Model providers won't solve this for you either. The defense that works is structural: make sure no single session has all three legs.</p>
+
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-labelledby="f3t f3d">
+  <title id="f3t">The lethal trifecta</title>
+  <desc id="f3d">Three overlapping circles: private data, untrusted content, and external communication. Where all three overlap, an injected instruction can exfiltrate data. EchoLeak sits in the center: mailbox access, an attacker's email, and a channel out.</desc>
+  <circle cx="250" cy="120" r="95" fill="none" stroke="currentColor" class="line"/>
+  <circle cx="390" cy="120" r="95" fill="none" class="line"/>
+  <circle cx="320" cy="210" r="95" fill="none" class="line"/>
+  <text x="200" y="85" text-anchor="middle" font-size="13">Private data</text>
+  <text x="200" y="102" text-anchor="middle" font-size="11" class="muted">mail · files · CRM</text>
+  <text x="440" y="85" text-anchor="middle" font-size="13">Untrusted content</text>
+  <text x="440" y="102" text-anchor="middle" font-size="11" class="muted">email · web · tickets</text>
+  <text x="320" y="268" text-anchor="middle" font-size="13">External communication</text>
+  <text x="320" y="285" text-anchor="middle" font-size="11" class="muted">send · fetch URL · render image</text>
+  <circle cx="320" cy="150" r="30" class="box-accent"/>
+  <text x="320" y="147" text-anchor="middle" font-size="11" class="accent">exfil</text>
+  <text x="320" y="162" text-anchor="middle" font-size="10" class="muted">EchoLeak</text>
+</svg>
+<figcaption>Any two legs can be made safe. All three in one session means an attacker who controls the content can move the data.</figcaption>
+</figure>
+
+<p>In October 2025, Meta published a practical version of the same rule, the <strong>Agents Rule of Two</strong>. Within a session, an agent should have no more than two of: processing untrustworthy inputs, access to sensitive systems or private data, and the ability to change state or communicate externally. If a workflow truly needs all three, it shouldn't run autonomously; it needs a human in the loop. The framing matters because it starts from the right assumption: injection will sometimes get through, so limit what a compromised session can do.</p>
+
+<div class="shift" role="group" aria-label="Belief shift 2">
+  <div class="before"><div class="label">Before</div><p>Security reviews the agent once it's built.</p></div>
+  <div class="after"><div class="label">After</div><p>The trifecta is decided in the integration list, which the FDE writes during scoping.</p></div>
+  <div class="turn"><div class="label">Turn</div><p>"Can you also connect it to the shared inbox?" is a security decision wearing a feature request's clothes.</p></div>
+</div>
+
+<p>This is why the problem lands on FDEs specifically. Nobody designs an exfiltration path on purpose. It gets assembled one reasonable request at a time. The pilot reads the CRM: private data. Week three, the customer asks for it to summarize inbound support email: untrusted content. Week five, someone wants it to post summaries to a webhook, or the chat UI starts rendering Markdown images, and the third leg arrives quietly, because fetching an image from an attacker-chosen URL is a way to communicate externally. Each step is a small change in a sprint review. Together they recreate EchoLeak.</p>
+<p>The fix isn't to refuse the features. It's to split the sessions. The agent that reads untrusted email produces structured output and has no outbound tools. The agent that sends things never sees raw untrusted text. Outbound destinations are allowlisted. Where one flow really needs all three, a person approves the outbound step with the content in front of them.</p>
+
+<div class="widget" id="tri-widget">
+  <h3>Trifecta check for one agent session</h3>
+  <p class="noscript-note">Tick the capabilities this session has.</p>
+  <label><input type="checkbox" class="tri" data-k="A"> Reads private or sensitive data (mail, files, CRM, internal DBs).</label>
+  <label><input type="checkbox" class="tri" data-k="B"> Sees content an outsider could write (email, web pages, tickets, uploaded docs).</label>
+  <label><input type="checkbox" class="tri" data-k="C"> Can send, post, fetch a URL, render remote images, or change state.</label>
+  <output id="tri-out" aria-live="polite"></output>
+</div>
+
+<p>Every FDE has sat in the security review where someone asks, "Can it be tricked?" The wrong answer is a description of the system prompt and the filter vendor. The right answer is "Yes, assume it can. Here's everything a tricked session can reach, and here's why it can't reach all three." That answer wins the room because it's the same answer the security team would give about a human with the same access.</p>
+
+<h2>The case against</h2>
+<p>The objection is that removing a leg kills the use case. The whole point of an email assistant is to read your inbox and act on it. That's true for the product as a whole, but it doesn't have to be true for any single session. Splitting reader and actor sessions, allowlisting where data can go, and putting a person on the rare step that needs everything costs some latency and some engineering. Compare that to a 9.3 CVSS rating with your customer's name on it.</p>
+
+<h2>What this means for you</h2>
+<ul class="actions">
+  <li><strong>Draw the legs.</strong> For each agent session, list which tools or connectors provide private data, untrusted content and external communication.</li>
+  <li><strong>Count quiet channels as outbound.</strong> Rendered Markdown images, link unfurls, webhooks and writes to shared documents all communicate externally.</li>
+  <li><strong>Split sessions.</strong> Readers of untrusted content get no outbound tools; senders never see raw untrusted text.</li>
+  <li><strong>Allowlist destinations</strong> for every outbound tool.</li>
+  <li><strong>Put it in the SOW.</strong> "We assume prompt injection succeeds; this is the blast radius" is a sentence a CISO will sign.</li>
+</ul>
+<div class="now"><strong>24-hour action:</strong> Take your most-used agent and write down which tool gives it each leg of the trifecta. If all three show up in one session, raise it with the customer's security contact this week.</div>
+
+</article>
+<aside class="endmatter" aria-label="Takeaways and sources">
+  <section class="card share" aria-labelledby="share-h">
+    <h3 id="share-h">Share this reframe</h3>
+    <blockquote>Prompt injection isn't a model-quality problem you wait out. It's a permissions problem you design out, at scoping time, one connector at a time.</blockquote>
+    <div class="btns">
+      <button class="btn" id="share-copy" type="button">Copy text &amp; link</button>
+      <a class="btn" id="share-x" href="https://x.com/intent/tweet?url=https://iggym.github.io/fde-field-notes/articles/prompt-injection-is-a-permissions-bug.html" target="_blank" rel="noopener">Share to X</a>
+      <a class="btn" id="share-li" href="https://www.linkedin.com/sharing/share-offsite/?url=https://iggym.github.io/fde-field-notes/articles/prompt-injection-is-a-permissions-bug.html" target="_blank" rel="noopener">Share to LinkedIn</a>
+    </div>
+  </section>
+  <section class="card tracker" aria-labelledby="tracker-h">
+    <h3 id="tracker-h">Three things tracker</h3>
+    <label><input type="checkbox"> <span>Assume injection succeeds; design for what a fooled agent can reach.</span></label><label><input type="checkbox"> <span>Private data + untrusted content + a way out = exfiltration.</span></label><label><input type="checkbox"> <span>Every connector you scope adds or removes a leg.</span></label>
+  </section>
+  <section class="card facts" aria-labelledby="facts-h">
+    <h3 id="facts-h">Quick facts</h3>
+    <details><summary>What was EchoLeak?</summary><p>CVE-2025-32711, rated CVSS 9.3: a zero-click flaw in Microsoft 365 Copilot where a crafted email could get data pulled from the user's context. Microsoft fixed it server-side in June 2025 and reported no evidence of exploitation.</p></details><details><summary>What is the lethal trifecta?</summary><p>Simon Willison's name (June 2025) for an agent that combines access to private data, exposure to untrusted content, and the ability to communicate externally.</p></details><details><summary>What is the Agents Rule of Two?</summary><p>Meta's October 2025 guidance: within a session, an agent should have no more than two of untrustworthy inputs, access to sensitive systems or data, and the ability to change state or communicate externally.</p></details><details><summary>Why not just add a filter?</summary><p>In security, a filter that stops 95% of attacks is a failing grade: attackers keep trying until they find the rest.</p></details>
+  </section>
+  <section class="card sources" aria-labelledby="sources-h">
+    <h3 id="sources-h">Sources</h3>
+    <ol><li><a href="https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/">The lethal trifecta for AI agents: private data, untrusted content, and external communication</a> <span class="pub">— Simon Willison, June 16, 2025</span></li><li><a href="https://thehackernews.com/2025/06/zero-click-ai-vulnerability-exposes.html">Zero-Click AI Vulnerability Exposes Microsoft 365 Copilot Data Without User Interaction</a> <span class="pub">— The Hacker News, June 2025</span></li><li><a href="https://www.techrepublic.com/article/news-microsoft-365-copilot-flaw-echoleak/">First Known Zero-Click AI Exploit: Microsoft 365 Copilot's 'EchoLeak' Flaw</a> <span class="pub">— TechRepublic, June 2025</span></li><li><a href="https://simonwillison.net/2025/Nov/2/new-prompt-injection-papers/">New prompt injection papers: Agents Rule of Two and The Attacker Moves Second</a> <span class="pub">— Simon Willison, November 2, 2025</span></li></ol>
+  </section>
+</aside>
+</main>
+<footer class="site">
+  © FDE Field Notes — <a href="../index.html">Home</a> — <a href="#top">Top ↑</a>
+</footer>
+<script src="../assets/js/article.js" defer></script>
+<script>
+(function(){
+  var b=document.querySelectorAll('#tri-widget .tri'),o=document.getElementById('tri-out');
+  function u(){
+    var on={};b.forEach(function(x){on[x.dataset.k]=x.checked;});
+    var n=(on.A?1:0)+(on.B?1:0)+(on.C?1:0),t;
+    if(n===3) t=['Lethal trifecta','A single injected instruction can move private data out. Split this session or require human approval for every outbound step.'];
+    else if(n===2&&on.A&&on.B) t=['Two legs: data + untrusted input','Safe only while it has no way out. Watch for rendered images, links and webhooks — they add the third leg.'];
+    else if(n===2&&on.B&&on.C) t=['Two legs: untrusted input + outbound','No private data to steal, but it can still be steered into sending or changing things. Allowlist destinations.'];
+    else if(n===2) t=['Two legs: data + outbound','Fine while every input is trusted. Re-check whenever a new data source is connected.'];
+    else t=[n+' leg'+(n===1?'':'s'),'Low injection risk. Keep it that way when the next connector request arrives.'];
+    o.innerHTML='<span class="big">'+t[0]+'</span><br>'+t[1];
+  }
+  b.forEach(function(x){x.addEventListener('change',u);});u();
+})();
+</script>
+</body>
+</html>
