@@ -9,6 +9,28 @@
   },
   "articles": [
     {
+      "id": "20261007-refusal-is-the-gate",
+      "slug": "refusal-is-the-gate",
+      "title": "Refusal as Engineering Gate",
+      "hook": "The three diagnostic moments where an FDE's highest-leverage act is saying 'don't build this yet'—before premature engineering locks in failure.",
+      "path": "articles/refusal-is-the-gate.html",
+      "date": "2026-10-07",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "customer-judgment",
+      "tags": [
+        "fde",
+        "customer-judgment",
+        "customer-context",
+        "ai-pilots",
+        "judgment",
+        "scoping"
+      ],
+      "reading_time_minutes": 8,
+      "pinned": false,
+      "research_window": "2024-03-18 to 2026-10-07"
+    },
+    {
       "id": "20261006-context-is-the-integration",
       "slug": "context-is-the-integration",
       "title": "Context Is the Integration",
@@ -193,67 +215,6 @@
       "reading_time_minutes": 6,
       "pinned": false,
       "research_window": "2025-02-18 to 2026-02-18"
-    },
-    {
-      "id": "20260106-the-courage-to-not-build",
-      "slug": "the-courage-to-not-build",
-      "title": "The Courage to Not Build",
-      "hook": "The FDE's highest-leverage act is often refusing to build. 95% of AI pilots fail not because models break, but because organizations build before they're ready.",
-      "path": "articles/the-courage-to-not-build.html",
-      "date": "2026-01-06",
-      "status": "published",
-      "format": "field-note",
-      "pillar": "customer-judgment",
-      "tags": [
-        "fde",
-        "judgment",
-        "customer-context",
-        "ai-pilots",
-        "career-craft"
-      ],
-      "reading_time_minutes": 6,
-      "pinned": false,
-      "research_window": "2025-01-06 to 2026-01-06"
-    },
-    {
-      "id": "20260106-customer-context-judgment-dont-build-this-yet",
-      "slug": "customer-context-judgment-dont-build-this-yet",
-      "title": "Customer-Context Judgment: Knowing When to Say 'Don't Build This Yet'",
-      "hook": "Why 95% of enterprise AI pilots fail from unready data and broken workflows—and why an FDE's greatest leverage is diagnostic refusal.",
-      "path": "articles/customer-context-judgment-dont-build-this-yet.html",
-      "date": "2026-01-06",
-      "status": "published",
-      "format": "field-note",
-      "pillar": "customer-judgment",
-      "tags": [
-        "fde",
-        "customer-context",
-        "diagnostic-refusal",
-        "career-craft"
-      ],
-      "reading_time_minutes": 6,
-      "pinned": false,
-      "research_window": "2025-01-06 to 2026-01-06"
-    },
-    {
-      "id": "20250318-when-the-building-stops",
-      "slug": "when-the-building-stops",
-      "title": "When the Building Stops",
-      "hook": "\"Don't build this yet\" isn't a technical judgment — it's an information-architecture check.",
-      "path": "articles/when-the-building-stops.html",
-      "date": "2025-03-18",
-      "status": "published",
-      "format": "field-note",
-      "pillar": "customer-judgment",
-      "tags": [
-        "fde",
-        "customer-judgment",
-        "scoping",
-        "career-craft"
-      ],
-      "reading_time_minutes": 6,
-      "pinned": false,
-      "research_window": "2024-03-18 to 2025-03-18"
     },
     {
       "id": "20250314-what-the-title-actually-prices",

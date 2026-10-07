@@ -7,6 +7,13 @@
   <description>Field notes on deployment-engineering practice — discovery, scoping, customer judgment calls, and the skill nobody puts in the job posting.</description>
   <language>en</language>
   <item>
+    <title>Refusal as Engineering Gate</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/refusal-is-the-gate.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/refusal-is-the-gate.html</guid>
+    <pubDate>Wed, 07 Oct 2026 00:00:00 +0000</pubDate>
+    <description>The three diagnostic moments where an FDE&#x27;s highest-leverage act is saying &#x27;don&#x27;t build this yet&#x27;—before premature engineering locks in failure.</description>
+  </item>
+  <item>
     <title>Context Is the Integration</title>
     <link>https://iggym.github.io/fde-field-notes/articles/context-is-the-integration.html</link>
     <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/context-is-the-integration.html</guid>
@@ -68,27 +75,6 @@
     <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/roadmap-is-not-wish-list.html</guid>
     <pubDate>Wed, 18 Feb 2026 00:00:00 +0000</pubDate>
     <description>Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.</description>
-  </item>
-  <item>
-    <title>The Courage to Not Build</title>
-    <link>https://iggym.github.io/fde-field-notes/articles/the-courage-to-not-build.html</link>
-    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-courage-to-not-build.html</guid>
-    <pubDate>Tue, 06 Jan 2026 00:00:00 +0000</pubDate>
-    <description>The FDE&#x27;s highest-leverage act is often refusing to build. 95% of AI pilots fail not because models break, but because organizations build before they&#x27;re ready.</description>
-  </item>
-  <item>
-    <title>Customer-Context Judgment: Knowing When to Say &#x27;Don&#x27;t Build This Yet&#x27;</title>
-    <link>https://iggym.github.io/fde-field-notes/articles/customer-context-judgment-dont-build-this-yet.html</link>
-    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/customer-context-judgment-dont-build-this-yet.html</guid>
-    <pubDate>Tue, 06 Jan 2026 00:00:00 +0000</pubDate>
-    <description>Why 95% of enterprise AI pilots fail from unready data and broken workflows—and why an FDE&#x27;s greatest leverage is diagnostic refusal.</description>
-  </item>
-  <item>
-    <title>When the Building Stops</title>
-    <link>https://iggym.github.io/fde-field-notes/articles/when-the-building-stops.html</link>
-    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/when-the-building-stops.html</guid>
-    <pubDate>Tue, 18 Mar 2025 00:00:00 +0000</pubDate>
-    <description>&quot;Don&#x27;t build this yet&quot; isn&#x27;t a technical judgment — it&#x27;s an information-architecture check.</description>
   </item>
   <item>
     <title>What the Title Actually Prices</title>
