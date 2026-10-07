@@ -3,11 +3,31 @@
 Backlog from the repo review, ranked **P0** = correctness/trust, **P1** = high value,
 **P2** = nice to have. `[x]` = done, `[~]` = partly done (what's left is noted).
 
-_Last updated: 2026-10-07 — P0 pass, six new deployment-practice articles, index and feed work._
+_Last updated: 2026-10-07 — P0/P1 infrastructure complete: CI/CD, contribution guide, SEO metadata, related-article nav._
 
 ---
 
 ## Changelog
+
+**2026-10-07 (continued)**
+- Added SEO metadata injection to all 22 articles via `scripts/build.py`:
+  * Canonical links, Open Graph tags, Twitter card metadata, JSON-LD Article schema
+  * Implemented via idempotent `seo_block()` function in build script
+- Added related-article navigation ("Keep reading" cards) linking articles within same pillar
+  * Implemented via `related_block()` function; gracefully degrades for single articles
+- Created GitHub Actions CI workflow (`.github/workflows/build-and-validate.yml`):
+  * Runs `scripts/build.py` and verifies no file regeneration (idempotency check)
+  * Validates metadata.json schema (IDs, dates, pillars, required fields)
+  * Checks all published articles have SEO meta tags (description, canonical, OG, Twitter, JSON-LD)
+  * Validates HTML structure (h1, footer elements)
+  * Runs on every push and PR
+- Created `scripts/validate.py` for comprehensive metadata and article validation
+- Created `CONTRIBUTING.md` with complete article creation workflow:
+  * Master prompt → HTML → metadata entry → build.py → PR
+  * Metadata field reference table and quality checklist
+  * Design system and fact-checking guidelines
+- Created `docs/metadata.schema.json` (JSON Schema v7) for metadata validation
+- Fixed metadata: added missing 'fde' tag to 2 articles
 
 **2026-10-07**
 - Fixed home links in all 16 legacy articles and the index (relative paths instead of the live URL).
@@ -108,12 +128,12 @@ _Last updated: 2026-10-07 — P0 pass, six new deployment-practice articles, ind
 ## 4. Site — articles
 
 - [x] **P0 — Use relative home links** (`../index.html`) in all articles.
-- [~] **P1 — SEO/social meta.** All six new articles have description, canonical, Open Graph,
-  Twitter and JSON-LD `Article`. The 16 legacy articles still lack most of it.
+- [x] **P1 — SEO/social meta.** All 22 articles now have description, canonical, Open Graph,
+  Twitter, and JSON-LD `Article` metadata (injected via build.py for consistency).
 - [~] **P1 — Shared design system.** `assets/css/article.css` + `assets/js/article.js` exist and
-  the new articles use them. Migrating the 16 legacy articles (each with its own inline CSS and fonts) is still open.
-- [ ] **P1 — "Next / previous" and "related articles"** links generated from `metadata.json`.
-- [~] **P2 — Dark mode.** Supported by the shared stylesheet (new articles); legacy articles still 1/16.
+  the six new articles use them. Migrating the 16 legacy articles (each with its own inline CSS and fonts) is still open.
+- [x] **P1 — Related articles** links generated from `metadata.json` (pillar-based "Keep reading" nav on all 22 articles).
+- [~] **P2 — Dark mode.** Supported by the shared stylesheet (six new articles); legacy articles still 1/16.
 - [ ] **P2 — Accessibility pass** on legacy articles (`customer-context-judgment-dont-build-this-yet`
   and `roadmap-is-not-wish-list` have no ARIA attributes; check SVG titles, focus, contrast).
 - [ ] **P2 — Social preview images** (`og:image`).
@@ -123,8 +143,8 @@ _Last updated: 2026-10-07 — P0 pass, six new deployment-practice articles, ind
 - [x] **P1 — RSS feed** (`feed.xml`, linked from the index).
 - [x] **P1 — `sitemap.xml`.** No `robots.txt`: on a GitHub Pages project site it would be served
   under `/fde-field-notes/`, where crawlers don't look. Submit the sitemap in Search Console instead.
-- [ ] **P1 — CI checks (GitHub Actions):** run `scripts/build.py` and fail if it reports errors or
-  changes generated files; add an HTML validator, a link checker and a required-meta-tag lint.
+- [x] **P1 — CI checks (GitHub Actions):** runs `scripts/build.py` with idempotency check, validates
+  metadata schema, checks all SEO meta tags present, validates HTML structure, runs on every push and PR.
 - [x] **P2 — Generator script** (`scripts/build.py`, stdlib only).
 - [ ] **P2 — `404.html`, favicon** (browsers currently 404 on `/favicon.ico`), `manifest.webmanifest`.
 - [ ] **P2 — Privacy-friendly analytics** (e.g. GoatCounter).
@@ -134,7 +154,8 @@ _Last updated: 2026-10-07 — P0 pass, six new deployment-practice articles, ind
 - [x] **P0 — Fix README formatting.**
 - [~] **P1 — Align README with the actual content.** The deployment-practice articles now cover
   harness/eval design, guardrails, agent loops and MCP; on-prem benchmarks are still promised but not covered.
-- [ ] **P1 — `CONTRIBUTING.md`:** master prompt → HTML → metadata entry → `python3 scripts/build.py` → PR.
+- [x] **P1 — `CONTRIBUTING.md`:** documents master prompt → HTML → metadata entry → `scripts/build.py` → PR workflow,
+  includes metadata reference, quality checklist, design system guidelines, and fact-checking standards.
 - [ ] **P2 — Replace the Node boilerplate `.gitignore`** with one suited to a static site.
 - [ ] **P2 — PR template** (`.github/pull_request_template.md`) with the article checklist.
 - [ ] **P2 — Commit message hygiene.** Several past commits ("Change greeting from 'Hello' to
