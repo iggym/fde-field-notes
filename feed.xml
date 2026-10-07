@@ -14,6 +14,13 @@
     <description>The three diagnostic moments where an FDE&#x27;s highest-leverage act is saying &#x27;don&#x27;t build this yet&#x27;—before premature engineering locks in failure.</description>
   </item>
   <item>
+    <title>Title as Encoding</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/title-as-encoding.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/title-as-encoding.html</guid>
+    <pubDate>Wed, 07 Oct 2026 00:00:00 +0000</pubDate>
+    <description>When you see &#x27;Forward Deployed Engineer&#x27; versus &#x27;Solutions Engineer,&#x27; you&#x27;re not reading a job description. You&#x27;re reading three encoded decisions: comp bracket, risk allocation, and career structure.</description>
+  </item>
+  <item>
     <title>Context Is the Integration</title>
     <link>https://iggym.github.io/fde-field-notes/articles/context-is-the-integration.html</link>
     <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/context-is-the-integration.html</guid>
@@ -75,34 +82,6 @@
     <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/roadmap-is-not-wish-list.html</guid>
     <pubDate>Wed, 18 Feb 2026 00:00:00 +0000</pubDate>
     <description>Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.</description>
-  </item>
-  <item>
-    <title>What the Title Actually Prices</title>
-    <link>https://iggym.github.io/fde-field-notes/articles/what-the-title-actually-prices.html</link>
-    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/what-the-title-actually-prices.html</guid>
-    <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
-    <description>The title on your offer letter isn&#x27;t describing the work — it&#x27;s describing the pricing bracket.</description>
-  </item>
-  <item>
-    <title>The Title Isn&#x27;t the Job</title>
-    <link>https://iggym.github.io/fde-field-notes/articles/the-title-isnt-the-job.html</link>
-    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-title-isnt-the-job.html</guid>
-    <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
-    <description>An &#x27;FDE&#x27; title doesn&#x27;t describe a role — it describes a company&#x27;s bet about how software gets sold.</description>
-  </item>
-  <item>
-    <title>The Title Is the Price</title>
-    <link>https://iggym.github.io/fde-field-notes/articles/the-title-is-the-price.html</link>
-    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-title-is-the-price.html</guid>
-    <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
-    <description>Your title isn&#x27;t describing your work. It&#x27;s naming who absorbs the cost when an engagement goes sideways.</description>
-  </item>
-  <item>
-    <title>Same Work, Different Price</title>
-    <link>https://iggym.github.io/fde-field-notes/articles/same-work-different-price.html</link>
-    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/same-work-different-price.html</guid>
-    <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
-    <description>The title fragmentation in FDE-adjacent roles isn&#x27;t a taxonomy — it&#x27;s a pricing mechanism. Same responsibilities, 30% comp gap, anchored to five words.</description>
   </item>
   <item>
     <title>Code Is Just a Receipt</title>

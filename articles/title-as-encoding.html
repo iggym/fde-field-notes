@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Title as Encoding — FDE Field Notes</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --text: #e4e6eb;
+    --text-muted: #9ca3af;
+    --text-dim: #6b7280;
+    --accent: #f59e0b;
+    --accent-soft: rgba(245,158,11,0.12);
+    --border: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 16px;
+  }
+  #progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), #fbbf24);
+    width: 0%; z-index: 1001; transition: width 0.1s linear;
+  }
+  #topbar {
+    position: sticky; top: 0; z-index: 1000;
+    background: rgba(15,17,21,0.72);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 1rem; }
+  .topbar-left a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
+  .topbar-left a:hover { color: var(--accent); }
+  .container {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 320px; gap: 3rem;
+    padding: 2rem 1.5rem 4rem;
+  }
+  @media (max-width: 880px) {
+    .container { grid-template-columns: 1fr; }
+  }
+  .hero {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .hero-sub {
+    font-size: 1.15rem; color: var(--text-muted); max-width: 640px;
+    line-height: 1.5;
+  }
+  article p { margin-bottom: 1.4rem; }
+  article h2 {
+    font-size: 1.35rem; font-weight: 600; margin: 2.5rem 0 1rem;
+  }
+  article h3 {
+    font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.8rem;
+  }
+  article blockquote {
+    border-left: 3px solid var(--accent); padding-left: 1.2rem;
+    margin: 1.8rem 0; color: var(--text-muted); font-style: italic;
+  }
+  .beat-marker {
+    display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 0.15rem 0.5rem; border-radius: 4px;
+    background: var(--accent-soft); color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .layer-box {
+    background: var(--accent-soft); border-left: 3px solid var(--accent);
+    padding: 1rem 1.2rem; margin: 1.5rem 0; border-radius: 4px;
+  }
+  .layer-title {
+    font-weight: 600; color: var(--accent); font-size: 0.9rem;
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;
+  }
+  .layer-box p { margin-bottom: 0.6rem; font-size: 0.95rem; }
+  .layer-box p:last-child { margin-bottom: 0; }
+  ul, ol { margin: 1rem 0 1.5rem 1.5rem; }
+  li { margin-bottom: 0.6rem; }
+  footer {
+    border-top: 1px solid var(--border); padding: 3rem 1.5rem;
+    text-align: center; color: var(--text-dim); font-size: 0.85rem;
+  }
+</style>
+<!-- seo:start -->
+<meta name="description" content="When you see &#x27;Forward Deployed Engineer&#x27; versus &#x27;Solutions Engineer,&#x27; you&#x27;re not reading a job description. You&#x27;re reading three encoded decisions: comp bracket, risk allocation, and career structure.">
+<link rel="canonical" href="https://iggym.github.io/fde-field-notes/articles/title-as-encoding.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FDE Field Notes">
+<meta property="og:title" content="Title as Encoding">
+<meta property="og:description" content="When you see &#x27;Forward Deployed Engineer&#x27; versus &#x27;Solutions Engineer,&#x27; you&#x27;re not reading a job description. You&#x27;re reading three encoded decisions: comp bracket, risk allocation, and career structure.">
+<meta property="og:url" content="https://iggym.github.io/fde-field-notes/articles/title-as-encoding.html">
+<meta property="article:published_time" content="2026-10-07">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Title as Encoding">
+<meta name="twitter:description" content="When you see &#x27;Forward Deployed Engineer&#x27; versus &#x27;Solutions Engineer,&#x27; you&#x27;re not reading a job description. You&#x27;re reading three encoded decisions: comp bracket, risk allocation, and career structure.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Title as Encoding", "description": "When you see 'Forward Deployed Engineer' versus 'Solutions Engineer,' you're not reading a job description. You're reading three encoded decisions: comp bracket, risk allocation, and career structure.", "datePublished": "2026-10-07", "url": "https://iggym.github.io/fde-field-notes/articles/title-as-encoding.html", "publisher": {"@type": "Organization", "name": "FDE Field Notes"}}</script>
+<!-- seo:end -->
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav id="topbar">
+  <div class="topbar-left">
+    <a href="../index.html">← Home</a>
+    <span style="color: var(--text-dim);">Field Notes</span>
+  </div>
+</nav>
+
+<div class="container">
+  <main>
+    <header class="hero">
+      <h1>Title as Encoding</h1>
+      <p class="hero-sub">When you see "Forward Deployed Engineer" versus "Solutions Engineer," you're not reading a job description. You're reading three encoded decisions: comp bracket, risk allocation, and career structure.</p>
+      <div style="margin-top: 1.5rem; display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-dim);">
+        <span>🏷️ Market & Comp</span>
+        <span>📊 Offer Evaluation</span>
+      </div>
+    </header>
+
+    <article>
+      <p>Two job postings, same week, same city. "Forward Deployed Engineer, L4" at a well-known infrastructure company: $275–310k total comp. "Solutions Engineer, Senior" at a similarly valued AI startup: $165–210k. Put the responsibility bullets side by side. Eight of ten matched nearly word-for-word: deploy to customer environments, build custom integrations, run technical evaluations, debug production issues on customer data. Same shape of work. Over $100k difference. The only variable was five words in the title line.</p>
+
+      <p>This isn't sloppy hiring. It's price discovery — and the mechanism is more complex than comp alone.</p>
+
+      <span class="beat-marker">Layer 1 — Comp Bracket</span>
+      <h2>The Title is the Price Tag</h2>
+
+      <p>Levels.fyi public data through Q1 2025 shows something most candidates don't notice: "Forward Deployed Engineer," "Solutions Engineer," "Customer Engineer," and "Field Engineer" roles share roughly 70% comp-band overlap at equivalent experience levels. A mid-level FDE at Palantir and a mid-level Solutions Engineer at Snowflake sit in the same $190K–$250K total-comp corridor. Yet the FDE title carries a 25–35% premium at equivalent experience.</p>
+
+      <p>The premium isn't random. Palantir originated and branded "Forward Deployed Engineer" as a proprietary role designation. When other companies reference the FDE model but avoid using the title, they're dodging the comp premium that comes with it. Hiring managers have explicitly said in conversation that they "couldn't use FDE in a job title because it would set comp expectations above their approved band." The title itself is a comp lever — and it flows in one direction: FDE labels pull comp up for anyone using the title; everyone else's titles pull comp down for functionally identical work.</p>
+
+      <p>This creates a trap for candidates reading public data. Palantir FDEs on Levels.fyi show $420K+ in reported total comp. But that number includes stock appreciation — PLTR went from $35 to $115 between February and March 2025, inflating equity value by 230%. The actual granted comp for a Palantir FDE was closer to $180–220K at hire — which puts it squarely in the same band as Google Customer Engineers and Snowflake Solutions Engineers at equivalent experience levels. The public figure is real money for the person holding those shares. But it's not a salary benchmark — it's an appreciation bonus.</p>
+
+      <div class="layer-box">
+        <div class="layer-title">Action: Strip the title from any offer</div>
+        <p>Write down the actual daily activities — not the posted bullets, the real Tuesday-morning version. Then look up what Palantir FDEs at your experience level make on Levels.fyi, adjusting for equity appreciation, not current market value. If the daily work overlaps by 70% or more and your offer sits 25% or more below that granted band, the gap isn't your skills — it's the bracket. You now have a specific, number-backed reason to negotiate: "This work trades at a higher price under a different label."</p>
+      </div>
+
+      <span class="beat-marker">Layer 2 — Risk Allocation</span>
+      <h2>The Title Names Who Absorbs Failure</h2>
+
+      <p>A second signal hides in the title. When a company writes "Forward Deployed Engineer," it is purchasing outcome ownership. When it writes "Solutions Engineer," it is purchasing pre-sales alignment and integration skill with a built-in handoff. When it writes "Field Engineer," it is purchasing implementation capacity — someone who can follow a deployment playbook reliably and hit the checklist items.</p>
+
+      <p>The same person doing nominally similar technical work under different titles carries different liability. A Palantir FDE owns the stall when a deployment slows down. When a customer's production system breaks, the FDE gets paged. They own scoping decisions, they defend those decisions to the customer, they carry the engagement if it starts to fail. A Databricks Solutions Engineer demonstrates functionality, builds proofs of concept, then hands off post-sale to the support organization. When something breaks after the contract signs, someone else's on-call schedule activates. The Tuesday work looks alike. The 2am page does not.</p>
+
+      <p>Here's why this matters for comp: the $40,000 gap between Palantir FDE and Databricks SE isn't paying for better engineering. It's paying for liability. Companies structure these roles to shift risk. The title encodes that risk shift.</p>
+
+      <p>A company that won't name the failure mode in your title won't let you own the fix when you find it. And you'll spend three years wondering why your career trajectory diverged from someone who took a higher-paying role at a company that structured the same title differently.</p>
+
+      <div class="layer-box">
+        <div class="layer-title">Action: Ask who gets paged at 2am</div>
+        <p>That single answer places the role in its real title family, regardless of what the listing says. If the answer is "their team," you're an implementation engineer with a borrowed title. If it's "me," you're being priced as an outcome owner, and the comp should reflect that liability. If the answer is ambiguous, that ambiguity is itself the answer — no one has thought about who owns failure, which means no one has budgeted for it.</p>
+      </div>
+
+      <span class="beat-marker">Layer 3 — Career Structure</span>
+      <h2>The Title Signals Business Model, Not Job Shape</h2>
+
+      <p>The strongest pattern to emerge: the signal isn't compensation. It's whether the company has differentiated leveling for the role. Organizations posting a single undifferentiated "FDE" title — no I, II, Senior, Staff — often haven't built a career path for the role, regardless of what the hiring manager verbally promises during interviews. Databricks and Snowflake, which use "Solutions Engineer" with explicit level hierarchies and published ranges, have made an organizational commitment to the role as a long-term career track. A startup posting one flat "FDE" title has made a different bet.</p>
+
+      <p>This shows up in tenure data. Companies with leveled FDE tracks retain people 2–4 years. Flat "FDE" roles skew toward rotational: people stay 12–18 months and leave. The absence of leveling predicts career stickiness better than comp band.</p>
+
+      <p>But there's a deeper layer: where the role reports into the organization. Palantir structures FDEs under engineering leadership. Their 2024 SEC filings frame the role consistently: product engineers who deploy on customer sites, building forward rather than selling sideways. The comp structure matches — equity-heavy, vesting tied to deployment milestones rather than revenue quota. An "FDE" under engineering leadership and an "FDE" under sales leadership are different roles wearing the same name. The first is an engineering career path. The second is a sales rotational.</p>
+
+      <div class="layer-box">
+        <div class="layer-title">Action: Find the actual reporting line and leveling structure</div>
+        <p>Ask: Does this role report into Engineering, Sales, Customer Success, or Professional Services? Each is a different career arc. Check for level progression — if "FDE" has no Senior or Staff variant, the role exists as a deployment mechanism, not a career track. Search LinkedIn for current title-holders at this company — if everyone's under 18 months, it's rotational regardless of the description. A well-written FDE job description makes the scoping and judgment-call aspects explicit. If you're inferring them from context clues, they're probably not there.</p>
+      </div>
+
+      <h2>The Decision Sequence</h2>
+
+      <p>When you evaluate an FDE-adjacent offer, work through the three layers in sequence:</p>
+
+      <ol>
+        <li><strong>Comp Bracket:</strong> Strip the title. What did this company grant at hire, before equity appreciation? Does it sit 25%+ below the actual granted band for equivalent work at Palantir or another FDE-heavy company? If yes, you have a negotiation lever.</li>
+        <li><strong>Risk Allocation:</strong> Who gets paged when the deployment stalls? If the answer isn't "me," you're in a lower-liability role. Comp should adjust accordingly. If the company can't answer the question, that's a red flag.</li>
+        <li><strong>Career Structure:</strong> Can you name the next role after this one? Does the company have a Staff-level variant? Does the org chart show a clear path to next-level scope? If leveling doesn't exist, this role exists for you to execute, not grow.</li>
+      </ol>
+
+      <blockquote>
+        Your title isn't describing your work. It's encoding three decisions simultaneously: which comp bracket you're in, whose responsibility failure becomes, and whether the company sees this as a career path or a rotational seat. Read all three.
+      </blockquote>
+
+      <h2>Your Move</h2>
+
+      <p>Within 24 hours, find one FDE-adjacent job posting that genuinely interests you. Rewrite its title to match what the description actually describes — implementation engineer, pre-sales technical, or outcome-owning deployer. Map the actual reporting line (Eng / Sales / CS). Check whether the company has a senior-level variant. The gap between the posted title and your diagnosis is the information you've been missing.</p>
+
+    </article>
+  </main>
+
+  <aside style="position: sticky; top: 80px;">
+    <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem;">
+      <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 0.8rem;">How This Consolidates</h4>
+      <ul style="font-size: 0.85rem; color: var(--text-muted); list-style: none; padding: 0; line-height: 1.6;">
+        <li>✓ Comp bracket encoding (from "Same Work, Different Price" + "What the Title Actually Prices")</li>
+        <li>✓ Risk allocation signaling (from "The Title Is the Price")</li>
+        <li>✓ Business model & structure (from "The Title Isn't the Job")</li>
+        <li>→ Kept separate: "The Title Is The Tell" (market validation via 800% growth, $4B bets)</li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<!-- related:start -->
+<nav class="fdefn-related" aria-label="Keep reading" style="max-width:700px;margin:48px auto 24px;padding:20px 16px 0;border-top:1px solid currentColor;line-height:1.5"><p style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin:0 0 12px">Keep reading · Market &amp; Comp</p><ul style="list-style:none;padding:0;margin:0"><li style="margin:0 0 10px"><span style="opacity:.65">Older ·</span> <a href="title-is-tell.html" style="color:inherit">The Title Is The Tell</a></li><li><a href="../index.html" style="color:inherit">All field notes →</a></li></ul></nav>
+<!-- related:end -->
+<footer>
+  <p><a href="../index.html">← FDE Field Notes</a></p>
+</footer>
+
+<script>
+const prog = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  prog.style.width = h > 0 ? (window.scrollY / h * 100) + '%' : '0%';
+}, { passive: true });
+</script>
+</body>
+</html>

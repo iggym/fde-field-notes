@@ -157,6 +157,29 @@
       "research_window": "2025-04-01 to 2026-09-08"
     },
     {
+      "id": "20261007-title-as-encoding",
+      "slug": "title-as-encoding",
+      "title": "Title as Encoding",
+      "hook": "When you see 'Forward Deployed Engineer' versus 'Solutions Engineer,' you're not reading a job description. You're reading three encoded decisions: comp bracket, risk allocation, and career structure.",
+      "path": "articles/title-as-encoding.html",
+      "date": "2026-10-07",
+      "status": "published",
+      "format": "field-note",
+      "pillar": "market-comp",
+      "tags": [
+        "fde",
+        "comp",
+        "titles",
+        "career-decisions",
+        "negotiation",
+        "risk-pricing",
+        "market-signals"
+      ],
+      "reading_time_minutes": 9,
+      "pinned": false,
+      "research_window": "2025-03-14 to 2026-10-07"
+    },
+    {
       "id": "20260810-title-is-tell",
       "slug": "title-is-tell",
       "title": "The Title Is The Tell",
@@ -215,90 +238,6 @@
       "reading_time_minutes": 6,
       "pinned": false,
       "research_window": "2025-02-18 to 2026-02-18"
-    },
-    {
-      "id": "20250314-what-the-title-actually-prices",
-      "slug": "what-the-title-actually-prices",
-      "title": "What the Title Actually Prices",
-      "hook": "The title on your offer letter isn't describing the work — it's describing the pricing bracket.",
-      "path": "articles/what-the-title-actually-prices.html",
-      "date": "2025-03-14",
-      "status": "published",
-      "format": "field-note",
-      "pillar": "market-comp",
-      "tags": [
-        "comp",
-        "titles",
-        "fde",
-        "negotiation",
-        "market-signals"
-      ],
-      "reading_time_minutes": 5,
-      "pinned": false
-    },
-    {
-      "id": "20250314-the-title-isnt-the-job",
-      "slug": "the-title-isnt-the-job",
-      "title": "The Title Isn't the Job",
-      "hook": "An 'FDE' title doesn't describe a role — it describes a company's bet about how software gets sold.",
-      "path": "articles/the-title-isnt-the-job.html",
-      "date": "2025-03-14",
-      "status": "published",
-      "format": "field-note",
-      "pillar": "market-comp",
-      "tags": [
-        "fde",
-        "comp",
-        "title-fragmentation",
-        "career-decisions"
-      ],
-      "reading_time_minutes": 6,
-      "pinned": false,
-      "research_window": "2024-03-14 to 2025-03-14"
-    },
-    {
-      "id": "20250314-the-title-is-the-price",
-      "slug": "the-title-is-the-price",
-      "title": "The Title Is the Price",
-      "hook": "Your title isn't describing your work. It's naming who absorbs the cost when an engagement goes sideways.",
-      "path": "articles/the-title-is-the-price.html",
-      "date": "2025-03-14",
-      "status": "published",
-      "format": "field-note",
-      "pillar": "market-comp",
-      "tags": [
-        "comp",
-        "titles",
-        "fde",
-        "solutions-engineer",
-        "career-craft",
-        "negotiation",
-        "risk-pricing"
-      ],
-      "reading_time_minutes": 5,
-      "pinned": false,
-      "research_window": "2025-02-07 to 2025-03-14"
-    },
-    {
-      "id": "20250314-same-work-different-price",
-      "slug": "same-work-different-price",
-      "title": "Same Work, Different Price",
-      "hook": "The title fragmentation in FDE-adjacent roles isn't a taxonomy — it's a pricing mechanism. Same responsibilities, 30% comp gap, anchored to five words.",
-      "path": "articles/same-work-different-price.html",
-      "date": "2025-03-14",
-      "status": "published",
-      "format": "field-note",
-      "pillar": "market-comp",
-      "tags": [
-        "fde",
-        "comp",
-        "title-fragmentation",
-        "negotiation",
-        "market-signals"
-      ],
-      "reading_time_minutes": 6,
-      "pinned": false,
-      "research_window": "2024-03-14 to 2025-03-14"
     },
     {
       "id": "20250308-code-is-just-a-receipt",
