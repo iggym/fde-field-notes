@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Harness Moves the Number — FDE Field Notes</title>
+<meta name="description" content="Same 4B model, same task, a 60-to-82% accuracy swing from harness design alone. The eval harness is the FDE&#x27;s real deliverable — and the acceptance contract with the customer.">
+<link rel="canonical" href="https://iggym.github.io/fde-field-notes/articles/the-harness-moves-the-number.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FDE Field Notes">
+<meta property="og:title" content="The Harness Moves the Number">
+<meta property="og:description" content="Same 4B model, same task, a 60-to-82% accuracy swing from harness design alone. The eval harness is the FDE&#x27;s real deliverable — and the acceptance contract with the customer.">
+<meta property="og:url" content="https://iggym.github.io/fde-field-notes/articles/the-harness-moves-the-number.html">
+<meta property="article:published_time" content="2026-10-01">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Harness Moves the Number">
+<meta name="twitter:description" content="Same 4B model, same task, a 60-to-82% accuracy swing from harness design alone. The eval harness is the FDE&#x27;s real deliverable — and the acceptance contract with the customer.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Harness Moves the Number", "description": "Same 4B model, same task, a 60-to-82% accuracy swing from harness design alone. The eval harness is the FDE's real deliverable — and the acceptance contract with the customer.", "datePublished": "2026-10-01", "url": "https://iggym.github.io/fde-field-notes/articles/the-harness-moves-the-number.html", "author": {"@type": "Organization", "name": "FDE Field Notes"}, "publisher": {"@type": "Organization", "name": "FDE Field Notes"}, "keywords": "fde, evals, eval-harness, reliability, model-selection"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;1,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/article.css">
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to article</a>
+<div id="progress" aria-hidden="true"></div>
+<nav class="topbar" aria-label="Site">
+  <a class="mark" href="../index.html">FDE Field Notes</a>
+  <span class="crumb">Deployment Practice · 4 min read</span>
+</nav>
+<main id="main" class="wrap">
+<article>
+<header class="hero">
+  <div class="eyebrow">Deployment Practice · Field Note</div>
+  <h1>The Harness Moves the Number</h1>
+  <p class="dek">Before you argue about which model, find out how much of your score belongs to the parser.</p>
+  <div class="dateline"><time datetime="2026-10-01">October 1, 2026</time> · 4 min read · research window 2025-05-01 to 2026-10-01</div>
+</header>
+
+<p>In August 2026, the newsletter behind this site ran a small experiment that keeps coming up in customer conversations. One 4-billion-parameter model. One classification task. The only thing that changed between runs was the harness: how the prompt was formatted, how the output was parsed, how the answer was extracted from what the model wrote. Accuracy moved from 60 percent to 82 percent. A 22-point swing without touching the model, and, as the write-up put it, more movement than a model swap would have bought.</p>
+<p>That result is uncomfortable for the most common conversation in an AI engagement, the one where the customer asks which model to use. If the harness can move the score by 22 points, then a model comparison run through a sloppy harness is mostly a comparison of parsing bugs.</p>
+
+<div class="reframe"><p>The eval harness isn't how you test the deployment. It is the deployment's contract, and it moves the number more than the model does.</p></div>
+
+<div class="shift" role="group" aria-label="Belief shift 1">
+  <div class="before"><div class="label">Before</div><p>Pick the best model, then build an eval to confirm it works.</p></div>
+  <div class="after"><div class="label">After</div><p>Build the harness first. Then the model is a parameter you can swap and measure honestly.</p></div>
+  <div class="turn"><div class="label">Turn</div><p>If changing the parser moves your score, you were never only measuring the model.</p></div>
+</div>
+
+<p>The labs have learned a version of this the hard way. When OpenAI explained its April 2025 GPT-4o sycophancy regression, it said its offline evals weren't broad or deep enough to catch the behavior, and its A/B tests didn't have the right signals to show it. When Anthropic explained its August 2025 quality problems, it said its evaluations didn't capture the degradation users were reporting. Two organizations with very large eval budgets, both describing the same thing: the harness measures what it was built to measure, and nothing else.</p>
+<p>For an FDE, that cuts two ways. The harness can inflate or deflate a model by double digits, and it can be blind to the failure the customer will actually hit. Both problems have the same fix: build the harness around the customer's real cases, with the customer's expert grading them, before anyone argues about models.</p>
+
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-labelledby="f5t f5d">
+  <title id="f5t">The model is one box of five</title>
+  <desc id="f5d">An evaluation pipeline: test cases, input formatting, the model, output parsing and answer extraction, and the grader. Only one stage is the model. The test cases and the grading rubric should come from the customer.</desc>
+  <g font-size="12">
+    <rect class="box-accent" x="10" y="60" width="105" height="60" rx="4"/><text x="62" y="86" text-anchor="middle">Test cases</text><text x="62" y="103" text-anchor="middle" font-size="10" class="accent">customer's</text>
+    <rect class="box" x="135" y="60" width="105" height="60" rx="4"/><text x="187" y="86" text-anchor="middle">Formatting</text><text x="187" y="103" text-anchor="middle" font-size="10" class="muted">prompt shape</text>
+    <rect class="box" x="260" y="50" width="120" height="80" rx="4" style="stroke-width:2"/><text x="320" y="95" text-anchor="middle" font-size="14">Model</text>
+    <rect class="box" x="400" y="60" width="105" height="60" rx="4"/><text x="452" y="86" text-anchor="middle">Parse +</text><text x="452" y="103" text-anchor="middle">extract</text>
+    <rect class="box-accent" x="525" y="60" width="105" height="60" rx="4"/><text x="577" y="86" text-anchor="middle">Grader</text><text x="577" y="103" text-anchor="middle" font-size="10" class="accent">customer's rubric</text>
+  </g>
+  <path class="line" d="M115 90 H135 M240 90 H260 M380 90 H400 M505 90 H525"/>
+  <path class="line-accent" d="M135 150 H505"/>
+  <text x="320" y="172" text-anchor="middle" font-size="11" class="accent">60% → 82% came from these boxes, not the model</text>
+  <text x="320" y="205" text-anchor="middle" font-size="11" class="muted">Version all five together. Report scores with the harness version.</text>
+</svg>
+<figcaption>A model comparison is only as honest as the four stages around it, and two of those stages should belong to the customer.</figcaption>
+</figure>
+
+<div class="shift" role="group" aria-label="Belief shift 2">
+  <div class="before"><div class="label">Before</div><p>Report average accuracy across the test set.</p></div>
+  <div class="after"><div class="label">After</div><p>For anything customer-facing, report how often it succeeds <em>every</em> time, not how often it succeeds <em>once</em>.</p></div>
+  <div class="turn"><div class="label">Turn</div><p>Your demo lives in pass@k. Your customer lives in pass^k.</p></div>
+</div>
+
+<p>Anthropic's January 2026 guide to agent evals draws a distinction every FDE should be able to explain on a whiteboard. <strong>pass@k</strong> is the probability that at least one of k attempts succeeds, which is the right metric for a developer tool where a human can retry and pick the good answer. <strong>pass^k</strong> is the probability that all k attempts succeed, which is the right metric for a workflow a customer will run every day and expects to behave the same way each time. The guide also separates capability evals (can the system do this at all?) from regression evals (does it still do what it did last week?), and code-based graders from model-based and human ones.</p>
+<p>The gap between the two metrics is where demos and deployments part ways. A system that succeeds 90 percent of the time per trial looks excellent in a demo, where you get five tries. Run the same task five times in production and the chance it works all five times is 59 percent.</p>
+
+<div class="widget" id="pk-widget">
+  <h3>pass@k vs pass^k</h3>
+  <label for="pk-p" style="display:block">Per-trial success rate: <strong id="pk-pv">90</strong>%</label>
+  <input type="range" id="pk-p" min="50" max="99" value="90">
+  <label for="pk-k" style="display:block;margin-top:12px">Number of runs (k): <strong id="pk-kv">5</strong></label>
+  <input type="range" id="pk-k" min="1" max="20" value="5">
+  <output id="pk-out" aria-live="polite">At 90% per trial over 5 runs: pass@5 ≈ 99.999%, pass^5 ≈ 59%.</output>
+</div>
+
+<p>Every FDE has been in the meeting where a customer executive reads a vendor benchmark aloud and asks why your deployment scores lower. The honest answer is that the benchmark used someone else's harness on someone else's data. The useful answer is to show your harness, on their cases, graded by their expert, and to show what happens to the score when you swap the model. That turns the model debate into a measurement, and it makes you the person who owns the measurement.</p>
+
+<h2>The case against</h2>
+<p>The objection is time. The customer wants a recommendation this week, public benchmarks exist, and building a custom eval set sounds like a research project. But a useful set is 50 to 100 real cases labeled by someone who knows the work, which takes days, not months. And it pays for itself on the first model upgrade or vendor deprecation, when the question "is the new version at least as good for us?" has an answer in an afternoon instead of a debate.</p>
+
+<h2>What this means for you</h2>
+<ul class="actions">
+  <li><strong>Collect the cases with the customer.</strong> Fifty to a hundred real inputs, including the ugly ones, labeled by their expert.</li>
+  <li><strong>Version the harness.</strong> Formatting, parsing, extraction and grader travel together; every score carries a harness version.</li>
+  <li><strong>Split capability from regression evals.</strong> One tells you what's possible, the other tells you what broke.</li>
+  <li><strong>Report pass^k</strong> for anything a customer runs repeatedly, next to the average.</li>
+  <li><strong>Put the eval in the SOW</strong> as the acceptance criterion, so "done" is a number both sides agreed on.</li>
+</ul>
+<div class="now"><strong>24-hour action:</strong> Rerun your current eval with a different answer extractor — strict JSON instead of regex, or the reverse. If the score moves by more than a couple of points, write that number down before anyone compares models again.</div>
+
+</article>
+<aside class="endmatter" aria-label="Takeaways and sources">
+  <section class="card share" aria-labelledby="share-h">
+    <h3 id="share-h">Share this reframe</h3>
+    <blockquote>The eval harness isn't how you test the deployment. It is the deployment's contract, and it moves the number more than the model does.</blockquote>
+    <div class="btns">
+      <button class="btn" id="share-copy" type="button">Copy text &amp; link</button>
+      <a class="btn" id="share-x" href="https://x.com/intent/tweet?url=https://iggym.github.io/fde-field-notes/articles/the-harness-moves-the-number.html" target="_blank" rel="noopener">Share to X</a>
+      <a class="btn" id="share-li" href="https://www.linkedin.com/sharing/share-offsite/?url=https://iggym.github.io/fde-field-notes/articles/the-harness-moves-the-number.html" target="_blank" rel="noopener">Share to LinkedIn</a>
+    </div>
+  </section>
+  <section class="card tracker" aria-labelledby="tracker-h">
+    <h3 id="tracker-h">Three things tracker</h3>
+    <label><input type="checkbox"> <span>If the parser moves your score, you weren't only measuring the model.</span></label><label><input type="checkbox"> <span>Customers live in pass^k, not pass@k.</span></label><label><input type="checkbox"> <span>Write the eval with the customer and make it the acceptance criterion.</span></label>
+  </section>
+  <section class="card facts" aria-labelledby="facts-h">
+    <h3 id="facts-h">Quick facts</h3>
+    <details><summary>How big was the harness effect?</summary><p>In this publication's August 2026 newsletter, the same 4B model on the same classification task swung from 60% to 82% accuracy when only the harness changed — prompt formatting, output parsing and answer extraction.</p></details><details><summary>What's the difference between pass@k and pass^k?</summary><p>pass@k is the chance that at least one of k attempts succeeds. pass^k is the chance that all k succeed. Anthropic's eval guide uses both; the second is what a repeat customer experiences.</p></details><details><summary>What does 90% per-trial success look like over five runs?</summary><p>pass@5 ≈ 99.999%. pass^5 ≈ 59%.</p></details><details><summary>What kinds of graders are there?</summary><p>Code-based checks, model-based graders, and human review — each with different cost, speed and blind spots.</p></details>
+  </section>
+  <section class="card sources" aria-labelledby="sources-h">
+    <h3 id="sources-h">Sources</h3>
+    <ol><li><a href="https://buttondown.com/fdefieldguide/archive/fde-field-notes-2026-08-01-5704/">FDE Field Notes newsletter — harness design vs. model choice</a> <span class="pub">— FDE Field Guide (Buttondown), August 1, 2026</span></li><li><a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents">Demystifying evals for AI agents</a> <span class="pub">— Anthropic Engineering, January 2026</span></li><li><a href="https://openai.com/index/expanding-on-sycophancy/">Expanding on what we missed with sycophancy</a> <span class="pub">— OpenAI, May 2, 2025</span></li><li><a href="https://www.anthropic.com/engineering/a-postmortem-of-three-recent-issues">A postmortem of three recent issues</a> <span class="pub">— Anthropic Engineering, September 17, 2025</span></li></ol>
+  </section>
+</aside>
+</main>
+<footer class="site">
+  © FDE Field Notes — <a href="../index.html">Home</a> — <a href="#top">Top ↑</a>
+</footer>
+<script src="../assets/js/article.js" defer></script>
+<script>
+(function(){
+  var p=document.getElementById('pk-p'),k=document.getElementById('pk-k'),o=document.getElementById('pk-out');
+  function f(x){return x>=99.995?'99.99+':(x<1?x.toFixed(2):x.toFixed(x>=99?2:0));}
+  function u(){
+    var pp=p.value/100,kk=+k.value;
+    document.getElementById('pk-pv').textContent=p.value;document.getElementById('pk-kv').textContent=kk;
+    var at=(1-Math.pow(1-pp,kk))*100,all=Math.pow(pp,kk)*100;
+    o.innerHTML='<span class="big">pass^'+kk+' ≈ '+f(all)+'%</span><br>pass@'+kk+' ≈ '+f(at)+'%. The demo sees the second number; a customer running it '+kk+' times sees the first.';
+  }
+  p.addEventListener('input',u);k.addEventListener('input',u);u();
+})();
+</script>
+</body>
+</html>

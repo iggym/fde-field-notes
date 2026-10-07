@@ -116,6 +116,8 @@ Produce **one self-contained file**: `articles/{{slug}}.html`.
 - Vanilla HTML5 + CSS + ES6 only. No frameworks, no build step, no external JS.
 - Fonts: Google Fonts only (Fraunces + Source Serif 4 + Courier Prime to match the index,
   unless a shared stylesheet exists in `assets/` — then link it instead of inlining).
+  Shared files now exist: `../assets/css/article.css` and `../assets/js/article.js` (progress bar,
+  share card with `#share-copy`/`#share-x`/`#share-li`, tracker persistence).
 - Mobile-first, works from 360px wide, no horizontal scroll.
 - Respect `prefers-reduced-motion`; support `prefers-color-scheme: dark`.
 - Accessible: semantic landmarks (`header`, `main`, `article`, `aside`, `footer`), one `h1`,
@@ -198,3 +200,5 @@ Return, in this order:
 - [ ] Home link is relative (`../index.html`) and works locally.
 - [ ] Renders at 360px, works with JS disabled, passes keyboard navigation.
 - [ ] Metadata JSON is valid; `path`, `slug`, `date`, `hook` match the HTML.
+- [ ] After adding the file and metadata entry, `python3 scripts/build.py` passes and
+      regenerates the index `<noscript>` list, `feed.xml` and `sitemap.xml`.

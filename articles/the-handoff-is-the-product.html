@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Handoff Is the Product — FDE Field Notes</title>
+<meta name="description" content="Air Canada, Klarna and Cursor learned the same lesson in public: the path from the bot to a human isn&#x27;t the failure mode of an AI deployment. It&#x27;s the feature that makes it safe to ship.">
+<link rel="canonical" href="https://iggym.github.io/fde-field-notes/articles/the-handoff-is-the-product.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FDE Field Notes">
+<meta property="og:title" content="The Handoff Is the Product">
+<meta property="og:description" content="Air Canada, Klarna and Cursor learned the same lesson in public: the path from the bot to a human isn&#x27;t the failure mode of an AI deployment. It&#x27;s the feature that makes it safe to ship.">
+<meta property="og:url" content="https://iggym.github.io/fde-field-notes/articles/the-handoff-is-the-product.html">
+<meta property="article:published_time" content="2026-09-29">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Handoff Is the Product">
+<meta name="twitter:description" content="Air Canada, Klarna and Cursor learned the same lesson in public: the path from the bot to a human isn&#x27;t the failure mode of an AI deployment. It&#x27;s the feature that makes it safe to ship.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Handoff Is the Product", "description": "Air Canada, Klarna and Cursor learned the same lesson in public: the path from the bot to a human isn't the failure mode of an AI deployment. It's the feature that makes it safe to ship.", "datePublished": "2026-09-29", "url": "https://iggym.github.io/fde-field-notes/articles/the-handoff-is-the-product.html", "author": {"@type": "Organization", "name": "FDE Field Notes"}, "publisher": {"@type": "Organization", "name": "FDE Field Notes"}, "keywords": "fde, customer-support, human-in-the-loop, escalation, production-incidents"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;1,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/article.css">
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to article</a>
+<div id="progress" aria-hidden="true"></div>
+<nav class="topbar" aria-label="Site">
+  <a class="mark" href="../index.html">FDE Field Notes</a>
+  <span class="crumb">Deployment Practice · 5 min read</span>
+</nav>
+<main id="main" class="wrap">
+<article>
+<header class="hero">
+  <div class="eyebrow">Deployment Practice · Field Note</div>
+  <h1>The Handoff Is the Product</h1>
+  <p class="dek">A support bot that never escalates isn't efficient. It's unsupervised.</p>
+  <div class="dateline"><time datetime="2026-09-29">September 29, 2026</time> · 5 min read · research window 2024-02-01 to 2026-09-29</div>
+</header>
+
+<p>In November 2022, after his grandmother died, Jake Moffatt asked the chatbot on Air Canada's website about bereavement fares. It told him he could book now and apply for the discount retroactively. That wasn't Air Canada's policy, and when he applied, the airline refused. In the case that followed, Air Canada argued that the chatbot was responsible for its own statements. In February 2024 the British Columbia Civil Resolution Tribunal called that "a remarkable submission," found the airline liable for negligent misrepresentation, and ordered it to pay $812.02 CAD. The bot, the tribunal said, is still just part of Air Canada's website.</p>
+<p>The dollar amount was trivial. The principle wasn't: when a bot states a policy, the company has stated a policy.</p>
+
+<div class="reframe"><p>Escalation isn't what happens when the AI deployment fails. It's the part of the deployment that lets you ship it at all.</p></div>
+
+<div class="shift" role="group" aria-label="Belief shift 1">
+  <div class="before"><div class="label">Before</div><p>Success is containment: the share of conversations resolved without a human.</p></div>
+  <div class="after"><div class="label">After</div><p>Success is correct resolution, and a correct handoff counts as one.</p></div>
+  <div class="turn"><div class="label">Turn</div><p>A bot that never escalates isn't efficient. It's unsupervised.</p></div>
+</div>
+
+<p>Two weeks after the Air Canada ruling, Klarna published the most-cited containment story of the period. Its OpenAI-powered assistant had handled 2.3 million conversations in its first month, two-thirds of all customer service chats. Klarna said it did the work of 700 full-time agents, matched human satisfaction scores, and cut average resolution time from 11 minutes to under two. It became the slide in every AI customer-service pitch for a year.</p>
+<p>In May 2025, Klarna's CEO, Sebastian Siemiatkowski, told Bloomberg the company was hiring human agents again. The cheaper AI-led service had come with lower quality, and Klarna wanted customers to always be able to reach a person. Nothing about the model had to break for that to happen. The metric it was managed to — how many conversations never reached a human — simply wasn't the thing customers valued.</p>
+<p class="closer">Containment measures how often you avoided a person. Customers measure whether they got the right answer.</p>
+
+<figure>
+<svg viewBox="0 0 640 290" role="img" aria-labelledby="f4t f4d">
+  <title id="f4t">A support flow with a designed handoff</title>
+  <desc id="f4d">A customer question is checked: is it about policy, money or the account? If not, the bot answers. If so, and a retrieved, versioned policy document supports the answer, the bot answers with a citation. Otherwise the conversation goes to a human with a context packet. A request for a human goes straight to handoff.</desc>
+  <g font-size="12">
+    <rect class="box" x="10" y="20" width="150" height="48" rx="4"/><text x="85" y="49" text-anchor="middle">Customer question</text>
+    <rect class="box" x="210" y="20" width="200" height="48" rx="4"/><text x="310" y="41" text-anchor="middle">Policy, money, account,</text><text x="310" y="57" text-anchor="middle">or "get me a human"?</text>
+    <rect class="box" x="460" y="20" width="170" height="48" rx="4"/><text x="545" y="49" text-anchor="middle">Bot answers</text>
+    <rect class="box" x="210" y="120" width="200" height="48" rx="4"/><text x="310" y="141" text-anchor="middle">Backed by a retrieved,</text><text x="310" y="157" text-anchor="middle">versioned policy doc?</text>
+    <rect class="box" x="460" y="120" width="170" height="48" rx="4"/><text x="545" y="141" text-anchor="middle">Answer + citation</text><text x="545" y="157" text-anchor="middle" class="muted" font-size="11">logged with doc version</text>
+    <rect class="box-accent" x="210" y="220" width="200" height="56" rx="4"/><text x="310" y="243" text-anchor="middle" class="accent">Human handoff</text><text x="310" y="261" text-anchor="middle" class="muted" font-size="11">transcript + intent + what was tried</text>
+  </g>
+  <path class="line" d="M160 44 H210 M410 44 H460 M310 68 V120 M410 144 H460 M310 168 V220"/>
+  <text x="430" y="38" font-size="10" class="muted">no</text><text x="316" y="98" font-size="10" class="muted">yes</text>
+  <text x="425" y="138" font-size="10" class="muted">yes</text><text x="316" y="198" font-size="10" class="muted">no</text>
+  <path class="line-accent" d="M210 44 H190 V248 H210"/><text x="120" y="160" font-size="10" class="accent">asks for a human</text>
+</svg>
+<figcaption>The bot can talk about anything. It can only commit the company to something a versioned source backs up. Everything else goes to a person, with context.</figcaption>
+</figure>
+
+<div class="shift" role="group" aria-label="Belief shift 2">
+  <div class="before"><div class="label">Before</div><p>Hallucination is a model-quality issue the vendor will fix.</p></div>
+  <div class="after"><div class="label">After</div><p>A hallucinated <em>policy</em> is a commitment problem. Policy-shaped answers need a source or a human.</p></div>
+  <div class="turn"><div class="label">Turn</div><p>The bot doesn't need to be right about everything. It needs to know which statements the company will be held to.</p></div>
+</div>
+
+<p>In April 2025, Cursor showed how fast the same failure travels when the customers are developers. Users were getting logged out when they switched machines. One wrote to support and got a reply from "Sam" explaining that Cursor was designed to work on one device per subscription as a core security feature. There was no such policy, and Sam was an AI. The reply spread across Hacker News and Reddit, users threatened to cancel, and co-founder Michael Truell had to post publicly: "We have no such policy." The logouts turned out to be a side effect of a security change.</p>
+<p>Look at what went wrong. Not the bug, which was ordinary. The bot invented a rule to explain it, users couldn't tell they were talking to a bot, and nothing stopped a policy-shaped answer from going out without a source. Each of those is a design decision an FDE makes, or leaves unmade, while scoping a support deployment.</p>
+
+<div class="widget" id="esc-widget">
+  <h3>Handoff coverage check</h3>
+  <p class="noscript-note">Which escalation triggers does your deployment actually implement?</p>
+  <label><input type="checkbox" class="esc" data-n="Policy, refund or legal answers without a cited source"> Policy, refund or legal answers without a cited source go to a human.</label>
+  <label><input type="checkbox" class="esc" data-n="Honoring the first request for a human"> The first request for a human is honored, not argued with.</label>
+  <label><input type="checkbox" class="esc" data-n="Escalating after repeated failed turns"> Two failed or rephrased turns in a row trigger a handoff.</label>
+  <label><input type="checkbox" class="esc" data-n="Gating money movement and account changes"> Money movement and account changes need a human or a hard-coded flow.</label>
+  <label><input type="checkbox" class="esc" data-n="Passing a context packet to the human"> The human receives the transcript, detected intent and what was already tried.</label>
+  <label><input type="checkbox" class="esc" data-n="Disclosing that the agent is AI"> The bot says it's AI, by name and in plain words.</label>
+  <output id="esc-out" aria-live="polite"></output>
+</div>
+
+<p>Every FDE who has deployed a support bot has seen the dashboard that leads with containment rate, and the executive who wants the number higher. The useful thing to bring to that meeting is the cost of one wrong commitment: a tribunal ruling, a viral thread, a reversed hiring freeze. Then propose the metric that would have caught it: cost per <em>correct</em> resolution, with a weekly human audit of a sample of contained conversations.</p>
+
+<h2>The case against</h2>
+<p>The objection is that escalation is exactly the cost the customer bought AI to remove, and that a cautious bot hands off so often it's pointless. That's real if the triggers are vague ("escalate when unsure"). It isn't if they're narrow and concrete: policy-shaped claims without a source, money and account changes, an explicit request, repeated failure. Most support volume is order status, how-to questions and password resets, and none of those trip these triggers. The handoff rate stays low; the dangerous tail goes to people.</p>
+
+<h2>What this means for you</h2>
+<ul class="actions">
+  <li><strong>Inventory the commitments.</strong> List every kind of statement the bot could make that the company would be held to: refunds, fees, eligibility, deadlines, security rules.</li>
+  <li><strong>Ground or hand off.</strong> Those statements come only from retrieved, versioned documents, cited in the answer. Otherwise route to a human.</li>
+  <li><strong>Build the context packet.</strong> The human should never ask the customer to repeat themselves.</li>
+  <li><strong>Disclose.</strong> Name the bot as AI in the first message and in email signatures.</li>
+  <li><strong>Change the headline metric</strong> from containment to correct resolution, backed by a weekly audit sample.</li>
+</ul>
+<div class="now"><strong>24-hour action:</strong> Open your deployment's chat and ask for a refund exception, then ask for a human. Record what it said and how long it took. That transcript is your first audit sample.</div>
+
+</article>
+<aside class="endmatter" aria-label="Takeaways and sources">
+  <section class="card share" aria-labelledby="share-h">
+    <h3 id="share-h">Share this reframe</h3>
+    <blockquote>Escalation isn't what happens when the AI deployment fails. It's the part of the deployment that lets you ship it at all.</blockquote>
+    <div class="btns">
+      <button class="btn" id="share-copy" type="button">Copy text &amp; link</button>
+      <a class="btn" id="share-x" href="https://x.com/intent/tweet?url=https://iggym.github.io/fde-field-notes/articles/the-handoff-is-the-product.html" target="_blank" rel="noopener">Share to X</a>
+      <a class="btn" id="share-li" href="https://www.linkedin.com/sharing/share-offsite/?url=https://iggym.github.io/fde-field-notes/articles/the-handoff-is-the-product.html" target="_blank" rel="noopener">Share to LinkedIn</a>
+    </div>
+  </section>
+  <section class="card tracker" aria-labelledby="tracker-h">
+    <h3 id="tracker-h">Three things tracker</h3>
+    <label><input type="checkbox"> <span>A policy statement from a bot is a commitment the company is liable for.</span></label><label><input type="checkbox"> <span>Measure correct resolutions, not containment.</span></label><label><input type="checkbox"> <span>Design the handoff like a feature: triggers, context packet, disclosure.</span></label>
+  </section>
+  <section class="card facts" aria-labelledby="facts-h">
+    <h3 id="facts-h">Quick facts</h3>
+    <details><summary>What did the tribunal rule in Moffatt v. Air Canada?</summary><p>In February 2024, the BC Civil Resolution Tribunal held Air Canada liable for its chatbot's wrong bereavement-fare advice and rejected the argument that the bot was responsible for its own words. The award was $812.02 CAD.</p></details><details><summary>What did Klarna claim in February 2024?</summary><p>Its AI assistant handled 2.3 million conversations in its first month — two-thirds of customer service chats — and did the equivalent work of 700 full-time agents.</p></details><details><summary>What changed at Klarna by May 2025?</summary><p>Its CEO told Bloomberg the company was hiring human agents again so customers could always reach a person, after cheaper AI service had produced lower quality.</p></details><details><summary>What did Cursor's support bot do?</summary><p>In April 2025 it told users a one-device-per-subscription 'policy' explained their logouts. No such policy existed; a co-founder had to correct it publicly.</p></details>
+  </section>
+  <section class="card sources" aria-labelledby="sources-h">
+    <h3 id="sources-h">Sources</h3>
+    <ol><li><a href="https://www.americanbar.org/groups/business_law/resources/business-law-today/2024-february/bc-tribunal-confirms-companies-remain-liable-information-provided-ai-chatbot/">BC Tribunal Confirms Companies Remain Liable for Information Provided by AI Chatbot</a> <span class="pub">— ABA Business Law Today, February 2024</span></li><li><a href="https://www.euronews.com/next/2024/02/28/klarnas-ai-bot-is-doing-the-work-of-700-employees-what-will-happen-to-their-jobs">Klarna's AI bot is doing the work of 700 employees. What will happen to their jobs?</a> <span class="pub">— Euronews, February 28, 2024</span></li><li><a href="https://www.entrepreneur.com/business-news/klarna-ceo-reverses-course-by-hiring-more-humans-not-ai/491396">Klarna Is Hiring Customer Service Agents After AI Couldn't Cut It on Calls, According to the Company's CEO</a> <span class="pub">— Entrepreneur, May 2025</span></li><li><a href="https://www.cxtoday.com/conversational-ai/a-contact-center-chatbot-invents-company-policies-now-customers-want-out/">A Contact Center Chatbot Invents Company Policies, Now Customers Want Out</a> <span class="pub">— CX Today, April 2025</span></li></ol>
+  </section>
+</aside>
+</main>
+<footer class="site">
+  © FDE Field Notes — <a href="../index.html">Home</a> — <a href="#top">Top ↑</a>
+</footer>
+<script src="../assets/js/article.js" defer></script>
+<script>
+(function(){
+  var b=document.querySelectorAll('#esc-widget .esc'),o=document.getElementById('esc-out');
+  function u(){
+    var miss=[],n=0;b.forEach(function(x){if(x.checked)n++;else miss.push(x.dataset.n);});
+    var t=n===b.length?'Every trigger covered. Now audit a sample weekly to prove it.':'Missing: '+miss.join('; ')+'.';
+    o.innerHTML='<span class="big">'+n+' of '+b.length+'</span><br>'+t;
+  }
+  b.forEach(function(x){x.addEventListener('change',u);});u();
+})();
+</script>
+</body>
+</html>

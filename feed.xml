@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>FDE Field Notes</title>
+  <link>https://iggym.github.io/fde-field-notes/</link>
+  <atom:link href="https://iggym.github.io/fde-field-notes/feed.xml" rel="self" type="application/rss+xml"/>
+  <description>Field notes on deployment-engineering practice — discovery, scoping, customer judgment calls, and the skill nobody puts in the job posting.</description>
+  <language>en</language>
+  <item>
+    <title>Context Is the Integration</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/context-is-the-integration.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/context-is-the-integration.html</guid>
+    <pubDate>Tue, 06 Oct 2026 00:00:00 +0000</pubDate>
+    <description>MCP turned FDE glue code into a durable asset the customer owns. The work that&#x27;s left — and that now matters most — is curating what each connector puts in front of the model.</description>
+  </item>
+  <item>
+    <title>The Harness Moves the Number</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/the-harness-moves-the-number.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-harness-moves-the-number.html</guid>
+    <pubDate>Thu, 01 Oct 2026 00:00:00 +0000</pubDate>
+    <description>Same 4B model, same task, a 60-to-82% accuracy swing from harness design alone. The eval harness is the FDE&#x27;s real deliverable — and the acceptance contract with the customer.</description>
+  </item>
+  <item>
+    <title>The Handoff Is the Product</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/the-handoff-is-the-product.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-handoff-is-the-product.html</guid>
+    <pubDate>Tue, 29 Sep 2026 00:00:00 +0000</pubDate>
+    <description>Air Canada, Klarna and Cursor learned the same lesson in public: the path from the bot to a human isn&#x27;t the failure mode of an AI deployment. It&#x27;s the feature that makes it safe to ship.</description>
+  </item>
+  <item>
+    <title>Prompt Injection Is a Permissions Bug</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/prompt-injection-is-a-permissions-bug.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/prompt-injection-is-a-permissions-bug.html</guid>
+    <pubDate>Tue, 22 Sep 2026 00:00:00 +0000</pubDate>
+    <description>Assume the model will be tricked. The FDE&#x27;s job is to decide, during scoping, what a tricked agent can reach — and to make sure it can&#x27;t reach all three legs of the lethal trifecta at once.</description>
+  </item>
+  <item>
+    <title>Dry Run Before Autonomy</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/dry-run-before-autonomy.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/dry-run-before-autonomy.html</guid>
+    <pubDate>Tue, 15 Sep 2026 00:00:00 +0000</pubDate>
+    <description>&quot;Don&#x27;t touch production&quot; in a prompt is a request. A read-only credential is a control. Agent tool loops need dry runs, idempotency and scoped access before they need autonomy.</description>
+  </item>
+  <item>
+    <title>Rollback Is the Feature</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/rollback-is-the-feature.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/rollback-is-the-feature.html</guid>
+    <pubDate>Tue, 08 Sep 2026 00:00:00 +0000</pubDate>
+    <description>The most instructive AI incidents of 2025 weren&#x27;t fixed by better models. They were fixed by how fast someone could get back to the last known good state.</description>
+  </item>
+  <item>
+    <title>The Title Is The Tell</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/title-is-tell.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/title-is-tell.html</guid>
+    <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+    <description>Fragmented FDE titles are not confusion — they are price discovery for deployment risk.</description>
+  </item>
+  <item>
+    <title>Not Yet Is the Deliverable</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/not-yet-is-the-deliverable.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/not-yet-is-the-deliverable.html</guid>
+    <pubDate>Tue, 17 Mar 2026 00:00:00 +0000</pubDate>
+    <description>The best FDEs aren&#x27;t measured by what they ship — they&#x27;re measured by what they refuse to build until the data proves it&#x27;s ready.</description>
+  </item>
+  <item>
+    <title>The Roadmap Is Not a Wish List</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/roadmap-is-not-wish-list.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/roadmap-is-not-wish-list.html</guid>
+    <pubDate>Wed, 18 Feb 2026 00:00:00 +0000</pubDate>
+    <description>Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.</description>
+  </item>
+  <item>
+    <title>The Courage to Not Build</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/the-courage-to-not-build.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-courage-to-not-build.html</guid>
+    <pubDate>Tue, 06 Jan 2026 00:00:00 +0000</pubDate>
+    <description>The FDE&#x27;s highest-leverage act is often refusing to build. 95% of AI pilots fail not because models break, but because organizations build before they&#x27;re ready.</description>
+  </item>
+  <item>
+    <title>Customer-Context Judgment: Knowing When to Say &#x27;Don&#x27;t Build This Yet&#x27;</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/customer-context-judgment-dont-build-this-yet.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/customer-context-judgment-dont-build-this-yet.html</guid>
+    <pubDate>Tue, 06 Jan 2026 00:00:00 +0000</pubDate>
+    <description>Why 95% of enterprise AI pilots fail from unready data and broken workflows—and why an FDE&#x27;s greatest leverage is diagnostic refusal.</description>
+  </item>
+  <item>
+    <title>When the Building Stops</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/when-the-building-stops.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/when-the-building-stops.html</guid>
+    <pubDate>Tue, 18 Mar 2025 00:00:00 +0000</pubDate>
+    <description>&quot;Don&#x27;t build this yet&quot; isn&#x27;t a technical judgment — it&#x27;s an information-architecture check.</description>
+  </item>
+  <item>
+    <title>What the Title Actually Prices</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/what-the-title-actually-prices.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/what-the-title-actually-prices.html</guid>
+    <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
+    <description>The title on your offer letter isn&#x27;t describing the work — it&#x27;s describing the pricing bracket.</description>
+  </item>
+  <item>
+    <title>The Title Isn&#x27;t the Job</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/the-title-isnt-the-job.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-title-isnt-the-job.html</guid>
+    <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
+    <description>An &#x27;FDE&#x27; title doesn&#x27;t describe a role — it describes a company&#x27;s bet about how software gets sold.</description>
+  </item>
+  <item>
+    <title>The Title Is the Price</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/the-title-is-the-price.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-title-is-the-price.html</guid>
+    <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
+    <description>Your title isn&#x27;t describing your work. It&#x27;s naming who absorbs the cost when an engagement goes sideways.</description>
+  </item>
+  <item>
+    <title>Same Work, Different Price</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/same-work-different-price.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/same-work-different-price.html</guid>
+    <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
+    <description>The title fragmentation in FDE-adjacent roles isn&#x27;t a taxonomy — it&#x27;s a pricing mechanism. Same responsibilities, 30% comp gap, anchored to five words.</description>
+  </item>
+  <item>
+    <title>Code Is Just a Receipt</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/code-is-just-a-receipt.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/code-is-just-a-receipt.html</guid>
+    <pubDate>Sat, 08 Mar 2025 00:00:00 +0000</pubDate>
+    <description>In forward-deployed engineering, discovery isn&#x27;t a prelude to the engagement. It IS the engagement. The code that follows is just the receipt.</description>
+  </item>
+  <item>
+    <title>The Code You Don&#x27;t Write</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/the-code-you-dont-write.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/the-code-you-dont-write.html</guid>
+    <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+    <description>The real product an FDE ships is a &quot;don&#x27;t build&quot; list. Everything else is evidence for why each item belongs on it.</description>
+  </item>
+  <item>
+    <title>Lost Before You Type</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/lost-before-you-type.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/lost-before-you-type.html</guid>
+    <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+    <description>Every failed engagement was lost in the first two weeks. The code just hadn&#x27;t been written yet.</description>
+  </item>
+  <item>
+    <title>You&#x27;re Not Deploying, You&#x27;re Correcting</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/youre-not-deploying-youre-correcting.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/youre-not-deploying-youre-correcting.html</guid>
+    <pubDate>Tue, 18 Feb 2025 00:00:00 +0000</pubDate>
+    <description>Your highest-output work isn&#x27;t what you ship to the customer. It&#x27;s what you ship back to your own product team.</description>
+  </item>
+  <item>
+    <title>Your Real Job Is Roadmap</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/your-real-job-is-roadmap.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/your-real-job-is-roadmap.html</guid>
+    <pubDate>Tue, 18 Feb 2025 00:00:00 +0000</pubDate>
+    <description>The FDE&#x27;s highest-leverage output isn&#x27;t code deployed — it&#x27;s field signal that changes the roadmap.</description>
+  </item>
+  <item>
+    <title>What the Job Selects For</title>
+    <link>https://iggym.github.io/fde-field-notes/articles/what-the-job-selects-for.html</link>
+    <guid isPermaLink="true">https://iggym.github.io/fde-field-notes/articles/what-the-job-selects-for.html</guid>
+    <pubDate>Wed, 22 Jan 2025 00:00:00 +0000</pubDate>
+    <description>The FDE role doesn&#x27;t select for people skills. It selects for the ability to know the customer is wrong and say nothing — for three weeks.</description>
+  </item>
+</channel>
+</rss>

@@ -68,15 +68,14 @@ Since there are no build steps or dependencies, you can run the application with
 
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/iggym/fde-field-notes.git](https://github.com/iggym/fde-field-notes.git)
+git clone https://github.com/iggym/fde-field-notes.git
 
 # 2. Enter the repository directory
 cd fde-field-notes
 
 # 3. Spin up a lightweight local server (Python 3)
 python3 -m http.server 8000
-
-
+```
 
 Then open `http://localhost:8000` in your browser. 🎈
 
@@ -84,7 +83,7 @@ Then open `http://localhost:8000` in your browser. 🎈
 
 ## 🚀 Deployment
 
-* **Automatic Deployments:** Any commits or pull requests merged into `main` automatically deploy to [GitHub Pages](https://www.google.com/url?sa=E&source=gmail&q=https://iggym.github.io/fde-field-notes).
+* **Automatic Deployments:** Any commits or pull requests merged into `main` automatically deploy to [GitHub Pages](https://iggym.github.io/fde-field-notes/).
 * **Client-Side Runtime:** All processing runs 100% in the user's browser.
 
 ---
@@ -95,6 +94,9 @@ Have field notes, harness benchmarks, or production post-mortems from your own F
 
 1. 🍴 **Fork** the repository
 2. 🌿 Create a feature branch (`git checkout -b field-note/my-insight`)
-3. 📥 Open a **Pull Request** with your updates!
+3. ✍️ Draft the article with the [master prompt](docs/master-prompt-v1.md) and add its entry to `metadata.json`
+4. 📥 Open a **Pull Request** with your updates!
+
+See [`tasks/tasks.md`](tasks/tasks.md) for the current improvement backlog.
 
 ---
