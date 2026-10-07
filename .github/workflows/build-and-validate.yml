@@ -1,0 +1,33 @@
+name: Build and Validate
+
+on:
+  push:
+    branches: [ main, improve/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run build script
+        run: python3 scripts/build.py
+
+      - name: Check for unintended changes
+        run: |
+          if ! git diff --quiet; then
+            echo "Build script regenerated files. Commit and push the changes:"
+            git diff --name-only
+            exit 1
+          fi
+          echo "No unintended changes from build script"
+
+      - name: Run validation
+        run: python3 scripts/validate.py
