@@ -46,6 +46,20 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,s
 figcaption{font-size:12px;color:var(--mut);margin-top:8px;font-family:JetBrains Mono,monospace}
 @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}#progress{transition:none}}
 </style>
+<!-- seo:start -->
+<meta name="description" content="Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.">
+<link rel="canonical" href="https://iggym.github.io/fde-field-notes/articles/roadmap-is-not-wish-list.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FDE Field Notes">
+<meta property="og:title" content="The Roadmap Is Not a Wish List">
+<meta property="og:description" content="Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.">
+<meta property="og:url" content="https://iggym.github.io/fde-field-notes/articles/roadmap-is-not-wish-list.html">
+<meta property="article:published_time" content="2026-02-18">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Roadmap Is Not a Wish List">
+<meta name="twitter:description" content="Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Roadmap Is Not a Wish List", "description": "Internal advocacy is not lobbying. It is turning field pain into an eval product wants to ship.", "datePublished": "2026-02-18", "url": "https://iggym.github.io/fde-field-notes/articles/roadmap-is-not-wish-list.html", "publisher": {"@type": "Organization", "name": "FDE Field Notes"}}</script>
+<!-- seo:end -->
 </head>
 <body>
 <div id="progress"></div>
@@ -73,23 +87,23 @@ figcaption{font-size:12px;color:var(--mut);margin-top:8px;font-family:JetBrains 
 <div class="main">
 <p style="color:var(--mut);font-family:JetBrains Mono,monospace;font-size:12px">OPENING — A call that did not go as planned</p>
 <h2 style="font-size:24px">The eval that broke the demo</h2>
-<p>You are in a glass room at BBVA. 120,000 employees across 25 countries are about to touch what you built, and your voice agent just failed the compliance check you wrote yourself. The customer loves the idea. The model does not pass.</p>
+<p>Picture the glass room at a large bank. More than a hundred thousand employees are about to touch what you built, and your voice agent just failed the compliance check you wrote yourself. The customer loves the idea. The model does not pass.</p>
 <p>Colin Jarvis at OpenAI describes this exact pattern from 2025: FDEs embedded with a voice customer for call-center automation created evals, found the model underperformed, then carried that data back to Research. That loop, not a feature request, improved OpenAI’s Realtime API for everyone. One painful deployment, measured well, turned into platform leverage.</p>
 <p>This is the job after the demo. Most FDE postings sell the embed. The scarce skill is the return trip.</p>
 <div class="pull" id="snap">The product team does not need your customer story. They need a pattern they can ship without ever meeting your customer.</div>
-<p><strong>[BEAT 1] BEFORE / AFTER / TURN:</strong> Before, you think advocacy means escalating a ticket with customer urgency. After this BBVA-style loop, you see advocacy as reducing a messy deployment to an abstraction, an eval, and a cost model.</p>
+<p><strong>[BEAT 1] BEFORE / AFTER / TURN:</strong> Before, you think advocacy means escalating a ticket with customer urgency. After this loop, you see advocacy as reducing a messy deployment to an abstraction, an eval, and a cost model.</p>
 <h2 style="font-size:18px">Field notes that made product move</h2>
 <div class="card">
 <strong>Story A — OpenAI FDE + Voice Evals → Realtime API</strong><br>
-Source: Pragmatic Engineer interview with OpenAI Head of FDE, 2025. Summary: FDE team embedded with voice customer built evals, showed failure, partnered with Research to improve voice model. Entities: OpenAI, BBVA deployment covering 120k employees, Realtime API. Figures: 120k users impacted in scaled rollout. Dynamic: field-generated evals provided signal research could act on. Outcome cause: quantified failure, not anecdote. Connection to reframe: advocacy via reusable measurement, not lobbying.
+As OpenAI's head of forward deployed engineering has described it in 2025 interviews, an FDE team embedded with a voice customer built evals for the customer's use case, showed exactly where the model fell short, and took that measured failure back to Research. The improvement landed in the voice model every API customer uses. What moved the roadmap was a reproducible eval, not an anecdote.
 </div>
 <div class="card">
 <strong>Story B — Palantir × NVIDIA × Lowe’s Ontology Twin</strong><br>
-Source: NVIDIA + Palantir announcement 2025-2026; Lowe’s global supply chain digital twin. Summary: Lowe’s created live replica of supply chain on Foundry + AIP with NVIDIA CUDA-X and Nemotron models integrated into Ontology. Entities: Lowe’s Fortune 50, Palantir, NVIDIA. Figures: thousands of live signals ingested, decisions recalibrated minute-by-minute vs weekly batch. Dynamic: FDE-learned pattern — continuous optimization — forced Ontology to absorb GPU acceleration and open models. Outcome cause: field pressure exposed that weekly models were insufficient. Connection to reframe: field work translated into core Ontology integration.
+In 2025, Palantir and NVIDIA announced work to bring NVIDIA's accelerated computing and open models into Palantir's platform, with Lowe's building a live replica of its supply chain as an early example. The field pattern behind it — customers needing continuous re-optimization instead of weekly batch runs — is the kind of signal that turns into core platform work.
 </div>
 <div class="card">
 <strong>Story C — Databricks Mosaic AI eval gap</strong><br>
-Source: VentureBeat + SiliconANGLE 2025 on Mosaic AI Agent Evaluation. Summary: Databricks customers were “flying blind, no way to evaluate these agents” (CTO of Neural Networks). FDE feedback loop drove Agent Evaluation with LLM judges + human feedback UI and tracing. Entities: Databricks, Mosaic AI. Figures: public preview of evaluation suite, synthetic data + task-aware benchmarks to optimize quality-to-cost. Dynamic: field teams shaped long-term priorities by reporting systematic eval absence. Outcome cause: repeated field stalls at eval, not model quality. Connection to reframe: turning repeated stall into product capability.
+Databricks launched Mosaic AI Agent Evaluation in 2024, pairing LLM judges with a human-feedback interface and tracing, after customers kept stalling at the same point: no reliable way to evaluate their agents. A repeated field stall became a product capability.
 </div>
 <h2 style="font-size:18px">Why wish lists die</h2>
 <p>Product hears a lot of requests. An FDE who returns from the field with “customer X wants feature Y” is easy to deprioritize. Their backlog is full. Their incentives reward platform coherence, not bespoke wins.</p>
@@ -98,7 +112,7 @@ Source: VentureBeat + SiliconANGLE 2025 on Mosaic AI Agent Evaluation. Summary: 
 <h3 style="margin:0 0 12px">Diagnostic — Will This Signal Move Roadmap?</h3>
 <figcaption>Click each node to test your signal.</figcaption>
 <div class="tree">
-<div class="node" onclick="this.classList.toggle('active')"><strong>1. Can you reproduce failure without customer data?</strong><div class="detail">If yes, you have an eval. If no, you have a story. Product needs evals. Build a minimal public-ish benchmark that mirrors BBVA compliance or Lowe’s minute-level drift.</div></div>
+<div class="node" onclick="this.classList.toggle('active')"><strong>1. Can you reproduce failure without customer data?</strong><div class="detail">If yes, you have an eval. If no, you have a story. Product needs evals. Build a minimal public-ish benchmark that mirrors the customer's compliance check or a supply chain's minute-level drift.</div></div>
 <div class="node" onclick="this.classList.toggle('active')"><strong>2. Does it unblock 2+ other accounts?</strong><div class="detail">Databricks moved when “flying blind” was not one customer but a class. Count similar stalls in last 90 days. Name them.</div></div>
 <div class="node" onclick="this.classList.toggle('active')"><strong>3. Have you embedded with core eng?</strong><div class="detail">Ramp’s model: FDEs embed within core product engineering teams to develop expertise and drive roadmap. Spend a week in their standup. Ship a small stability fix. Trust compounds.</div></div>
 <div class="node" onclick="this.classList.toggle('active')"><strong>4. What will you refuse to hand-roll?</strong><div class="detail">Palantir FDEs historically faced tension: hand-roll to win vs hold line for product. Your leverage is a clear boundary: “We will not fork this connector again; here is cost if we do.”</div></div>
@@ -166,6 +180,9 @@ Source: VentureBeat + SiliconANGLE 2025 on Mosaic AI Agent Evaluation. Summary: 
 </div>
 </div>
 </div>
+<!-- related:start -->
+<nav class="fdefn-related" aria-label="Keep reading" style="max-width:700px;margin:48px auto 24px;padding:20px 16px 0;border-top:1px solid currentColor;line-height:1.5"><p style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin:0 0 12px">Keep reading · Internal Advocacy</p><ul style="list-style:none;padding:0;margin:0"><li style="margin:0 0 10px"><span style="opacity:.65">Older ·</span> <a href="youre-not-deploying-youre-correcting.html" style="color:inherit">You&#x27;re Not Deploying, You&#x27;re Correcting</a></li><li><a href="../index.html" style="color:inherit">All field notes →</a></li></ul></nav>
+<!-- related:end -->
 <footer style="text-align:center;padding:32px;color:var(--mut);font-family:JetBrains Mono,monospace;font-size:12px;border-top:1px solid var(--line)">
 <a href="../index.html" style="color:var(--fg)">Home</a> • <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" style="color:var(--fg)">Top</a><br>© fde-field-notes 2026-02-18
 </footer>
