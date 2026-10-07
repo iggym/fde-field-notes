@@ -1,0 +1,199 @@
+name: Build and Validate
+
+on:
+  push:
+    branches: [ main, improve/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run build script
+        run: python3 scripts/build.py
+
+      - name: Check for unintended changes
+        run: |
+          if ! git diff --quiet; then
+            echo "❌ Build script regenerated files. Commit and push the changes:"
+            git diff --name-only
+            exit 1
+          fi
+          echo "✓ No unintended changes from build script"
+
+      - name: Validate metadata.json schema
+        run: |
+          python3 << 'EOF'
+          import json
+          from pathlib import Path
+
+          # Load metadata
+          metadata = json.loads(Path("metadata.json").read_text())
+
+          # Validate site object
+          assert "site" in metadata, "Missing 'site' object"
+          assert "base_url" in metadata["site"], "Missing 'site.base_url'"
+          assert "title" in metadata["site"], "Missing 'site.title'"
+          assert "description" in metadata["site"], "Missing 'site.description'"
+
+          # Validate articles
+          assert "articles" in metadata, "Missing 'articles' array"
+          assert len(metadata["articles"]) > 0, "No articles found"
+
+          required_fields = ["id", "slug", "title", "hook", "path", "date", "status", "pillar", "tags", "reading_time_minutes"]
+
+          for i, article in enumerate(metadata["articles"]):
+              for field in required_fields:
+                  assert field in article, f"Article {i} ({article.get('slug', 'unknown')}): missing '{field}'"
+
+              # Validate ID format (YYYYMMDD-slug)
+              id_parts = article["id"].split("-", 1)
+              assert len(id_parts) == 2 and len(id_parts[0]) == 8, \
+                  f"Article {i}: ID '{article['id']}' must be YYYYMMDD-slug format"
+
+              # Validate date format (YYYY-MM-DD)
+              assert len(article["date"]) == 10 and article["date"][4] == "-" and article["date"][7] == "-", \
+                  f"Article {i}: date '{article['date']}' must be YYYY-MM-DD"
+
+              # Validate pillar
+              valid_pillars = ["deployment-practice", "customer-judgment", "discovery-scoping",
+                             "internal-advocacy", "market-comp", "role-craft"]
+              assert article["pillar"] in valid_pillars, \
+                  f"Article {i}: unknown pillar '{article['pillar']}'"
+
+              # Validate tags
+              assert isinstance(article["tags"], list), f"Article {i}: tags must be a list"
+              assert len(article["tags"]) > 0, f"Article {i}: tags list is empty"
+              assert "fde" in article["tags"], f"Article {i}: missing 'fde' tag"
+
+          print(f"✓ Metadata valid: {len(metadata['articles'])} articles")
+          EOF
+
+      - name: Check for required meta tags
+        run: |
+          python3 << 'EOF'
+          import re
+          from pathlib import Path
+          import json
+
+          metadata = json.loads(Path("metadata.json").read_text())
+          required_meta = {
+              "description": r'<meta name="description"',
+              "canonical": r'<link rel="canonical"',
+              "og:type": r'<meta property="og:type"',
+              "og:title": r'<meta property="og:title"',
+              "twitter:card": r'<meta name="twitter:card"',
+              "json-ld": r'<script type="application/ld\+json"',
+          }
+
+          for article in metadata["articles"]:
+              if article["status"] != "published":
+                  continue
+
+              path = Path(article["path"])
+              if not path.exists():
+                  print(f"❌ Missing file: {article['path']}")
+                  continue
+
+              content = path.read_text()
+              missing = []
+
+              for meta_name, pattern in required_meta.items():
+                  if not re.search(pattern, content):
+                      missing.append(meta_name)
+
+              if missing:
+                  print(f"❌ {article['slug']}: missing meta tags: {', '.join(missing)}")
+              else:
+                  print(f"✓ {article['slug']}: all meta tags present")
+
+          EOF
+
+      - name: Validate HTML structure
+        run: |
+          python3 << 'EOF'
+          import re
+          from pathlib import Path
+          import json
+
+          metadata = json.loads(Path("metadata.json").read_text())
+
+          for article in metadata["articles"]:
+              if article["status"] != "published":
+                  continue
+
+              path = Path(article["path"])
+              if not path.exists():
+                  continue
+
+              content = path.read_text()
+
+              # Check for required elements
+              checks = {
+                  "h1": r"<h1[^>]*>",
+                  "main": r"<main[^>]*>",
+                  "footer": r"<footer[^>]*>",
+              }
+
+              missing = [name for name, pattern in checks.items() if not re.search(pattern, content)]
+
+              if missing:
+                  print(f"⚠ {article['slug']}: missing semantic elements: {', '.join(missing)}")
+              else:
+                  print(f"✓ {article['slug']}: structure valid")
+
+          EOF
+
+      - name: Check for broken links
+        run: |
+          python3 << 'EOF'
+          import re
+          from pathlib import Path
+          import json
+
+          metadata = json.loads(Path("metadata.json").read_text())
+          articles_by_slug = {a["slug"]: a for a in metadata["articles"]}
+
+          for article in metadata["articles"]:
+              if article["status"] != "published":
+                  continue
+
+              path = Path(article["path"])
+              if not path.exists():
+                  continue
+
+              content = path.read_text()
+
+              # Find all href attributes
+              links = re.findall(r'href=["\']([^"\']+)["\']', content)
+
+              broken = []
+              for link in links:
+                  # Skip external URLs, anchors, and mailto
+                  if link.startswith(("http://", "https://", "#", "mailto:")):
+                      continue
+
+                  # Resolve relative links
+                  if link.startswith("../"):
+                      target = Path("articles").parent / link.lstrip("../")
+                  else:
+                      target = Path("articles").parent / "articles" / link
+
+                  # Check if target exists
+                  if not target.exists():
+                      broken.append(link)
+
+              if broken:
+                  print(f"⚠ {article['slug']}: broken links: {', '.join(broken)}")
+              else:
+                  print(f"✓ {article['slug']}: no broken links")
+
+          EOF
